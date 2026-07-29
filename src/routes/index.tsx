@@ -1,24 +1,82 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Hero } from "@/components/site/hero";
+import {
+  CaseStudies,
+  CtaBand,
+  Industries,
+  Pricing,
+  ProblemComparison,
+  Process,
+  Products,
+  ServiceExplorer,
+  SocialProof,
+  TechStack,
+  WhyUs,
+} from "@/components/site/sections";
+import { AiSection, AutomationCanvas, CloudInfrastructure } from "@/components/site/systems";
+import { ContactSection } from "@/components/site/contact";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+const title = "Nexolith — AI & Software Engineering Studio For Business Operations";
+const description =
+  "We build custom software, AI automation, cloud infrastructure and enterprise dashboards that remove manual work and modernise business operations.";
+
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title },
+      { name: "description", content: description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "/" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: "/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ProfessionalService",
+          name: "Nexolith",
+          description,
+          areaServed: "Global",
+          serviceType: [
+            "Custom Software Development",
+            "AI Workflow Automation",
+            "Cloud Infrastructure & DevOps",
+            "ERP Development",
+            "CRM Development",
+          ],
+        }),
+      },
+    ],
+  }),
+  component: Home,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function Home() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <main>
+      <h1 className="sr-only">
+        AI and software engineering studio building custom software, automation and cloud systems
+      </h1>
+      <Hero />
+      <SocialProof />
+      <ServiceExplorer />
+      <ProblemComparison />
+      <Industries />
+      <Products />
+      <AutomationCanvas />
+      <CloudInfrastructure />
+      <AiSection />
+      <CaseStudies />
+      <Process />
+      <TechStack />
+      <WhyUs />
+      <Pricing />
+      <CtaBand />
+      <ContactSection />
+    </main>
   );
 }
