@@ -34,7 +34,7 @@ export function SectionHeading({
   intro,
   align = "left",
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   intro?: string;
   align?: "left" | "center";
@@ -46,7 +46,7 @@ export function SectionHeading({
         align === "center" && "mx-auto items-center text-center",
       )}
     >
-      <Eyebrow>{eyebrow}</Eyebrow>
+      {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
       <h2 className="text-3xl leading-[1.08] font-semibold text-balance md:text-5xl">{title}</h2>
       {intro ? <p className="text-base text-muted-foreground md:text-lg">{intro}</p> : null}
     </Reveal>
