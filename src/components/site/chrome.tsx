@@ -7,7 +7,7 @@ import { FoxquartLogo } from "./ui";
 const nav = [
   { label: "Services", to: "/services" },
   { label: "Solutions", to: "/solutions" },
-  { label: "Work", to: "/#case-studies" },
+  // { label: "Work", to: "/#case-studies" },
   // { label: "Pricing", to: "/#pricing" },
 ];
 
