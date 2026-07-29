@@ -1,15 +1,16 @@
 export const EMAIL_ADDRESS = "businessfoxquart@gmail.com";
-export const EMAIL_SUBJECT = "Engineering Strategy Inquiry — foxquart";
-export const EMAIL_BODY_TEMPLATE = `Hi foxquart Engineering Team,
+export const EMAIL_SUBJECT = "Inquiry: Strategy Call for Custom Engineering";
+export const EMAIL_BODY_TEMPLATE = `Hello Foxquart Team,
 
-I would like to discuss a potential software / automation project for our business.
+I am interested in discussing a software or automation engineering project for our business.
 
-• Company / Organization: 
-• Process or System to Automate/Build: 
-• Target Timeline: 
-• Estimated Budget: 
+Here are a few initial details:
+- Organization Name: 
+- Primary Requirement / Bottleneck: 
+- Expected Timeline: 
+- Estimated Budget: 
 
-Looking forward to connecting.
+Looking forward to hearing from you.
 
 Best regards,`;
 

@@ -29,25 +29,27 @@ export function ContactSection() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const mailBody = `Strategy Call Request — foxquart Engineering
+    const mailBody = `Hello Foxquart Team,
 
-Client Details:
-• Name: ${name}
-• Work Email: ${email}
-• Company: ${company || "N/A"}
-• Phone: ${phone || "N/A"}
+My name is ${name}${company ? ` from ${company}` : ""}. I am reaching out to discuss a strategy call regarding our engineering requirements.
 
-Scope & Preferences:
-• Project Type: ${type}
-• Budget Target: ${budget}
-• Timeline: ${timeline}
-• Preferred Call Slot: ${slot}
+Contact Info:
+- Direct Email: ${email}
+- Phone: ${phone || "Not provided"}
 
-Current Process Bottleneck / Notes:
-${message || "No additional message provided."}
-`;
+Project Overview:
+- Service Area: ${type}
+- Target Budget: ${budget}
+- Expected Timeline: ${timeline}
+- Preferred Call Time: ${slot}
 
-    const subject = `Strategy Call Request: ${name} ${company ? `(${company})` : ""}`;
+Notes & Requirements:
+${message || "No additional notes specified."}
+
+Best regards,
+${name}`;
+
+    const subject = `[Foxquart Inquiry] Strategy Call — ${name}${company ? ` (${company})` : ""}`;
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
       EMAIL_ADDRESS,
     )}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailBody)}`;
