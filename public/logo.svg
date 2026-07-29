@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" width="240" height="60" fill="none">
+  <defs>
+    <path id="fox-blade" d="M 25,24 C 28.5,19 38,9.5 31,1.5 C 41.5,9 40,21 25,24 Z" />
+    <linearGradient id="fox-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(5, 5)">
+    <use href="#fox-blade" fill="url(#fox-cyan)" />
+    <use href="#fox-blade" fill="url(#fox-cyan)" transform="rotate(120 25 25)" />
+    <use href="#fox-blade" fill="url(#fox-cyan)" transform="rotate(240 25 25)" />
+  </g>
+  <text x="65" y="37" font-family="'Space Grotesk', system-ui, sans-serif" font-weight="700" font-size="28" fill="#f8fafc" letter-spacing="-0.5">Foxquart</text>
+</svg>

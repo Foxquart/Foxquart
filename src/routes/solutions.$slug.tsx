@@ -13,10 +13,10 @@ export const Route = createFileRoute("/solutions/$slug")({
   head: ({ params, loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Solution unavailable — Nexolith" }, { name: "robots", content: "noindex" }],
+        meta: [{ title: "Solution unavailable — foxquart" }, { name: "robots", content: "noindex" }],
       };
     }
-    const t = `${loaderData.page.title} | Nexolith`;
+    const t = `${loaderData.page.title} | foxquart`;
     const d = loaderData.page.description;
     return {
       meta: [

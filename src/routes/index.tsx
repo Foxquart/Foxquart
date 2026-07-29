@@ -16,7 +16,7 @@ import {
 import { AiSection, AutomationCanvas, CloudInfrastructure } from "@/components/site/systems";
 import { ContactSection } from "@/components/site/contact";
 
-const title = "Nexolith — AI & Software Engineering Studio For Business Operations";
+const title = "foxquart — AI & Software Engineering Studio For Business Operations";
 const description =
   "We build custom software, AI automation, cloud infrastructure and enterprise dashboards that remove manual work and modernise business operations.";
 
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "ProfessionalService",
-          name: "Nexolith",
+          name: "foxquart",
           description,
           areaServed: "Global",
           serviceType: [
@@ -63,6 +63,7 @@ function Home() {
       </h1>
       <Hero />
       <SocialProof />
+      <WhyUs />
       <ServiceExplorer />
       <ProblemComparison />
       <Industries />
@@ -73,8 +74,7 @@ function Home() {
       <CaseStudies />
       <Process />
       <TechStack />
-      <WhyUs />
-      <Pricing />
+      {/* <Pricing /> */}
       <CtaBand />
       <ContactSection />
     </main>

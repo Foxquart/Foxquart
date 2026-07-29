@@ -78,14 +78,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Nexolith — AI & Software Engineering Studio" },
+      { title: "foxquart — AI & Software Engineering Studio" },
       {
         name: "description",
         content:
-          "Nexolith engineers custom software, AI automation and cloud infrastructure for modern business operations.",
+          "foxquart engineers custom software, AI automation and cloud infrastructure for modern business operations.",
       },
-      { name: "author", content: "Nexolith" },
-      { property: "og:site_name", content: "Nexolith" },
+      { name: "author", content: "foxquart" },
+      { property: "og:site_name", content: "foxquart" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -100,6 +100,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=JetBrains+Mono:wght@400;500&display=swap",
       },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
     scripts: [
@@ -108,7 +109,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "Nexolith",
+          name: "foxquart",
           url: "/",
           description:
             "AI and software engineering studio building custom software, automation and cloud systems for businesses.",

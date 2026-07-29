@@ -4,7 +4,7 @@ import { GlassPanel, Reveal, Section, SectionHeading } from "@/components/site/u
 import { CtaBand } from "@/components/site/sections";
 import { solutionPages } from "@/lib/site-data";
 
-const title = "Solutions — Industry & Service Specific Software | Nexolith";
+const title = "Solutions — Industry & Service Specific Software | foxquart";
 const description =
   "Dedicated solution pages for inventory, ERP, CRM, n8n automation, cloud hosting, DevOps, scraping, restaurant, warehouse, healthcare and school software.";
 

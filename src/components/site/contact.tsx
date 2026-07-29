@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Check, Send } from "lucide-react";
+import { Check, Send, Mail, ExternalLink, Phone } from "lucide-react";
 import { GlassPanel, Reveal, Section, SectionHeading } from "./ui";
+import { GMAIL_COMPOSE_URL, MAILTO_TEMPLATE_URL, EMAIL_ADDRESS, PHONE_NUMBERS } from "@/lib/site-data";
 
 const projectTypes = [
   "Custom software / ERP",
@@ -15,11 +16,45 @@ const timelines = ["ASAP", "1–3 months", "3–6 months", "Exploring options"];
 const slots = ["Tue 10:00", "Tue 15:30", "Wed 09:00", "Wed 14:00", "Thu 11:30", "Fri 16:00"];
 
 export function ContactSection() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
   const [type, setType] = useState(projectTypes[0]);
   const [budget, setBudget] = useState(budgets[2]);
   const [timeline, setTimeline] = useState(timelines[1]);
   const [slot, setSlot] = useState(slots[0]);
   const [sent, setSent] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const mailBody = `Strategy Call Request — foxquart Engineering
+
+Client Details:
+• Name: ${name}
+• Work Email: ${email}
+• Company: ${company || "N/A"}
+• Phone: ${phone || "N/A"}
+
+Scope & Preferences:
+• Project Type: ${type}
+• Budget Target: ${budget}
+• Timeline: ${timeline}
+• Preferred Call Slot: ${slot}
+
+Current Process Bottleneck / Notes:
+${message || "No additional message provided."}
+`;
+
+    const subject = `Strategy Call Request: ${name} ${company ? `(${company})` : ""}`;
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+      EMAIL_ADDRESS,
+    )}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailBody)}`;
+
+    window.open(gmailUrl, "_blank");
+    setSent(true);
+  };
 
   return (
     <Section id="contact">
@@ -41,11 +76,42 @@ export function ContactSection() {
               </li>
             ))}
           </ul>
-          <div className="mt-8 space-y-1 text-sm">
-            <p className="text-muted-foreground">Direct</p>
-            <a href="mailto:hello@nexolith.dev" className="text-primary hover:underline">
-              hello@nexolith.dev
-            </a>
+          <div className="mt-8 space-y-4">
+            <div>
+              <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase font-bold">
+                Direct Phone / Call
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2.5">
+                {PHONE_NUMBERS.map((p) => (
+                  <a
+                    key={p.raw}
+                    href={p.tel}
+                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface/60 px-3.5 py-2 text-xs font-mono font-semibold text-foreground transition-colors hover:border-primary/50 hover:bg-surface"
+                  >
+                    <Phone className="size-3.5 text-primary" /> {p.formatted}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase font-bold">
+                Direct Email &amp; Template
+              </p>
+              <div className="mt-2 flex flex-col gap-2">
+                <a
+                  href={GMAIL_COMPOSE_URL}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex items-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/20"
+                >
+                  <Mail className="size-4" /> Open pre-filled template in Gmail <ExternalLink className="size-3.5 opacity-70" />
+                </a>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground px-1">
+                  <span>Direct email: <a href={MAILTO_TEMPLATE_URL} className="text-foreground hover:underline font-mono">{EMAIL_ADDRESS}</a></span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -56,37 +122,59 @@ export function ContactSection() {
                 <span className="grid size-12 place-items-center rounded-full bg-primary/15">
                   <Check className="size-5 text-primary" />
                 </span>
-                <h3 className="mt-5 font-display text-xl font-semibold">Request received</h3>
+                <h3 className="mt-5 font-display text-xl font-semibold">Request Prepared in Gmail</h3>
                 <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-                  We will confirm your {slot} slot by email within one business day.
+                  We opened Gmail with your filled details for <span className="text-foreground font-mono font-medium">{EMAIL_ADDRESS}</span>.
                 </p>
+                <button
+                  type="button"
+                  onClick={() => setSent(false)}
+                  className="mt-6 text-xs text-primary hover:underline font-mono"
+                >
+                  ← Submit another inquiry
+                </button>
               </div>
             ) : (
-              <form
-                className="grid gap-5"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setSent(true);
-                }}
-              >
+              <form className="grid gap-5" onSubmit={handleSubmit}>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="Full name" id="name">
-                    <input id="name" required className={inputCls} placeholder="Jane Okafor" />
+                    <input
+                      id="name"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className={inputCls}
+                      placeholder="Jane Okafor"
+                    />
                   </Field>
                   <Field label="Work email" id="email">
                     <input
                       id="email"
                       type="email"
                       required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       className={inputCls}
                       placeholder="jane@company.com"
                     />
                   </Field>
                   <Field label="Company" id="company">
-                    <input id="company" className={inputCls} placeholder="Company Ltd" />
+                    <input
+                      id="company"
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
+                      className={inputCls}
+                      placeholder="Company Ltd"
+                    />
                   </Field>
                   <Field label="Phone" id="phone">
-                    <input id="phone" className={inputCls} placeholder="+00 000 000 000" />
+                    <input
+                      id="phone"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className={inputCls}
+                      placeholder="+00 000 000 000"
+                    />
                   </Field>
                 </div>
 
@@ -99,6 +187,8 @@ export function ContactSection() {
                   <textarea
                     id="message"
                     rows={4}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     className={inputCls}
                     placeholder="We reconcile 400 supplier invoices a month by hand…"
                   />

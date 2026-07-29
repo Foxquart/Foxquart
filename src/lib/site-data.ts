@@ -1,3 +1,31 @@
+export const EMAIL_ADDRESS = "businessfoxquart@gmail.com";
+export const EMAIL_SUBJECT = "Engineering Strategy Inquiry — foxquart";
+export const EMAIL_BODY_TEMPLATE = `Hi foxquart Engineering Team,
+
+I would like to discuss a potential software / automation project for our business.
+
+• Company / Organization: 
+• Process or System to Automate/Build: 
+• Target Timeline: 
+• Estimated Budget: 
+
+Looking forward to connecting.
+
+Best regards,`;
+
+export const GMAIL_COMPOSE_URL = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+  EMAIL_ADDRESS,
+)}&su=${encodeURIComponent(EMAIL_SUBJECT)}&body=${encodeURIComponent(EMAIL_BODY_TEMPLATE)}`;
+
+export const MAILTO_TEMPLATE_URL = `mailto:${EMAIL_ADDRESS}?subject=${encodeURIComponent(
+  EMAIL_SUBJECT,
+)}&body=${encodeURIComponent(EMAIL_BODY_TEMPLATE)}`;
+
+export const PHONE_NUMBERS = [
+  { raw: "6909519692", formatted: "+91 69095 19692", tel: "tel:+916909519692" },
+  { raw: "8731953807", formatted: "+91 87319 53807", tel: "tel:+918731953807" },
+];
+
 export type Service = {
   slug: string;
   name: string;
@@ -6,6 +34,7 @@ export type Service = {
   solution: string;
   impact: string;
   roi: string;
+  isFlagship?: boolean;
   tech: string[];
   capabilities: string[];
   faqs: { q: string; a: string }[];
@@ -16,6 +45,7 @@ export const services: Service[] = [
     slug: "ai-automation",
     name: "AI Workflow Automation",
     tagline: "Replace repetitive human steps with reliable, auditable automation.",
+    isFlagship: true,
     problem:
       "Teams re-key data between tools, chase approvals over email, and lose leads because nobody responded within the hour.",
     solution:
@@ -46,6 +76,7 @@ export const services: Service[] = [
     slug: "custom-software-development",
     name: "Custom Software Development",
     tagline: "Operational systems built around how your business actually runs.",
+    isFlagship: true,
     problem:
       "Off-the-shelf software forces your process into someone else's template, and the gaps get filled with spreadsheets.",
     solution:
@@ -764,17 +795,20 @@ export const industries = [
   },
 ];
 
+export const productPillars = ["All Foundations", "Core Operations", "Automation & AI", "Industry Systems"] as const;
+
 export const products = [
-  { name: "Inventory Management", detail: "Multi-location stock, barcode workflows, reorder automation." },
-  { name: "Restaurant POS", detail: "Offline-capable POS, kitchen display, recipe costing." },
-  { name: "Warehouse Management", detail: "Bin-level tracking, guided picking, dispatch verification." },
-  { name: "CRM Platform", detail: "Pipeline automation, AI lead scoring, quote-to-invoice." },
-  { name: "HRMS", detail: "Attendance, payroll inputs, leave and performance cycles." },
-  { name: "School ERP", detail: "Admissions to alumni, fees, exams, parent portal." },
-  { name: "Hospital ERP", detail: "Patient records, scheduling, pharmacy, billing." },
-  { name: "Construction ERP", detail: "Site progress, procurement, subcontractor control." },
-  { name: "Business Dashboard", detail: "Company-wide KPIs from every operational system." },
-  { name: "Automation Platform", detail: "Self-hosted n8n estate with monitoring and governance." },
+  { name: "Inventory Management", pillar: "Core Operations", detail: "Multi-location stock, barcode workflows, reorder automation." },
+  { name: "Warehouse Management", pillar: "Core Operations", detail: "Bin-level tracking, guided picking, dispatch verification." },
+  { name: "CRM Platform", pillar: "Core Operations", detail: "Pipeline automation, AI lead scoring, quote-to-invoice." },
+  { name: "HRMS & Payroll", pillar: "Core Operations", detail: "Attendance, payroll inputs, leave and performance cycles." },
+  { name: "Automation Platform", pillar: "Automation & AI", detail: "Self-hosted n8n estate with monitoring and governance." },
+  { name: "Business Dashboard", pillar: "Automation & AI", detail: "Company-wide KPIs aggregated from every operational system." },
+  { name: "AI Lead & Support Agent", pillar: "Automation & AI", detail: "Autonomous triage, document extraction, and WhatsApp/Email actions." },
+  { name: "Restaurant POS", pillar: "Industry Systems", detail: "Offline-capable POS, kitchen display, recipe costing." },
+  { name: "Hospital ERP", pillar: "Industry Systems", detail: "Patient records, scheduling, pharmacy, billing." },
+  { name: "Construction ERP", pillar: "Industry Systems", detail: "Site progress, procurement, subcontractor control." },
+  { name: "School ERP", pillar: "Industry Systems", detail: "Admissions to alumni, fees, exams, parent portal." },
 ];
 
 export const caseStudies = [

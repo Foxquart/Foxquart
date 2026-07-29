@@ -4,7 +4,7 @@ import { GlassPanel, Reveal, Section, SectionHeading } from "@/components/site/u
 import { CtaBand } from "@/components/site/sections";
 import { services } from "@/lib/site-data";
 
-const title = "Services — Custom Software, AI Automation & Cloud Engineering | Nexolith";
+const title = "Services — Custom Software, AI Automation & Cloud Engineering | foxquart";
 const description =
   "Six engineering practices: custom software, AI workflow automation, cloud and DevOps, data intelligence, enterprise web and mobile applications.";
 

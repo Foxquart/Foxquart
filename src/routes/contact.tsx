@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ContactSection } from "@/components/site/contact";
 
-const title = "Contact — Book A Strategy Call | Nexolith";
+const title = "Contact — Book A Strategy Call | foxquart";
 const description =
   "Book a 30-minute strategy call with an engineer. Tell us the process costing you the most hours and get a prioritised automation shortlist.";
 
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/contact")({
 function ContactPage() {
   return (
     <main className="pt-24">
-      <h1 className="sr-only">Contact Nexolith</h1>
+      <h1 className="sr-only">Contact foxquart</h1>
       <ContactSection />
     </main>
   );

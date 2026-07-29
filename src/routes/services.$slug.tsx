@@ -12,9 +12,9 @@ export const Route = createFileRoute("/services/$slug")({
   },
   head: ({ params, loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: "Service unavailable — Nexolith" }, { name: "robots", content: "noindex" }] };
+      return { meta: [{ title: "Service unavailable — foxquart" }, { name: "robots", content: "noindex" }] };
     }
-    const t = `${loaderData.service.name} — Nexolith`;
+    const t = `${loaderData.service.name} — foxquart`;
     const d = loaderData.service.tagline;
     return {
       meta: [

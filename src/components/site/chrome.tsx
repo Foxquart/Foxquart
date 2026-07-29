@@ -1,13 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { solutionPages } from "@/lib/site-data";
+import { GMAIL_COMPOSE_URL, EMAIL_ADDRESS, PHONE_NUMBERS, solutionPages } from "@/lib/site-data";
+import { FoxquartLogo } from "./ui";
 
 const nav = [
   { label: "Services", to: "/services" },
   { label: "Solutions", to: "/solutions" },
   { label: "Work", to: "/#case-studies" },
-  { label: "Pricing", to: "/#pricing" },
+  // { label: "Pricing", to: "/#pricing" },
 ];
 
 export function SiteHeader() {
@@ -28,11 +29,8 @@ export function SiteHeader() {
       }`}
     >
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-4 md:px-8">
-        <Link to="/" className="flex items-center gap-2.5">
-          <span className="relative grid size-8 place-items-center rounded-lg border border-border bg-surface">
-            <span className="size-2.5 rounded-full bg-primary animate-pulse-soft" />
-          </span>
-          <span className="font-display text-lg font-semibold tracking-tight">Nexolith</span>
+        <Link to="/" className="flex items-center">
+          <FoxquartLogo iconClassName="size-7 text-primary" textClassName="font-display text-xl font-bold tracking-tight text-foreground" />
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
@@ -109,11 +107,8 @@ export function SiteFooter() {
     <footer className="relative border-t border-border bg-surface/30 px-5 py-16 md:px-8">
       <div className="mx-auto grid w-full max-w-7xl gap-12 lg:grid-cols-[1.2fr_2fr]">
         <div className="flex flex-col gap-4">
-          <Link to="/" className="flex items-center gap-2.5">
-            <span className="grid size-8 place-items-center rounded-lg border border-border bg-surface">
-              <span className="size-2.5 rounded-full bg-primary" />
-            </span>
-            <span className="font-display text-lg font-semibold">Nexolith</span>
+          <Link to="/" className="flex items-center">
+            <FoxquartLogo iconClassName="size-7 text-primary" textClassName="font-display text-xl font-bold text-foreground" />
           </Link>
           <p className="max-w-sm text-sm text-muted-foreground">
             AI &amp; software engineering studio. We design, build, automate and operate the systems
@@ -223,22 +218,35 @@ export function SiteFooter() {
               </li>
               <li>
                 <a
-                  href="mailto:hello@nexolith.dev"
-                  className="text-muted-foreground hover:text-foreground"
+                  href={GMAIL_COMPOSE_URL}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 font-mono"
+                  title="Open template directly in Gmail"
                 >
-                  hello@nexolith.dev
+                  {EMAIL_ADDRESS}
                 </a>
               </li>
+              {PHONE_NUMBERS.map((p) => (
+                <li key={p.raw}>
+                  <a
+                    href={p.tel}
+                    className="text-muted-foreground hover:text-foreground font-mono text-xs"
+                  >
+                    {p.formatted}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
       </div>
 
       <div className="mx-auto mt-12 flex w-full max-w-7xl flex-col gap-3 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-        <p>© {new Date().getFullYear()} Nexolith Engineering. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} foxquart Engineering. All rights reserved.</p>
         <div className="flex gap-5">
-          <a href="/#pricing" className="hover:text-foreground">
-            Engagement models
+          <a href="/#process" className="hover:text-foreground">
+            How we work
           </a>
           <a href="/#contact" className="hover:text-foreground">
             Privacy

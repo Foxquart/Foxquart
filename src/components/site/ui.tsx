@@ -178,3 +178,40 @@ export function GlassPanel({
     <div className={cn("glass rounded-2xl", lift && "card-lift", className)}>{children}</div>
   );
 }
+
+export function FoxquartIcon({ className = "size-7", ...props }: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      fill="currentColor"
+      className={cn("size-7 text-primary shrink-0", className)}
+      aria-hidden="true"
+      {...props}
+    >
+      <defs>
+        <path
+          id="fox-blade-path"
+          d="M 50,48 C 55,40 68,25 58,12 C 75,24 73,43 50,48 Z"
+        />
+      </defs>
+      <use href="#fox-blade-path" transform="rotate(0 50 50)" />
+      <use href="#fox-blade-path" transform="rotate(120 50 50)" />
+      <use href="#fox-blade-path" transform="rotate(240 50 50)" />
+    </svg>
+  );
+}
+
+export function FoxquartLogo({
+  iconClassName = "size-7",
+  textClassName = "font-display text-xl font-bold tracking-tight text-foreground",
+}: {
+  iconClassName?: string;
+  textClassName?: string;
+}) {
+  return (
+    <span className="flex items-center gap-2.5">
+      <FoxquartIcon className={iconClassName} />
+      <span className={textClassName}>Foxquart</span>
+    </span>
+  );
+}
