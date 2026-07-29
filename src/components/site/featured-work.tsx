@@ -12,6 +12,8 @@ type ProjectCard = {
   timeline: string;
   image: string;
   liveLink: string;
+  /** Name shown in the browser mockup's address bar. Falls back to `category`. */
+  demoLabel?: string;
   testimonial: {
     text: string;
     author: string;
@@ -74,8 +76,9 @@ const projects: ProjectCard[] = [
     impactHighlight: "85% of bookings are now online. Reception call volume dropped by 60%.",
     features: ["Doctor Rosters", "Patient Booking", "WhatsApp Reminders", "Doctor Profiles"],
     timeline: "4 weeks",
-    image: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&w=800&q=80",
-    liveLink: "#",
+    image: "/images/clinic_portfolio.png",
+    liveLink: "https://clinic-portfolio-template.vercel.app/",
+    demoLabel: "Clinic Portfolio",
     testimonial: {
       text: "Patients love booking their own slots. WhatsApp reminders go out automatically. The staff's daily workload is cut in half.",
       author: "Dr. Aris Thorne",
@@ -108,6 +111,11 @@ const projects: ProjectCard[] = [
   },
 ];
 
+/** Address-bar label: the demo's product name, not its URL. */
+function displayLabel(project: ProjectCard) {
+  return project.demoLabel ?? project.category;
+}
+
 export function FeaturedWork() {
   return (
     <section id="work" className="relative overflow-hidden bg-[#FAFAFA] px-5 py-24 md:px-8 md:py-32">
@@ -129,7 +137,6 @@ export function FeaturedWork() {
         {/* Project Cards Grid */}
         <div className="mt-20 grid gap-16 lg:grid-cols-2">
           {projects.map((project, i) => {
-            const isTattoo = project.id === "tattoo-shop";
             const rotationClass = i % 2 === 0 ? "rotate-1" : "-rotate-1";
             
             return (
@@ -150,9 +157,9 @@ export function FeaturedWork() {
                         <div className="size-2.5 rounded-full bg-[#F59E0B]/80" />
                         <div className="size-2.5 rounded-full bg-[#10B981]/80" />
                       </div>
-                      <div className="flex h-5 w-48 items-center justify-center rounded-md bg-white px-2 font-mono text-[9px] text-gray-400 select-none border border-gray-100 transition-colors group-hover:text-primary group-hover:border-primary/20">
-                        <Globe className="mr-1 size-2.5 transition-colors group-hover:text-primary" />
-                        {isTattoo ? "goodlucktattooshop.netlify.app" : `${project.id}.foxquart.com`}
+                      <div className="flex h-5 w-48 items-center justify-center rounded-md bg-white px-2 text-[10px] font-medium text-gray-400 select-none border border-gray-100 transition-colors group-hover:text-primary group-hover:border-primary/20">
+                        <Globe className="mr-1 size-2.5 shrink-0 transition-colors group-hover:text-primary" />
+                        <span className="truncate">{displayLabel(project)}</span>
                       </div>
                       <div className="size-4 opacity-0 transition-opacity group-hover:opacity-100">
                         <ArrowUpRight className="size-3.5 text-primary" />
@@ -161,14 +168,36 @@ export function FeaturedWork() {
 
                     {/* Browser page content */}
                     <div className="relative h-64 w-full overflow-hidden bg-gray-50 md:h-72">
-                      <img
-                        src={project.image}
-                        alt={`${project.businessName} website preview`}
-                        className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-102"
-                      />
-                      
+                      {project.liveLink !== "#" ? (
+                        <>
+                          {/* Live preview: the real site, rendered at 2x the card width and
+                              scaled down, so it never goes stale as the demo changes. */}
+                          <img
+                            src={project.image}
+                            alt=""
+                            aria-hidden
+                            className="absolute inset-0 h-full w-full object-cover object-top"
+                          />
+                          <iframe
+                            src={project.liveLink}
+                            title={`${project.businessName} live site preview`}
+                            loading="lazy"
+                            tabIndex={-1}
+                            scrolling="no"
+                            sandbox="allow-scripts allow-same-origin"
+                            className="pointer-events-none absolute top-0 left-0 h-[200%] w-[200%] origin-top-left scale-50 border-0 transition-transform duration-700 group-hover:scale-[0.51]"
+                          />
+                        </>
+                      ) : (
+                        <img
+                          src={project.image}
+                          alt={`${project.businessName} website preview`}
+                          className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-102"
+                        />
+                      )}
+
                       {/* Dark gradient overlay for Unsplash photo fallbacks to look more like web designs */}
-                      {!project.isDarkTheme && project.image.startsWith("http") && (
+                      {project.liveLink === "#" && !project.isDarkTheme && project.image.startsWith("http") && (
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent flex items-end p-4">
                           <div className="rounded-lg bg-white/90 backdrop-blur-md px-3 py-1.5 text-[10px] font-semibold text-gray-800 shadow-sm">
                             Client Website Concept
