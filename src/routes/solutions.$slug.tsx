@@ -49,7 +49,7 @@ export const Route = createFileRoute("/solutions/$slug")({
 });
 
 function SolutionPage() {
-  const { page } = Route.useLoaderData();
+  const { page } = Route.useLoaderData() as { page: LandingPage };
   const parent = services.find((s) => s.slug === page.parent);
 
   return (
