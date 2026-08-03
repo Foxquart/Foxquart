@@ -14,7 +14,7 @@ import { GlassPanel, Reveal, Section, SectionHeading } from "./ui";
 
 export type TestimonialItem = {
   id: string;
-  category: "Fine Dining" | "Tattoo Shop" | "Banquet Hall" | "Doctor Clinic" | "Premium Coffee Shop";
+  category: "Fine Dining" | "Tattoo Shop" | "School Management" | "Doctor Clinic" | "Premium Coffee Shop";
   businessName: string;
   tagline: string;
   clientName: string;
@@ -57,6 +57,32 @@ export const testimonialData: TestimonialItem[] = [
     accentColor: "from-amber-500/20 to-orange-600/10 border-amber-500/40 text-amber-400",
   },
   {
+    id: "school-management",
+    category: "School Management",
+    businessName: "Vidya Bharati International School",
+    tagline: "Multi-Portal School Operating System & Academic Platform",
+    clientName: "Rajesh Sharma",
+    clientRole: "Principal & Administrator",
+    avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80",
+    rating: 5,
+    testimonial:
+      "Replacing paper registers and scattered WhatsApp groups with VBIS transformed our entire school administration. Parents, teachers, and staff love the dedicated portals.",
+    impactMetrics: [
+      { label: "Paperwork Reduced", value: "-75%" },
+      { label: "Dedicated Portals", value: "4 Portals" },
+      { label: "Parent Satisfaction", value: "4.9 / 5" },
+    ],
+    featuresDelivered: [
+      "Parent, Teacher, Admin & Student Portals",
+      "Automated Fee Receipt & Outstanding Dues Engine",
+      "Real-Time Student Attendance & Marksheet Module",
+      "Direct Notice Board & Emergency Broadcast System",
+    ],
+    liveLink: "https://gilded-nougat-63e5af.netlify.app/",
+    image: "/images/school_management.png",
+    accentColor: "from-blue-500/20 to-indigo-600/10 border-blue-500/40 text-blue-400",
+  },
+  {
     id: "tattoo-shop",
     category: "Tattoo Shop",
     businessName: "Obsidian Ink Studio",
@@ -81,32 +107,6 @@ export const testimonialData: TestimonialItem[] = [
     liveLink: "https://goodlucktattooshop.netlify.app/",
     image: "/images/tattoo_studio.png",
     accentColor: "from-amber-500/20 to-orange-600/10 border-amber-500/40 text-amber-400",
-  },
-  {
-    id: "banquet-hall",
-    category: "Banquet Hall",
-    businessName: "Grand Vista Palace & Conventions",
-    tagline: "Venue Booking Calendar & Event Estimator Platform",
-    clientName: "Elena Rostova",
-    clientRole: "Operations Director",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
-    rating: 5,
-    testimonial:
-      "Managing multi-hall wedding dates and catering packages used to take hours of manual phone calls. The website Foxquart delivered lets clients view live availability, calculate instant quotes, and schedule venue tours in seconds.",
-    impactMetrics: [
-      { label: "Direct Inquiries", value: "4.5x" },
-      { label: "Quote Generation", value: "Instant" },
-      { label: "Hall Occupancy", value: "94%" },
-    ],
-    featuresDelivered: [
-      "Live Multi-Hall Availability Calendar",
-      "Interactive Event Package & Catering Calculator",
-      "Virtual 360 Venue Tour Scheduler",
-      "Client Contract & Initial Token Payment Portal",
-    ],
-    liveLink: "#", // Placeholder for user's link
-    image: "/images/banquet_hall_preview.png",
-    accentColor: "from-emerald-500/20 to-teal-600/10 border-emerald-500/40 text-emerald-400",
   },
   {
     id: "doctor-clinic",
