@@ -14,7 +14,7 @@ import { GlassPanel, Reveal, Section, SectionHeading } from "./ui";
 
 export type TestimonialItem = {
   id: string;
-  category: "Tattoo Shop" | "Banquet Hall" | "Doctor Clinic" | "Premium Coffee Shop";
+  category: "Fine Dining" | "Tattoo Shop" | "Banquet Hall" | "Doctor Clinic" | "Premium Coffee Shop";
   businessName: string;
   tagline: string;
   clientName: string;
@@ -30,6 +30,32 @@ export type TestimonialItem = {
 };
 
 export const testimonialData: TestimonialItem[] = [
+  {
+    id: "ember-oak",
+    category: "Fine Dining",
+    businessName: "Ember & Oak",
+    tagline: "3-Michelin-Starred Dining & Digital Reservation Sanctuary",
+    clientName: "Chef Henrik Lindqvist",
+    clientRole: "Executive Chef & Founder",
+    avatar: "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=200&q=80",
+    rating: 5,
+    testimonial:
+      "Foxquart captured the true essence of our Michelin-starred culinary sanctuary. The digital reservation engine handles high-demand tasting menu bookings seamlessly.",
+    impactMetrics: [
+      { label: "Booked In Advance", value: "3 Months" },
+      { label: "Online Reservations", value: "98%" },
+      { label: "Guest Satisfaction", value: "5.0 / 5" },
+    ],
+    featuresDelivered: [
+      "Interactive Tasting Menu & Seasonal Grid",
+      "Automated High-Demand Table Reservation Portal",
+      "Sommelier Wine Pairing & Dietary Preference System",
+      "Ambient Multi-Location Digital Sanctuary Showcase",
+    ],
+    liveLink: "https://emberanoak.netlify.app/",
+    image: "/images/ember_oak.png",
+    accentColor: "from-amber-500/20 to-orange-600/10 border-amber-500/40 text-amber-400",
+  },
   {
     id: "tattoo-shop",
     category: "Tattoo Shop",
@@ -52,8 +78,8 @@ export const testimonialData: TestimonialItem[] = [
       "Instant SMS & Email Consultation Reminders",
       "Digital Consent Form & Aftercare Guide",
     ],
-    liveLink: "#", // Placeholder for user's link
-    image: "/images/tattoo_studio_preview.png",
+    liveLink: "https://goodlucktattooshop.netlify.app/",
+    image: "/images/tattoo_studio.png",
     accentColor: "from-amber-500/20 to-orange-600/10 border-amber-500/40 text-amber-400",
   },
   {
