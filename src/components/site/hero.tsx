@@ -133,7 +133,7 @@ function HeroDashboard() {
           </span>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3">
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <DashboardCard title="Client Impact" icon={<Activity className="size-3.5" />} float={0.2}>
             <p className="font-display text-2xl font-semibold text-foreground">
               <Counter to={4.82} prefix="$" suffix="M" decimals={2} />
@@ -254,22 +254,22 @@ export function Hero() {
   }, [mx, my]);
 
   return (
-    <div ref={ref} className="relative grain overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
+    <div ref={ref} className="relative grain overflow-hidden pt-24 pb-14 sm:pt-32 sm:pb-20 md:pt-40 md:pb-28">
       <div className="mesh-bg animate-drift absolute inset-0 -z-10" />
       <motion.div className="absolute inset-0 -z-10" style={{ background: light }} />
       <div className="absolute -top-24 left-1/4 -z-10 size-[32rem] rounded-full bg-primary/10 blur-[120px]" />
       <div className="absolute right-0 bottom-0 -z-10 size-[28rem] rounded-full bg-chart-4/10 blur-[120px]" />
       <Particles />
 
-      <div className="mx-auto grid w-full max-w-7xl items-center gap-12 px-5 md:px-8 lg:grid-cols-[1.1fr_1fr]">
+      <div className="mx-auto grid w-full max-w-7xl items-center gap-8 px-4 sm:gap-12 sm:px-5 md:px-8 lg:grid-cols-[1.1fr_1fr]">
         {/* Left Side Text Content */}
-        <div className="flex flex-col items-start text-left gap-7 max-w-2xl">
+        <div className="flex flex-col items-start text-left gap-5 sm:gap-7 max-w-2xl">
 
           <motion.h1
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.05 }}
-            className="text-4xl leading-[1.03] font-semibold text-balance md:text-6xl xl:text-[4.2rem]"
+            className="text-[1.75rem] leading-[1.08] font-semibold text-balance sm:text-4xl md:text-6xl xl:text-[4.2rem]"
           >
             <span className="text-gradient">Engineering software that runs modern businesses.</span>
           </motion.h1>
@@ -278,7 +278,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.15 }}
-            className="max-w-xl text-base text-foreground/80 md:text-lg font-medium"
+            className="max-w-xl text-sm text-foreground/80 sm:text-base md:text-lg font-medium"
           >
             We build custom software, AI automation, cloud infrastructure, enterprise dashboards and
             intelligent workflows that eliminate repetitive work and help businesses scale faster.
@@ -288,7 +288,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.25 }}
-            className="flex flex-wrap items-center gap-3 pt-2"
+            className="flex flex-col items-stretch gap-3 pt-2 sm:flex-row sm:flex-wrap sm:items-center"
           >
             <MagneticLink to="/contact">
               Schedule a strategy call <ArrowRight className="size-4" />
@@ -304,7 +304,7 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.2 }}
-          className="relative flex h-[500px] md:h-[580px] w-full items-center justify-center"
+          className="relative flex h-[280px] sm:h-[400px] md:h-[580px] w-full items-center justify-center"
         >
           <WovenCanvas className="h-full w-full pointer-events-auto" />
         </motion.div>

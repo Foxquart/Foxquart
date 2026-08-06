@@ -13,7 +13,7 @@ export function Section({
   children: ReactNode;
 }) {
   return (
-    <section id={id} className={cn("relative px-5 py-24 md:px-8 md:py-32", className)}>
+    <section id={id} className={cn("relative px-4 py-16 sm:px-5 sm:py-24 md:px-8 md:py-32", className)}>
       <div className="mx-auto w-full max-w-7xl">{children}</div>
     </section>
   );
@@ -46,8 +46,8 @@ export function SectionHeading({
         align === "center" && "mx-auto items-center text-center",
       )}
     >
-      {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-      <h2 className="text-3xl leading-[1.08] font-semibold text-balance md:text-5xl">{title}</h2>
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <h2 className="text-2xl leading-[1.08] font-semibold text-balance sm:text-3xl md:text-5xl">{title}</h2>
       {intro ? <p className="text-base text-muted-foreground md:text-lg">{intro}</p> : null}
     </Reveal>
   );

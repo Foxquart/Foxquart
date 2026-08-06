@@ -29,7 +29,7 @@ export function SocialProof() {
         <p className="text-center font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase font-semibold">
           Trusted by high-growth startups, logistics leaders and enterprise operations
         </p>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-6 md:grid-cols-6">
+        <div className="grid grid-cols-3 gap-x-6 gap-y-4 sm:grid-cols-3 md:grid-cols-6">
           {logos.map((l) => (
             <span
               key={l}
@@ -41,10 +41,10 @@ export function SocialProof() {
         </div>
         <div className="hairline" />
 
-        <dl className="grid grid-cols-2 gap-8 md:grid-cols-4">
+        <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-8 md:grid-cols-4">
           {stats.map((s, i) => (
             <div key={i} className="rounded-xl border border-border/60 bg-surface/40 p-5 text-left transition-colors hover:border-primary/40">
-              <dt className="font-display text-4xl font-bold text-foreground md:text-5xl">{s.v}</dt>
+              <dt className="font-display text-3xl font-bold text-foreground sm:text-4xl md:text-5xl">{s.v}</dt>
               <dd className="mt-2 text-sm font-medium text-foreground">{s.l}</dd>
               <dd className="mt-0.5 text-xs text-muted-foreground">{s.d}</dd>
             </div>
@@ -52,7 +52,7 @@ export function SocialProof() {
         </dl>
 
         {/* Front-loaded Proof Banner */}
-        <div className="glass-strong flex flex-col items-center justify-between gap-4 rounded-2xl border-primary/30 p-5 md:flex-row md:px-8">
+        <div className="glass-strong flex flex-col items-start justify-between gap-4 rounded-2xl border-primary/30 p-4 sm:p-5 md:flex-row md:items-center md:px-8">
           <div className="flex items-center gap-3">
             <span className="grid size-9 place-items-center rounded-lg bg-primary/15 text-primary font-mono font-bold text-xs">
               PROOF
@@ -277,7 +277,7 @@ export function Industries() {
               key={ind.name}
               type="button"
               onClick={() => setActive(i)}
-              className={`shrink-0 rounded-xl border px-4 py-3 text-left text-sm font-medium transition-all lg:w-full ${
+              className={`shrink-0 rounded-xl border px-3 py-2.5 text-left text-xs sm:text-sm sm:px-4 sm:py-3 font-medium transition-all lg:w-full ${
                 i === active
                   ? "border-primary bg-primary/15 text-foreground font-semibold shadow-sm"
                   : "border-border bg-surface/40 text-foreground/80 hover:text-foreground hover:bg-surface"
@@ -296,8 +296,8 @@ export function Industries() {
             transition={{ duration: 0.3 }}
             className="glass-strong rounded-2xl p-7 md:p-8"
           >
-            <div className="flex items-center justify-between">
-              <h3 className="font-display text-2xl font-bold text-foreground">{current.name} Operations</h3>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <h3 className="font-display text-xl font-bold text-foreground sm:text-2xl">{current.name} Operations</h3>
               <span className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 font-mono text-xs text-primary font-bold">
                 {current.benefit}
               </span>
@@ -732,7 +732,7 @@ export function CtaBand() {
   return (
     <Section className="pb-8">
       <Reveal>
-        <div className="glass-strong grain relative overflow-hidden rounded-3xl px-7 py-14 text-center md:px-16">
+        <div className="glass-strong grain relative overflow-hidden rounded-2xl px-5 py-10 text-center sm:rounded-3xl sm:px-7 sm:py-14 md:px-16">
           <div className="mesh-bg animate-drift absolute inset-0 -z-10 opacity-70" />
           <Eyebrow>Next step</Eyebrow>
           <h2 className="mx-auto mt-5 max-w-2xl text-3xl font-semibold text-balance md:text-4xl">
