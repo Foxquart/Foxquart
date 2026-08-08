@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(command -v chromium chromium-browser google-chrome playwright npx)",
+      "Bash(timeout 120 google-chrome --headless=new --disable-gpu --hide-scrollbars --virtual-time-budget=12000 --window-size=1440,900 --screenshot=clinic.png https://clinic-portfolio-template.vercel.app/)",
+      "Bash(timeout 120 google-chrome --headless=new --disable-gpu --hide-scrollbars --virtual-time-budget=12000 --window-size=1920,894 --screenshot=clinic_1920.png https://clinic-portfolio-template.vercel.app/)",
+      "Bash(command -v bun)",
+      "Bash(bun --version)",
+      "Bash(bun install *)",
+      "Bash(timeout 120 google-chrome --headless=new --disable-gpu --hide-scrollbars --virtual-time-budget=25000 --window-size=1440,4600 --screenshot=site_full.png \"http://localhost:8081/#work\")",
+      "Bash(command -v convert magick python3)",
+      "Bash(python3 -c \"import PIL; print\\('pil ok'\\)\")",
+      "Bash(python3 -c ' *)"
+    ]
+  }
+}

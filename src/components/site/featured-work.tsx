@@ -30,6 +30,30 @@ type ProjectCard = {
 // Live demos first, concepts after.
 const projects: ProjectCard[] = [
   {
+    id: "ember-oak",
+    category: "Fine Dining Restaurant",
+    businessName: "Ember & Oak",
+    problem:
+      "Needed a high-end digital presence and automated reservation experience for 3-Michelin-starred dining.",
+    impactHighlight: "Fully booked 3 months in advance with seamless online reservations.",
+    features: ["Tasting Menu", "Online Reservations", "Sommelier Pairings", "Sanctuary Experience"],
+    timeline: "4 weeks",
+    image: "/images/ember_oak.png",
+    liveLink: "https://emberanoak.netlify.app/",
+    demoLabel: "Ember & Oak",
+    isDarkTheme: true,
+    testimonial: {
+      text: "Foxquart captured the essence of our culinary sanctuary. The digital reservation portal handles high-demand table bookings flawlessly.",
+      author: "Chef Henrik Lindqvist",
+      role: "Executive Chef & Founder",
+      avatar:
+        "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=120&q=80",
+      rating: 5,
+      platform: "google",
+      date: "1 week ago",
+    },
+  },
+  {
     id: "tattoo-shop",
     category: "Tattoo Studio",
     businessName: "Good Luck Tattoo Studio",
@@ -50,6 +74,35 @@ const projects: ProjectCard[] = [
       rating: 5,
       platform: "whatsapp",
       date: "Active client",
+    },
+  },
+  {
+    id: "school-management",
+    category: "School Management System",
+    businessName: "Vidya Bharati International School",
+    problem:
+      "Managing student records, attendance, and parent communication via paper registers was error-prone and chaotic.",
+    impactHighlight:
+      "Eliminated paper registers & reduced admin workload by 75% across 4 dedicated portals.",
+    features: [
+      "Parent & Teacher Portals",
+      "Attendance Tracking",
+      "Fee Receipt Engine",
+      "Student Analytics",
+    ],
+    timeline: "4 weeks",
+    image: "/images/school_management.png",
+    liveLink: "https://gilded-nougat-63e5af.netlify.app/",
+    demoLabel: "Vidya Bharati SMS",
+    testimonial: {
+      text: "Replacing paper registers and scattered WhatsApp groups with VBIS transformed our entire school administration. Parents, teachers, and staff love the portals.",
+      author: "Rajesh Sharma",
+      role: "Principal & Administrator",
+      avatar:
+        "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=120&q=80",
+      rating: 5,
+      platform: "google",
+      date: "Recent deployment",
     },
   },
   {
@@ -87,51 +140,6 @@ const projects: ProjectCard[] = [
     image: "/images/interior_studio.png",
     liveLink: "https://interior-design-demo-three.vercel.app/",
     demoLabel: "Interior Studio",
-  },
-  {
-    id: "banquet-hall",
-    category: "Banquet Hall",
-    businessName: "Aura Grand Palace",
-    problem:
-      "Managing dates and packages took hours of manual phone calls. No online venue availability.",
-    impactHighlight: "Direct venue inquiries grew 4.5x with instant package quote calculators.",
-    features: ["Interactive Calendar", "Quote Calculator", "Virtual Venue Tour", "Booking Form"],
-    timeline: "5 weeks",
-    image: "/images/banquet_hall.png",
-    liveLink: "#",
-    testimonial: {
-      text: "We get direct inquiries and package bookings straight from the site now. Saved us so many phone calls and emails.",
-      author: "Elena Rostova",
-      role: "Operations Manager",
-      avatar:
-        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=120&q=80",
-      rating: 5,
-      platform: "google",
-      date: "2 weeks ago",
-    },
-  },
-  {
-    id: "coffee-shop",
-    category: "Premium Coffee Shop",
-    businessName: "Krafted Bean Roasters",
-    problem:
-      "Long morning queues, no mobile pre-ordering, and no loyalty program to retain customers.",
-    impactHighlight: "Order-ahead volume grew 240% and coffee subscriptions hit 1,200+.",
-    features: ["Order Ahead", "Digital Menu", "Coffee Subscriptions", "Loyalty Rewards"],
-    timeline: "3 weeks",
-    image:
-      "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
-    liveLink: "#",
-    testimonial: {
-      text: "Morning lines are gone because everyone orders ahead on the web app. Subscription model has brought steady monthly revenue.",
-      author: "Julian Vance",
-      role: "Co-Founder",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80",
-      rating: 5,
-      platform: "google",
-      date: "3 days ago",
-    },
   },
 ];
 

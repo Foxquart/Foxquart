@@ -27,7 +27,9 @@ export const WovenCanvas = ({ className }: { className?: string }) => {
     const clock = new THREE.Clock();
 
     // --- Woven Silk ---
-    const particleCount = 65000;
+    // Use fewer particles on mobile for better performance
+    const isMobile = width < 640;
+    const particleCount = isMobile ? 25000 : 65000;
     const positions = new Float32Array(particleCount * 3);
     const originalPositions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
