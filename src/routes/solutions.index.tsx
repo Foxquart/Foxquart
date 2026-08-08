@@ -26,8 +26,8 @@ export const Route = createFileRoute("/solutions/")({
 
 function SolutionsIndex() {
   return (
-    <main className="pt-28">
-      <Section className="pb-8">
+    <main>
+      <Section className="pt-28 pb-8 md:pt-36 md:pb-8">
         <SectionHeading
           eyebrow="Solutions"
           title="Seventeen problems we solve, in detail."

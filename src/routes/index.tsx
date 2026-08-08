@@ -1,24 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Hero } from "@/components/site/hero";
-import {
-  CaseStudies,
-  CtaBand,
-  Industries,
-  Pricing,
-  ProblemComparison,
-  Process,
-  Products,
-  ServiceExplorer,
-  SocialProof,
-  TechStack,
-  WhyUs,
-} from "@/components/site/sections";
-import { AiSection, AutomationCanvas, CloudInfrastructure } from "@/components/site/systems";
-import { ContactSection } from "@/components/site/contact";
+import { WhatWeDo } from "@/components/site/what-we-do";
+import { FeaturedWork } from "@/components/site/featured-work";
+import { BookingCta } from "@/components/site/booking-cta";
 
-const title = "foxquart — AI & Software Engineering Studio For Business Operations";
+const title = "foxquart — Custom Websites, Apps & Automation For Your Business";
 const description =
-  "We build custom software, AI automation, cloud infrastructure and enterprise dashboards that remove manual work and modernise business operations.";
+  "We build stunning websites, mobile apps, and smart automation that help businesses attract more customers and grow online.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,51 +20,24 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "/" }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "ProfessionalService",
-          name: "foxquart",
-          description,
-          areaServed: "Global",
-          serviceType: [
-            "Custom Software Development",
-            "AI Workflow Automation",
-            "Cloud Infrastructure & DevOps",
-            "ERP Development",
-            "CRM Development",
-          ],
-        }),
-      },
-    ],
   }),
   component: Home,
 });
 
 function Home() {
   return (
-    <main>
-      <h1 className="sr-only">
-        AI and software engineering studio building custom software, automation and cloud systems
-      </h1>
+    <main className="min-h-screen">
+      {/* 1. Hero */}
       <Hero />
-      <SocialProof />
-      <WhyUs />
-      <ServiceExplorer />
-      <ProblemComparison />
-      <Industries />
-      <Products />
-      <AutomationCanvas />
-      <CloudInfrastructure />
-      <AiSection />
-      <CaseStudies />
-      <Process />
-      <TechStack />
-      {/* <Pricing /> */}
-      <CtaBand />
-      <ContactSection />
+
+      {/* 2. What We Do (Services — simplified) */}
+      <WhatWeDo />
+
+      {/* 3. Featured Work / Testimonials (Tattoo Shop, Banquet Hall, Doctor Clinic, Coffee Shop) */}
+      <FeaturedWork />
+
+      {/* 4. Book a Consultation / Enquire */}
+      <BookingCta />
     </main>
   );
 }

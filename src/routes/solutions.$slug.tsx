@@ -53,8 +53,8 @@ function SolutionPage() {
   const parent = services.find((s) => s.slug === page.parent);
 
   return (
-    <main className="pt-28">
-      <Section className="pb-8">
+    <main>
+      <Section className="pt-28 pb-8 md:pt-36 md:pb-8">
         <Reveal className="flex max-w-3xl flex-col gap-5">
           <Eyebrow>{parent ? parent.name : "Solution"}</Eyebrow>
           <h1 className="text-4xl font-semibold text-balance md:text-6xl">{page.h1}</h1>

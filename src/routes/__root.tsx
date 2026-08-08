@@ -4,9 +4,12 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
@@ -141,6 +144,14 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  // Report the route pattern (e.g. /services/$slug) rather than the resolved URL,
+  // so Speed Insights groups dynamic pages instead of listing every slug separately.
+  const route = useRouterState({
+    select: (s) => s.matches[s.matches.length - 1]?.fullPath ?? s.location.pathname,
+  });
+  // Analytics needs both: passing `route` alone turns off auto-tracking without
+  // enabling the manual pageview, which would report no pageviews at all.
+  const path = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -148,6 +159,8 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <SiteFooter />
+      <SpeedInsights route={route} />
+      <Analytics route={route} path={path} />
     </QueryClientProvider>
   );
 }

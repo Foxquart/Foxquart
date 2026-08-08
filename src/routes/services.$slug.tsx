@@ -50,8 +50,8 @@ function ServicePage() {
   const { service } = Route.useLoaderData() as { service: Service };
 
   return (
-    <main className="pt-28">
-      <Section className="pb-10">
+    <main>
+      <Section className="pt-28 pb-10 md:pt-36 md:pb-10">
         <Reveal className="flex max-w-3xl flex-col gap-5">
           <Eyebrow>Service</Eyebrow>
           <h1 className="text-4xl font-semibold text-balance md:text-6xl">{service.name}</h1>

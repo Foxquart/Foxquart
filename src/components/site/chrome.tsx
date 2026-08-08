@@ -7,7 +7,7 @@ import { FoxquartLogo } from "./ui";
 const nav = [
   { label: "Services", to: "/services" },
   { label: "Solutions", to: "/solutions" },
-  { label: "Work", to: "/#case-studies" },
+  // { label: "Work", to: "/#case-studies" },
   // { label: "Pricing", to: "/#pricing" },
 ];
 
@@ -104,7 +104,7 @@ export function SiteHeader() {
 export function SiteFooter() {
   const featured = solutionPages.slice(0, 8);
   return (
-    <footer className="relative border-t border-border bg-surface/30 px-5 py-16 md:px-8">
+    <footer className="relative border-t border-border bg-surface/30 px-4 py-12 sm:px-5 sm:py-16 md:px-8">
       <div className="mx-auto grid w-full max-w-7xl gap-12 lg:grid-cols-[1.2fr_2fr]">
         <div className="flex flex-col gap-4">
           <Link to="/" className="flex items-center">
@@ -129,7 +129,7 @@ export function SiteFooter() {
               type="email"
               required
               placeholder="Work email"
-              className="w-full rounded-full border border-border bg-surface px-4 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus:border-primary/60"
+              className="min-w-0 flex-1 rounded-full border border-border bg-surface px-4 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus:border-primary/60"
             />
             <button
               type="submit"
