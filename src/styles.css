@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * foxquart design system — dark, engineering-grade, AI-native.
+ * foxquart design system: dark, engineering-grade, AI-native.
  * All color values are oklch tokens. Never hardcode colors in components.
  */
 
@@ -54,78 +54,97 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  /* Instrument Serif carries the display voice (regular + italic only; it has no
+     bold, so display type must never ask for one); Geist is the working sans;
+     mono is for micro-labels and metrics only. */
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
+/*
+ * Palette derived from the fox mark: one saturated orange on a near-black ground.
+ * Dark is the only mode; there is no light theme. Hex equivalents are noted so the
+ * values stay checkable against the brand contract in docs/redesign-contract.md.
+ */
 :root {
   --radius: 0.75rem;
 
-  --background: oklch(0.99 0.003 250);
-  --foreground: oklch(0.14 0.02 250);
-  --surface: oklch(0.965 0.005 250);
-  --surface-2: oklch(0.93 0.008 250);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.14 0.02 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.14 0.02 250);
+  --background: oklch(0.155 0.007 271); /* #0B0C0F */
+  --foreground: oklch(0.946 0.003 264); /* #ECEDEF, never pure white */
+  --surface: oklch(0.2 0.01 268); /* #14161B */
+  --surface-2: oklch(0.235 0.012 264); /* #1B1E24 */
+  --card: oklch(0.2 0.01 268);
+  --card-foreground: oklch(0.946 0.003 264);
+  --popover: oklch(0.235 0.012 264);
+  --popover-foreground: oklch(0.946 0.003 264);
 
-  --primary: oklch(0.48 0.22 254);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.94 0.008 250);
-  --secondary-foreground: oklch(0.18 0.02 250);
-  --muted: oklch(0.94 0.006 250);
-  --muted-foreground: oklch(0.42 0.02 250);
-  --accent: oklch(0.92 0.04 254);
-  --accent-foreground: oklch(0.18 0.08 254);
-  --signal: oklch(0.52 0.18 150);
-  --warn: oklch(0.62 0.18 60);
-  --destructive: oklch(0.56 0.22 22);
-  --destructive-foreground: oklch(0.99 0 0);
+  /* The accent. Its foreground is near-black: white on this orange is 3.4:1 and fails. */
+  --primary: oklch(0.663 0.218 37.6); /* #FB4F02, sampled from public/foxquart.png */
+  --primary-foreground: oklch(0.155 0.007 271); /* #0B0C0F */
+  --primary-hover: oklch(0.694 0.203 40.4); /* #FF6420 */
 
-  --border: oklch(0.14 0.02 250 / 12%);
-  --input: oklch(0.14 0.02 250 / 16%);
-  --ring: oklch(0.48 0.22 254 / 40%);
+  --secondary: oklch(0.235 0.012 264);
+  --secondary-foreground: oklch(0.946 0.003 264);
+  --muted: oklch(0.235 0.012 264);
+  --muted-foreground: oklch(0.642 0.016 261); /* #878D97, 4.6:1 on ground */
+  --subtle: oklch(0.8 0.013 260); /* #B9BEC6, secondary body text */
+  --accent: oklch(0.284 0.016 264);
+  --accent-foreground: oklch(0.946 0.003 264);
 
-  --chart-1: oklch(0.48 0.22 254);
-  --chart-2: oklch(0.52 0.18 150);
-  --chart-3: oklch(0.62 0.18 60);
-  --chart-4: oklch(0.48 0.18 290);
-  --chart-5: oklch(0.56 0.22 22);
+  --signal: oklch(0.731 0.146 163);
+  --warn: oklch(0.782 0.158 72);
+  --destructive: oklch(0.637 0.21 28);
+  --destructive-foreground: oklch(0.155 0.007 271);
 
-  --sidebar: oklch(0.98 0.003 250);
-  --sidebar-foreground: oklch(0.14 0.02 250);
-  --sidebar-primary: oklch(0.48 0.22 254);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.94 0.008 250);
-  --sidebar-accent-foreground: oklch(0.14 0.02 250);
-  --sidebar-border: oklch(0.14 0.02 250 / 10%);
-  --sidebar-ring: oklch(0.48 0.22 254 / 40%);
+  --border: oklch(0.284 0.016 264); /* #262A32, solid hairline, not an alpha wash */
+  --border-strong: oklch(0.352 0.019 264); /* #363B45 */
+  --input: oklch(0.284 0.016 264);
+  --ring: oklch(0.663 0.218 37.6 / 55%);
 
+  --chart-1: oklch(0.663 0.218 37.6);
+  --chart-2: oklch(0.731 0.146 163);
+  --chart-3: oklch(0.782 0.158 72);
+  --chart-4: oklch(0.8 0.013 260);
+  --chart-5: oklch(0.637 0.21 28);
+
+  --sidebar: oklch(0.2 0.01 268);
+  --sidebar-foreground: oklch(0.946 0.003 264);
+  --sidebar-primary: oklch(0.663 0.218 37.6);
+  --sidebar-primary-foreground: oklch(0.155 0.007 271);
+  --sidebar-accent: oklch(0.235 0.012 264);
+  --sidebar-accent-foreground: oklch(0.946 0.003 264);
+  --sidebar-border: oklch(0.284 0.016 264);
+  --sidebar-ring: oklch(0.663 0.218 37.6 / 55%);
+
+  /* One accent means one light source: a single warm wash from the top left. */
   --gradient-hero: radial-gradient(
-      120% 90% at 12% 8%,
-      color-mix(in oklab, var(--primary) 12%, transparent) 0%,
-      transparent 55%
-    ),
-    radial-gradient(
-      90% 80% at 92% 18%,
-      color-mix(in oklab, var(--chart-4) 12%, transparent) 0%,
-      transparent 60%
-    ),
-    radial-gradient(
-      80% 70% at 60% 100%,
-      color-mix(in oklab, var(--signal) 8%, transparent) 0%,
-      transparent 65%
-    );
+    110% 80% at 8% 0%,
+    color-mix(in oklab, var(--primary) 10%, transparent) 0%,
+    transparent 60%
+  );
   --gradient-line: linear-gradient(
     90deg,
     transparent,
-    color-mix(in oklab, var(--primary) 40%, transparent),
+    color-mix(in oklab, var(--primary) 55%, transparent),
     transparent
   );
-  --shadow-elevated: 0 20px 50px -25px color-mix(in oklab, var(--primary) 25%, transparent);
-  --shadow-panel: 0 20px 40px -20px oklch(0.14 0.02 250 / 10%);
+  --shadow-elevated: 0 24px 60px -32px oklch(0 0 0 / 85%);
+  --shadow-panel: 0 18px 40px -24px oklch(0 0 0 / 70%);
+
+  /* Motion tokens, see contract §3. Everything collapses to 0ms under reduced motion. */
+  --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-micro: 140ms;
+  --dur-base: 240ms;
+  --dur-exit: 160ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-micro: 0ms;
+    --dur-base: 0ms;
+    --dur-exit: 0ms;
+  }
 }
 
 @layer base {
@@ -135,6 +154,7 @@
 
   html {
     scroll-behavior: smooth;
+    color-scheme: dark;
   }
 
   body {
@@ -142,32 +162,69 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
+  /* Instrument Serif ships one weight. Any font-semibold/font-bold that reaches a
+     display element would synthesize an ugly faux-bold, so weight is pinned here
+     and in the font-display utility below. */
   h1,
   h2,
   h3,
   h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.025em;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  /* Every interactive element gets a visible keyboard state (contract §6.3) */
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Touch: no 300ms delay, no accidental text selection on tap targets */
+  a,
+  button,
+  [role="button"] {
+    touch-action: manipulation;
   }
 
   ::selection {
-    background: color-mix(in oklab, var(--primary) 35%, transparent);
+    background: color-mix(in oklab, var(--primary) 40%, transparent);
+    color: var(--foreground);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
+/* On a dark ground, surfaces separate by tint and hairline, not by blur.
+   Both utilities keep their names so existing markup doesn't break, but the
+   heavy backdrop-filters are gone: they cost real frames on low-end Android. */
 @utility glass {
-  background: color-mix(in oklab, var(--surface) 55%, transparent);
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
   border: 1px solid var(--border);
-  backdrop-filter: blur(18px) saturate(140%);
 }
 
 @utility glass-strong {
-  background: color-mix(in oklab, var(--surface-2) 70%, transparent);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(28px) saturate(160%);
-  box-shadow: var(--shadow-panel);
+  background: color-mix(in oklab, var(--background) 88%, transparent);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
 }
 
 @utility mesh-bg {
@@ -181,8 +238,10 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.22;
-    mix-blend-mode: overlay;
+    /* Much lighter than the light-theme value: on near-black, 0.22 overlay reads as fog.
+       This is here to kill gradient banding, not to be seen. */
+    opacity: 0.05;
+    mix-blend-mode: soft-light;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>");
   }
 }
@@ -211,13 +270,106 @@
 
 @utility card-lift {
   transition:
-    transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
-    border-color 0.35s ease,
-    box-shadow 0.35s ease;
+    background-color var(--dur-base) var(--ease-brand),
+    border-color var(--dur-base) var(--ease-brand);
   &:hover {
-    transform: translateY(-4px);
-    border-color: color-mix(in oklab, var(--primary) 45%, transparent);
-    box-shadow: var(--shadow-elevated);
+    background-color: var(--surface-2);
+    border-color: var(--border-strong);
+  }
+}
+
+/* Press feedback for tappable cards and buttons, with no layout shift. */
+@utility press {
+  transition: transform var(--dur-micro) var(--ease-brand);
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+/* Uppercase mono label used for eyebrows, indices and metric captions. */
+@utility eyebrow-type {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Digits that line up in columns: metrics, prices, timelines. */
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* SplitText line masks: each line clips inside its own box while it slides in. */
+.mask-line {
+  will-change: transform;
+}
+
+/* Infinite marquee. The track holds two identical groups; translating the track
+   by exactly -50% loops seamlessly. CSS-only, so it costs no JS per frame, and
+   the global reduced-motion killswitch freezes it. */
+@utility marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 36s linear infinite;
+}
+
+.marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+@keyframes marquee-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Outlined display type: the fill is the ground, the letterform is a hairline. */
+@utility text-stroke {
+  -webkit-text-stroke: 1px var(--border-strong);
+  color: transparent;
+}
+
+/* Overrides Tailwind's generated font-display utility so every existing
+   `font-display font-semibold` combination renders the serif at its one true
+   weight instead of a synthesized bold. */
+@utility font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Icons are never static: inside any `group`, an icon carrying one of these
+   classes moves on hover/focus. Transform-only; frozen by the reduced-motion
+   killswitch like everything else. */
+@utility icon-nudge {
+  transition: transform var(--dur-base) var(--ease-brand);
+  .group:hover &,
+  .group:focus-visible & {
+    transform: translateX(0.3rem);
+  }
+}
+
+@utility icon-nudge-up {
+  transition: transform var(--dur-base) var(--ease-brand);
+  .group:hover &,
+  .group:focus-visible & {
+    transform: translate(0.2rem, -0.2rem);
+  }
+}
+
+@utility icon-pop {
+  transition: transform var(--dur-base) var(--ease-brand);
+  .group:hover &,
+  .group:focus-visible & {
+    transform: scale(1.18) rotate(-6deg);
   }
 }
 
@@ -274,4 +426,15 @@
 
 @utility animate-pulse-soft {
   animation: pulse-soft 2.6s ease-in-out infinite;
+}
+
+/* The lift component replaces the native scrollbar visual on desktop only.
+   Scrolling itself (wheel, keys, touchpad) is untouched. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  html {
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
+  }
 }

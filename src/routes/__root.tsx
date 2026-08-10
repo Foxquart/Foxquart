@@ -15,6 +15,23 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader, SiteFooter } from "@/components/site/chrome";
+import { SmoothScroll } from "@/components/site/smooth-scroll";
+import { LiftScrollbar } from "@/components/site/lift-scrollbar";
+import { EMAIL_ADDRESS, PHONE_NUMBERS } from "@/lib/site-data";
+import {
+  OG_IMAGE_ALT,
+  OG_IMAGE_HEIGHT,
+  OG_IMAGE_URL,
+  OG_IMAGE_WIDTH,
+  SITE_NAME,
+  jsonLdScript,
+  organizationNode,
+  websiteNode,
+} from "@/lib/seo";
+
+const rootTitle = "Foxquart | Product Engineering Studio";
+const rootDescription =
+  "Foxquart is a remote-first product engineering studio building custom operational software, AI automation, cloud infrastructure and mobile apps worldwide.";
 
 function NotFoundComponent() {
   return (
@@ -78,19 +95,42 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
+    // Site-wide defaults. Every child route overrides the title, description and
+    // og:url for its own page (TanStack keeps the deepest match for a given
+    // name/property), so what survives here is only what is genuinely global.
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "foxquart — AI & Software Engineering Studio" },
+      { title: rootTitle },
+      { name: "description", content: rootDescription },
+      { name: "author", content: SITE_NAME },
+      // Let search and answer engines quote the page in full rather than
+      // truncating it to a stock snippet length.
       {
-        name: "description",
-        content:
-          "foxquart engineers custom software, AI automation and cloud infrastructure for modern business operations.",
+        name: "robots",
+        content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
       },
-      { name: "author", content: "foxquart" },
-      { property: "og:site_name", content: "foxquart" },
+      { property: "og:site_name", content: SITE_NAME },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: OG_IMAGE_URL },
+      { property: "og:image:width", content: OG_IMAGE_WIDTH },
+      { property: "og:image:height", content: OG_IMAGE_HEIGHT },
+      { property: "og:image:alt", content: OG_IMAGE_ALT },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: OG_IMAGE_URL },
+      { name: "twitter:image:alt", content: OG_IMAGE_ALT },
+    ],
+    // Entity graph for the whole site. Page-level nodes reference these by @id
+    // instead of restating the business, so crawlers resolve one entity across
+    // every URL rather than one business per page.
+    scripts: [
+      jsonLdScript([
+        organizationNode({
+          email: EMAIL_ADDRESS,
+          telephones: PHONE_NUMBERS.map((p) => p.tel.replace("tel:", "")),
+        }),
+        websiteNode(),
+      ]),
     ],
     links: [
       {
@@ -100,26 +140,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
+        // Three roles, matching --font-display/--font-sans/--font-mono in styles.css:
+        // Instrument Serif (display), Geist (body), JetBrains Mono (micro-labels).
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=JetBrains+Mono:wght@400;500&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap",
       },
-      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-      { rel: "icon", href: "/favicon.png", type: "image/png" },
-      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
-      { rel: "shortcut icon", href: "/favicon.svg" },
-    ],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: "foxquart",
-          url: "/",
-          description:
-            "AI and software engineering studio building custom software, automation and cloud systems for businesses.",
-        }),
-      },
+      // Favicon set supplied by the founder (generator output from the brand artwork).
+      { rel: "icon", href: "/favicon.ico", sizes: "48x48" },
+      { rel: "icon", href: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+      { rel: "icon", href: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
+      { rel: "manifest", href: "/site.webmanifest" },
     ],
   }),
   shellComponent: RootShell,
@@ -155,10 +186,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SiteHeader />
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
-      <SiteFooter />
+      <SmoothScroll>
+        <SiteHeader />
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+        <SiteFooter />
+        <LiftScrollbar />
+      </SmoothScroll>
       <SpeedInsights route={route} />
       <Analytics route={route} path={path} />
     </QueryClientProvider>

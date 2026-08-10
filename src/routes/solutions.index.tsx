@@ -3,23 +3,33 @@ import { ArrowRight } from "lucide-react";
 import { GlassPanel, Reveal, Section, SectionHeading } from "@/components/site/ui";
 import { CtaBand } from "@/components/site/sections";
 import { solutionPages } from "@/lib/site-data";
+import { breadcrumbNode, canonicalLink, collectionNode, jsonLdScript, pageMeta } from "@/lib/seo";
 
-const title = "Solutions — Industry & Service Specific Software | foxquart";
+const path = "/solutions";
+const title = "Solutions: Industry & Operational Software | Foxquart";
 const description =
-  "Dedicated solution pages for inventory, ERP, CRM, n8n automation, cloud hosting, DevOps, scraping, restaurant, warehouse, healthcare and school software.";
+  "Seventeen solution pages covering inventory, ERP, CRM, n8n automation, cloud hosting, DevOps, scraping, restaurant, warehouse, healthcare and school software.";
 
 export const Route = createFileRoute("/solutions/")({
   head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/solutions" },
-      { name: "twitter:card", content: "summary_large_image" },
+    meta: pageMeta({ title, description, path }),
+    links: [canonicalLink(path)],
+    scripts: [
+      // The seventeen solution pages as a machine-readable list, so the full
+      // taxonomy is retrievable from one URL.
+      jsonLdScript([
+        collectionNode({
+          name: "Foxquart solutions",
+          description,
+          path,
+          items: solutionPages.map((p) => ({ name: p.title, path: `/solutions/${p.slug}` })),
+        }),
+        breadcrumbNode([
+          { name: "Home", path: "/" },
+          { name: "Solutions", path },
+        ]),
+      ]),
     ],
-    links: [{ rel: "canonical", href: "/solutions" }],
   }),
   component: SolutionsIndex,
 });

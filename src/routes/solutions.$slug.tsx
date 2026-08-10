@@ -2,7 +2,18 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRight, Check, X } from "lucide-react";
 import { GlassPanel, Reveal, Section, SectionHeading, Eyebrow } from "@/components/site/ui";
 import { CtaBand } from "@/components/site/sections";
+import { SolutionDemo } from "@/components/site/solution-demo";
 import { solutionPages, services, type LandingPage } from "@/lib/site-data";
+import {
+  SITE_NAME,
+  breadcrumbNode,
+  canonicalLink,
+  composeDescription,
+  faqNode,
+  jsonLdScript,
+  pageMeta,
+  serviceNode,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/solutions/$slug")({
   loader: ({ params }): { page: LandingPage } => {
@@ -13,35 +24,46 @@ export const Route = createFileRoute("/solutions/$slug")({
   head: ({ params, loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Solution unavailable — foxquart" }, { name: "robots", content: "noindex" }],
+        meta: [
+          { title: `Solution unavailable | ${SITE_NAME}` },
+          { name: "robots", content: "noindex" },
+        ],
       };
     }
-    const t = `${loaderData.page.title} | foxquart`;
-    const d = loaderData.page.description;
+    const page = loaderData.page;
+    const path = `/solutions/${params.slug}`;
+    // Every solution title stays under 60 characters once suffixed, so the title
+    // is no longer blind-truncated mid-word at 68 characters as it was before.
+    const title = `${page.title} | ${SITE_NAME}`;
+    const description = composeDescription([
+      page.description,
+      ...page.outcomes.map((o) => `${o}.`),
+      `Built by ${SITE_NAME}.`,
+    ]);
+    const parent = services.find((s) => s.slug === page.parent);
+
     return {
-      meta: [
-        { title: t.slice(0, 68) },
-        { name: "description", content: d },
-        { property: "og:title", content: t },
-        { property: "og:description", content: d },
-        { property: "og:type", content: "article" },
-        { property: "og:url", content: `/solutions/${params.slug}` },
-        { name: "twitter:card", content: "summary_large_image" },
-      ],
-      links: [{ rel: "canonical", href: `/solutions/${params.slug}` }],
+      meta: pageMeta({ title, description, path }),
+      links: [canonicalLink(path)],
       scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: loaderData.page.faqs.map((f) => ({
-              "@type": "Question",
-              name: f.q,
-              acceptedAnswer: { "@type": "Answer", text: f.a },
-            })),
+        jsonLdScript([
+          serviceNode({
+            name: page.title,
+            description,
+            path,
+            capabilities: page.outcomes,
+            // Ties the solution back to the broader practice it specialises, so
+            // the seventeen pages resolve as one connected offering rather than
+            // seventeen unrelated businesses.
+            relatedToPath: parent ? `/services/${parent.slug}` : undefined,
           }),
-        },
+          faqNode(page.faqs, path),
+          breadcrumbNode([
+            { name: "Home", path: "/" },
+            { name: "Solutions", path: "/solutions" },
+            { name: page.title, path },
+          ]),
+        ]),
       ],
     };
   },
@@ -110,6 +132,9 @@ function SolutionPage() {
             </GlassPanel>
           </Reveal>
         </div>
+
+        {/* The live build that demonstrates this exact solution (or the gallery band). */}
+        <SolutionDemo slug={page.slug} />
       </Section>
 
       <Section className="py-10">

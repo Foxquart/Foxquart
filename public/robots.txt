@@ -1,14 +1,92 @@
+# Foxquart — https://www.foxquart.com
+# Full crawl access. The goal is citation in AI answers, so every search-and-cite
+# crawler is allowed explicitly rather than relying on the wildcard group: some
+# agents only read the group that names them.
+# Structured summary for AI systems: https://www.foxquart.com/llms.txt
+
+# --- Search engines ---
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
 Allow: /
 
+User-agent: DuckDuckBot
+Allow: /
+
+# --- AI answer engines and assistants ---
+# OpenAI — ChatGPT search, browsing and training
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic — Claude
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Google Gemini and AI Overviews (separate from Googlebot indexing)
+User-agent: Google-Extended
+Allow: /
+
+# Apple Intelligence
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Common Crawl — the corpus many models are trained from
+User-agent: CCBot
+Allow: /
+
+# Meta AI
+User-agent: Meta-ExternalAgent
+Allow: /
+
+# Amazon
+User-agent: Amazonbot
+Allow: /
+
+# Mistral
+User-agent: MistralAI-User
+Allow: /
+
+# --- Social link unfurling ---
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+# --- Everything else ---
 User-agent: *
 Allow: /
+
+Sitemap: https://www.foxquart.com/sitemap.xml

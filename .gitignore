@@ -20,6 +20,14 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Vercel build output
+.vercel/
+
+# Environment secrets (DATABASE_URL, RESEND_API_KEY, …)
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { motion, useInView, useMotionValue, useSpring, animate } from "motion/react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 
 export function Section({
   id,
@@ -13,7 +14,10 @@ export function Section({
   children: ReactNode;
 }) {
   return (
-    <section id={id} className={cn("relative px-4 py-16 sm:px-5 sm:py-24 md:px-8 md:py-32", className)}>
+    <section
+      id={id}
+      className={cn("relative px-4 py-16 sm:px-5 sm:py-24 md:px-8 md:py-32", className)}
+    >
       <div className="mx-auto w-full max-w-7xl">{children}</div>
     </section>
   );
@@ -21,7 +25,9 @@ export function Section({
 
 export function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 font-mono text-[11px] tracking-[0.18em] text-primary uppercase">
+    // `w-fit` matters: as a flex child of SectionHeading the pill would otherwise
+    // stretch to the full column width and read as a bar, not a label.
+    <span className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 font-mono text-[11px] tracking-[0.18em] text-primary uppercase">
       <span className="size-1.5 rounded-full bg-primary animate-pulse-soft" />
       {children}
     </span>
@@ -46,8 +52,10 @@ export function SectionHeading({
         align === "center" && "mx-auto items-center text-center",
       )}
     >
-      <Eyebrow>{eyebrow}</Eyebrow>
-      <h2 className="text-2xl leading-[1.08] font-semibold text-balance sm:text-3xl md:text-5xl">{title}</h2>
+      {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
+      <h2 className="text-2xl leading-[1.08] font-semibold text-balance sm:text-3xl md:text-5xl">
+        {title}
+      </h2>
       {intro ? <p className="text-base text-muted-foreground md:text-lg">{intro}</p> : null}
     </Reveal>
   );
@@ -88,10 +96,25 @@ export function Counter({
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
-  const [value, setValue] = useState(0);
+  // Start at the real number, not 0. The server renders it, crawlers and answer
+  // engines read it, and a client with JS off or broken still shows the figure
+  // instead of "0+ systems delivered". We only drop to 0 once we know the counter
+  // is off-screen and will actually be watched into view.
+  const [value, setValue] = useState(to);
+  const armed = useRef(false);
 
   useEffect(() => {
-    if (!inView) return;
+    const el = ref.current;
+    if (!el || armed.current) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const box = el.getBoundingClientRect();
+    if (box.top < window.innerHeight && box.bottom > 0) return; // already visible: no count-up
+    armed.current = true;
+    setValue(0);
+  }, []);
+
+  useEffect(() => {
+    if (!inView || !armed.current) return;
     const controls = animate(0, to, {
       duration: 1.6,
       ease: [0.2, 0.7, 0.2, 1],
@@ -174,29 +197,38 @@ export function GlassPanel({
   className?: string;
   lift?: boolean;
 }) {
-  return (
-    <div className={cn("glass rounded-2xl", lift && "card-lift", className)}>{children}</div>
-  );
+  return <div className={cn("glass rounded-2xl", lift && "card-lift", className)}>{children}</div>;
 }
 
+/**
+ * The fox mark: two ears sweeping into a shield, with a Q counter cut from the muzzle.
+ * Single even-odd path so it inherits `currentColor` and stays legible down to 16px.
+ * Kept in sync with public/logo.svg.
+ */
 export function FoxquartIcon({ className = "size-7", ...props }: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
-      viewBox="0 0 100 100"
+      viewBox="0 0 512 512"
       fill="currentColor"
-      className={cn("size-7 text-primary shrink-0", className)}
+      className={cn("size-7 shrink-0 text-primary", className)}
       aria-hidden="true"
       {...props}
     >
-      <defs>
-        <path
-          id="fox-blade-path"
-          d="M 50,48 C 55,40 68,25 58,12 C 75,24 73,43 50,48 Z"
-        />
-      </defs>
-      <use href="#fox-blade-path" transform="rotate(0 50 50)" />
-      <use href="#fox-blade-path" transform="rotate(120 50 50)" />
-      <use href="#fox-blade-path" transform="rotate(240 50 50)" />
+      <path
+        fillRule="evenodd"
+        d="M104 88
+           C154 136 206 184 256 216
+           C306 184 358 134 408 86
+           C404 214 396 300 336 372
+           C310 402 282 426 256 431
+           C230 426 202 402 176 372
+           C116 300 108 214 104 88
+           Z
+           M256 266
+           a62 62 0 1 0 0.01 0
+           Z
+           M284 373 L301 356 L322 377 L305 394 Z"
+      />
     </svg>
   );
 }
@@ -208,9 +240,56 @@ export function FoxquartLogo({
   iconClassName?: string;
   textClassName?: string;
 }) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  // The cartoon idle: the mark rocks on its own axis twice, settles with a
+  // little spring, waits a beat, then a gloss sweeps across. Repeats forever,
+  // never on reduced motion, transform/opacity only.
+  useGSAP(
+    () => {
+      const root = ref.current;
+      if (!root || prefersReducedMotion()) return;
+      const mark = root.querySelector("[data-mark]");
+      const shine = root.querySelector("[data-shine]");
+      if (!mark || !shine) return;
+
+      gsap.set(shine, { xPercent: -180 });
+      const tl = gsap.timeline({ repeat: -1, repeatDelay: 3.4, delay: 1.4 });
+      tl.to(mark, { rotation: -14, duration: 0.16, ease: "power2.out" })
+        .to(mark, { rotation: 12, duration: 0.3, ease: "power2.inOut" })
+        .to(mark, { rotation: -9, duration: 0.28, ease: "power2.inOut" })
+        .to(mark, { rotation: 6, duration: 0.24, ease: "power2.inOut" })
+        .to(mark, { rotation: 0, duration: 0.4, ease: "elastic.out(1, 0.45)" })
+        .to(shine, { xPercent: 320, duration: 0.65, ease: "power2.inOut" }, "+=0.4")
+        .set(shine, { xPercent: -180 });
+    },
+    { scope: ref },
+  );
+
   return (
-    <span className="flex items-center gap-2.5">
-      <FoxquartIcon className={iconClassName} />
+    <span ref={ref} className="flex items-center gap-2.5">
+      {/* The founder's artwork, verbatim. The vector FoxquartIcon is only for
+          decorative tinted uses (e.g. the hero's parallax mark), never the lockup. */}
+      <span
+        data-mark
+        className={cn(
+          "relative inline-flex shrink-0 overflow-hidden rounded-lg will-change-transform",
+          iconClassName,
+        )}
+      >
+        <img
+          src="/android-chrome-192x192.png"
+          alt=""
+          width={192}
+          height={192}
+          className="size-full"
+        />
+        <span
+          data-shine
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-foreground/45 to-transparent"
+        />
+      </span>
       <span className={textClassName}>Foxquart</span>
     </span>
   );

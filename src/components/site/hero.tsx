@@ -1,314 +1,227 @@
-import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import { useEffect, useRef } from "react";
-import { ArrowRight, Boxes, Activity, Bot, Cloud, Workflow, Bell } from "lucide-react";
-import { Counter, MagneticLink } from "./ui";
-import { WovenCanvas } from "@/components/ui/woven-canvas";
+import { useRef } from "react";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+import { FoxquartIcon } from "./ui";
+import { Magnetic, Marquee, MaskLines, Parallax, Rise } from "./motion";
+import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 
-function Particles() {
-  const dots = Array.from({ length: 26 }, (_, i) => ({
-    id: i,
-    left: (i * 37) % 100,
-    top: (i * 53) % 100,
-    delay: (i % 9) * 0.7,
-    size: i % 5 === 0 ? 3 : 2,
-  }));
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {dots.map((d) => (
-        <motion.span
-          key={d.id}
-          className="absolute rounded-full bg-primary/60"
-          style={{ left: `${d.left}%`, top: `${d.top}%`, width: d.size, height: d.size }}
-          animate={{ y: [0, -40, 0], opacity: [0, 0.9, 0] }}
-          transition={{ duration: 9 + (d.id % 5), repeat: Infinity, delay: d.delay, ease: "easeInOut" }}
-        />
-      ))}
-    </div>
-  );
-}
+/*
+ * Hero. The LCP element is the <h1> text. No image or canvas competes with it.
+ * One decorative object: the fox mark, oversized, parallaxing off the right edge.
+ * Display face is Instrument Serif (one weight; italics are the emphasis voice).
+ */
 
-function Sparkline({ points }: { points: number[] }) {
-  const max = Math.max(...points);
-  const d = points
-    .map((p, i) => `${(i / (points.length - 1)) * 100},${34 - (p / max) * 30}`)
-    .join(" ");
-  return (
-    <svg viewBox="0 0 100 36" preserveAspectRatio="none" className="h-10 w-full">
-      <motion.polyline
-        points={d}
-        fill="none"
-        stroke="var(--primary)"
-        strokeWidth="1.6"
-        vectorEffect="non-scaling-stroke"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 1.8, ease: "easeOut" }}
-      />
-      <polyline
-        points={`0,36 ${d} 100,36`}
-        fill="color-mix(in oklab, var(--primary) 14%, transparent)"
-        stroke="none"
-      />
-    </svg>
-  );
-}
-
-function Bars() {
-  const bars = [42, 68, 55, 84, 61, 92, 74];
-  return (
-    <div className="flex h-16 items-end gap-1.5">
-      {bars.map((b, i) => (
-        <motion.span
-          key={i}
-          className="flex-1 rounded-sm bg-primary/70"
-          initial={{ height: 0 }}
-          animate={{ height: `${b}%` }}
-          transition={{ duration: 1, delay: 0.2 + i * 0.08, ease: [0.2, 0.7, 0.2, 1] }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function DashboardCard({
-  title,
-  icon,
-  children,
-  className,
-  float = 0,
-}: {
-  title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-  className?: string;
-  float?: number;
-}) {
-  return (
-    <motion.div
-      className={`glass rounded-xl p-4 ${className ?? ""}`}
-      animate={{ y: [0, -8, 0] }}
-      transition={{ duration: 6 + float, repeat: Infinity, ease: "easeInOut", delay: float }}
-    >
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <span className="text-primary">{icon}</span>
-        <span className="font-mono text-[10px] tracking-[0.16em] uppercase">{title}</span>
-      </div>
-      <div className="mt-3">{children}</div>
-    </motion.div>
-  );
-}
-
-function HeroDashboard() {
-  const rx = useSpring(useMotionValue(0), { stiffness: 120, damping: 20 });
-  const ry = useSpring(useMotionValue(0), { stiffness: 120, damping: 20 });
-  const rotateX = useTransform(rx, (v) => v);
-  const rotateY = useTransform(ry, (v) => v);
-
-  return (
-    <motion.div
-      className="relative w-full [perspective:1400px]"
-      onMouseMove={(e) => {
-        const r = e.currentTarget.getBoundingClientRect();
-        ry.set(((e.clientX - (r.left + r.width / 2)) / r.width) * 10);
-        rx.set(-((e.clientY - (r.top + r.height / 2)) / r.height) * 8);
-      }}
-      onMouseLeave={() => {
-        rx.set(0);
-        ry.set(0);
-      }}
-    >
-      <motion.div
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-        className="glass-strong rounded-3xl p-4 md:p-5"
-      >
-        <div className="flex items-center justify-between border-b border-border pb-3">
-          <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-signal" />
-            <span className="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
-              Operations Console
-            </span>
-          </div>
-          <span className="rounded-full border border-border px-2.5 py-1 font-mono text-[10px] text-signal">
-            LIVE
-          </span>
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <DashboardCard title="Client Impact" icon={<Activity className="size-3.5" />} float={0.2}>
-            <p className="font-display text-2xl font-semibold text-foreground">
-              <Counter to={4.82} prefix="$" suffix="M" decimals={2} />
-            </p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">Annualised value unlocked</p>
-            <Sparkline points={[12, 18, 15, 24, 22, 31, 29, 38, 44]} />
-          </DashboardCard>
-
-          <DashboardCard title="Inventory Sync" icon={<Boxes className="size-3.5" />} float={0.9}>
-            <p className="font-display text-2xl font-semibold text-foreground">
-              <Counter to={99.4} suffix="%" decimals={1} />
-            </p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">Stock accuracy across 9 hubs</p>
-            <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-              <motion.div
-                className="h-full rounded-full bg-primary"
-                initial={{ width: 0 }}
-                animate={{ width: "94%" }}
-                transition={{ duration: 1.4, delay: 0.4 }}
-              />
-            </div>
-          </DashboardCard>
-
-          <DashboardCard title="Daily Throughput" icon={<Activity className="size-3.5" />} float={1.4}>
-            <p className="font-display text-2xl font-semibold text-foreground">
-              <Counter to={1284} />
-            </p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">Orders auto-processed today</p>
-            <Bars />
-          </DashboardCard>
-
-          <DashboardCard title="AI Agent Actions" icon={<Bot className="size-3.5" />} float={0.6}>
-            <div className="space-y-1.5 text-xs">
-              <p className="rounded-lg bg-surface-2/90 px-2.5 py-1 text-muted-foreground font-mono text-[11px]">
-                Query: "Which SKUs risk stockout?"
-              </p>
-              <motion.p
-                className="rounded-lg bg-primary/20 px-2.5 py-1 text-foreground font-medium text-[11px]"
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2 }}
-              >
-                Action: 7 SKUs flagged · 3 POs drafted.
-              </motion.p>
-            </div>
-          </DashboardCard>
-
-          <DashboardCard title="Platform SLA" icon={<Cloud className="size-3.5" />} float={1.1}>
-            <p className="font-display text-2xl font-semibold text-signal">
-              <Counter to={99.98} suffix="%" decimals={2} />
-            </p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">30-day rolling uptime</p>
-            <div className="mt-2 flex gap-1">
-              {Array.from({ length: 14 }).map((_, i) => (
-                <span
-                  key={i}
-                  className={`h-5 flex-1 rounded-sm ${i === 9 ? "bg-warn/80" : "bg-signal/80"}`}
-                />
-              ))}
-            </div>
-          </DashboardCard>
-
-          <DashboardCard title="Automation Engine" icon={<Workflow className="size-3.5" />} float={1.7}>
-            <p className="font-display text-2xl font-semibold text-foreground">
-              <Counter to={38} suffix="k" />
-            </p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">Monthly runs · 0 downtime</p>
-            <div className="mt-3 flex items-center gap-1.5">
-              {["Form", "AI", "CRM", "ERP"].map((n) => (
-                <span
-                  key={n}
-                  className="rounded-md border border-border bg-surface px-1.5 py-0.5 font-mono text-[9px] font-medium text-foreground"
-                >
-                  {n}
-                </span>
-              ))}
-            </div>
-          </DashboardCard>
-        </div>
-
-        <motion.div
-          className="mt-3 flex items-center gap-3 rounded-xl border border-border bg-surface/60 px-4 py-3"
-          animate={{ opacity: [0.75, 1, 0.75] }}
-          transition={{ duration: 4, repeat: Infinity }}
-        >
-          <Bell className="size-4 text-accent" />
-          <p className="text-xs text-muted-foreground">
-            Invoice #48219 auto-approved · posted to ERP · Slack notified
-          </p>
-        </motion.div>
-      </motion.div>
-    </motion.div>
-  );
-}
+const marqueeSystems = [
+  "Inventory & Warehouse",
+  "Hospital ERP",
+  "School Management",
+  "Restaurant POS",
+  "Custom CRM",
+  "AI Automation",
+  "Booking Systems",
+  "Data Pipelines",
+];
 
 export function Hero() {
-  const ref = useRef<HTMLDivElement>(null);
-  const mx = useMotionValue(50);
-  const my = useMotionValue(30);
-  const sx = useSpring(mx, { stiffness: 60, damping: 20 });
-  const sy = useSpring(my, { stiffness: 60, damping: 20 });
-  const light = useTransform(
-    [sx, sy],
-    ([x, y]) =>
-      `radial-gradient(45rem 30rem at ${x}% ${y}%, color-mix(in oklab, var(--primary) 16%, transparent), transparent 70%)`,
+  const foxRef = useRef<HTMLDivElement>(null);
+
+  /*
+   * The cartoon intro, built from sprites cut out of the founder's artwork:
+   * the fox head appears whole (hole filled), the Q-ball bounces in from the
+   * left in two hops, leaps onto the head and lands exactly where the counter
+   * belongs, at which point the true holed head swaps in and the mark punches
+   * to rest. Afterwards a gentle idle rock repeats. Reduced motion shows the
+   * finished mark immediately and nothing moves.
+   */
+  useGSAP(
+    () => {
+      const fox = foxRef.current;
+      if (!fox) return;
+      const full = fox.querySelector("[data-head-full]");
+      const holed = fox.querySelector("[data-head-holed]");
+      const ball = fox.querySelector("[data-ball]");
+      if (!full || !holed || !ball) return;
+
+      if (prefersReducedMotion()) {
+        gsap.set(holed, { opacity: 1 });
+        gsap.set(full, { opacity: 0 });
+        gsap.set(ball, { opacity: 0 });
+        return;
+      }
+
+      const START = { xPercent: -380, yPercent: 140, rotation: -160, scaleX: 1, scaleY: 1 };
+      gsap.set(ball, { ...START, opacity: 1, transformOrigin: "50% 50%" });
+
+      /*
+       * One seamless cycle, repeated forever: the Q rolls in spinning, hops
+       * twice with squash-and-stretch, crouches (anticipation), leaps onto the
+       * face (the real holed artwork swaps in on impact), the head recoils and
+       * settles, holds, then the Q pops back out and rolls away off-screen,
+       * the head refills, and the cycle begins again from the exact start
+       * state, so the loop has no visible seam.
+       */
+      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.9, delay: 0.6 });
+      tl.from(fox, { rotation: -8, duration: 0.9, ease: "elastic.out(1, 0.4)" });
+      // Two roaming hops, spinning as it travels.
+      for (const [toX, hopDur] of [
+        [-250, 0.5],
+        [-125, 0.45],
+      ] as const) {
+        tl.to(ball, { xPercent: toX, rotation: "+=110", duration: hopDur, ease: "none" }, "<")
+          .to(ball, { yPercent: 60, duration: hopDur / 2, ease: "power2.out" }, "<")
+          .to(ball, { yPercent: 140, duration: hopDur / 2, ease: "power2.in" }, ">")
+          .to(ball, { scaleY: 0.8, scaleX: 1.14, duration: 0.09, ease: "power2.out" }, ">")
+          .to(ball, { scaleY: 1.04, scaleX: 0.98, duration: 0.11, ease: "power2.out" }, ">")
+          .to(ball, { scaleY: 1, scaleX: 1, duration: 0.08 }, ">");
+      }
+      // Anticipation: crouch, aim at the face…
+      tl.to(ball, { scaleY: 0.72, scaleX: 1.2, yPercent: 148, duration: 0.22, ease: "power2.out" })
+        // …and the leap, stretching in flight, spinning upright to land tail-true.
+        .to(ball, { xPercent: 0, rotation: 0, duration: 0.5, ease: "none" })
+        .to(
+          ball,
+          { yPercent: -55, scaleY: 1.12, scaleX: 0.92, duration: 0.28, ease: "power2.out" },
+          "<",
+        )
+        .to(ball, { yPercent: 0, scaleY: 1, scaleX: 1, duration: 0.22, ease: "power3.in" }, ">")
+        // Impact: the counter punches through and the head recoils like it took the hit.
+        .set(full, { opacity: 0 })
+        .set(holed, { opacity: 1 })
+        .to(ball, { opacity: 0, duration: 0.18, ease: "power1.out" }, "<")
+        .fromTo(
+          fox,
+          { scale: 1.06, rotation: 2.5 },
+          { scale: 1, rotation: 0, duration: 0.6, ease: "elastic.out(1, 0.4)" },
+        )
+        // Hold the finished mark, with one small proud rock.
+        .to(fox, { rotation: -4, duration: 0.3, ease: "power2.inOut" }, "+=1.6")
+        .to(fox, { rotation: 3, duration: 0.26, ease: "power2.inOut" })
+        .to(fox, { rotation: 0, duration: 0.45, ease: "elastic.out(1, 0.5)" })
+        // The Q pops back out and rolls away; the head refills. End = start.
+        .to(ball, { opacity: 1, duration: 0.15 }, "+=1.9")
+        .set(full, { opacity: 1 })
+        .set(holed, { opacity: 0 })
+        .to(ball, { yPercent: -40, duration: 0.22, ease: "power2.out" })
+        .to(
+          ball,
+          { xPercent: START.xPercent, rotation: START.rotation, duration: 0.7, ease: "power1.in" },
+          "<",
+        )
+        .to(ball, { yPercent: START.yPercent, duration: 0.5, ease: "power2.in" }, "<+=0.2")
+        .to(fox, { rotation: -3, duration: 0.25, ease: "power2.inOut" }, "<")
+        .to(fox, { rotation: 0, duration: 0.4, ease: "elastic.out(1, 0.5)" });
+    },
+    { scope: foxRef },
   );
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const onMove = (e: MouseEvent) => {
-      const r = el.getBoundingClientRect();
-      mx.set(((e.clientX - r.left) / r.width) * 100);
-      my.set(((e.clientY - r.top) / r.height) * 100);
-    };
-    el.addEventListener("mousemove", onMove);
-    return () => el.removeEventListener("mousemove", onMove);
-  }, [mx, my]);
-
   return (
-    <div ref={ref} className="relative grain overflow-hidden pt-24 pb-14 sm:pt-32 sm:pb-20 md:pt-40 md:pb-28">
-      <div className="mesh-bg animate-drift absolute inset-0 -z-10" />
-      <motion.div className="absolute inset-0 -z-10" style={{ background: light }} />
-      <div className="absolute -top-24 left-1/4 -z-10 size-[32rem] rounded-full bg-primary/10 blur-[120px]" />
-      <div className="absolute right-0 bottom-0 -z-10 size-[28rem] rounded-full bg-chart-4/10 blur-[120px]" />
-      <Particles />
-
-      <div className="mx-auto grid w-full max-w-7xl items-center gap-8 px-4 sm:gap-12 sm:px-5 md:px-8 lg:grid-cols-[1.1fr_1fr]">
-        {/* Left Side Text Content */}
-        <div className="flex flex-col items-start text-left gap-5 sm:gap-7 max-w-2xl">
-
-          <motion.h1
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.05 }}
-            className="text-[1.75rem] leading-[1.08] font-semibold text-balance sm:text-4xl md:text-6xl xl:text-[4.2rem]"
+    <section className="mesh-bg relative flex min-h-dvh flex-col overflow-hidden">
+      {/* The mark as object, decorative, scrubbed, never in the reading path.
+          Positioning lives on this wrapper; GSAP owns the transforms of the two
+          nested layers (Parallax → translate, foxRef → rotation), so the layers
+          never fight over one transform property. */}
+      <div className="pointer-events-none absolute inset-y-0 -right-[16vw] flex items-center sm:-right-[8vw] lg:-right-[2vw]">
+        <Parallax from={8} to={-8}>
+          <div
+            ref={foxRef}
+            className="relative w-[72vw] opacity-[0.16] will-change-transform sm:w-[50vw] lg:w-[38vw] lg:opacity-[0.3]"
+            style={{ aspectRatio: "900 / 1006" }}
           >
-            <span className="text-gradient">Engineering software that runs modern businesses.</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.15 }}
-            className="max-w-xl text-sm text-foreground/80 sm:text-base md:text-lg font-medium"
-          >
-            We build custom software, AI automation, cloud infrastructure, enterprise dashboards and
-            intelligent workflows that eliminate repetitive work and help businesses scale faster.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.25 }}
-            className="flex flex-col items-stretch gap-3 pt-2 sm:flex-row sm:flex-wrap sm:items-center"
-          >
-            <MagneticLink to="/contact">
-              Schedule a strategy call <ArrowRight className="size-4" />
-            </MagneticLink>
-            <MagneticLink href="#services" variant="ghost">
-              Explore solutions
-            </MagneticLink>
-          </motion.div>
-        </div>
-
-        {/* Right Side 3D Woven Animation */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="relative flex h-[280px] sm:h-[400px] md:h-[580px] w-full items-center justify-center"
-        >
-          <WovenCanvas className="h-full w-full pointer-events-auto" />
-        </motion.div>
+            {/* Sprites cut from public/foxquart.png, the mark is the artwork, verbatim. */}
+            <img
+              data-head-full
+              src="/images/fox-head-full.webp"
+              alt=""
+              width={900}
+              height={1006}
+              className="absolute inset-0 size-full"
+            />
+            <img
+              data-head-holed
+              src="/images/fox-head-holed.webp"
+              alt=""
+              width={900}
+              height={1006}
+              className="absolute inset-0 size-full opacity-0"
+            />
+            {/* Resting geometry = the hole's measured position in the artwork:
+                centre (48.94%, 67.77%), diameter 40.6% of the head's width. */}
+            <img
+              data-ball
+              src="/images/fox-ball.webp"
+              alt=""
+              width={505}
+              height={505}
+              className="absolute w-[56.2%]"
+              style={{ left: "20.86%", top: "42.65%" }}
+            />
+          </div>
+        </Parallax>
       </div>
-    </div>
+
+      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 pt-32 pb-16 sm:px-5 lg:px-8 lg:pt-36">
+        <div className="max-w-6xl">
+          {/* LCP element. Serif at display scale; the promise's verb carries the italic. */}
+          <MaskLines
+            as="h1"
+            className="font-display text-[clamp(2.9rem,8vw,5.9rem)] leading-[1.04] text-foreground"
+          >
+            Software your business <em className="text-primary italic">runs&nbsp;on.</em>
+            <br />
+            Built in weeks. <span className="text-muted-foreground">Built to keep.</span>
+          </MaskLines>
+
+          <Rise delay={0.35} className="mt-6 max-w-xl">
+            {/* Entity-first and self-contained on purpose, answer engines quote this
+                passage for "what is Foxquart". Keep the definition in the first clause. */}
+            <p className="text-base leading-relaxed text-foreground/80 sm:text-lg">
+              Foxquart is a product engineering studio. We turn spreadsheets, WhatsApp threads and
+              paper files into one system your team runs on.
+            </p>
+          </Rise>
+
+          <Rise
+            delay={0.5}
+            className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center"
+          >
+            <Magnetic className="w-full sm:w-auto">
+              <Link
+                to="/contact"
+                className="group press inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-full bg-primary px-7 text-base font-medium text-primary-foreground transition-colors duration-[var(--dur-micro)] hover:bg-[var(--primary-hover)] sm:w-auto"
+              >
+                Book a 30-min build review
+                <ArrowRight className="icon-nudge size-4" aria-hidden="true" />
+              </Link>
+            </Magnetic>
+            <Link
+              to="/work"
+              className="press inline-flex min-h-13 w-full items-center justify-center rounded-full border border-border bg-surface px-7 text-base font-medium text-foreground transition-colors duration-[var(--dur-micro)] hover:bg-surface-2 sm:w-auto"
+            >
+              See live demos
+            </Link>
+          </Rise>
+
+          <Rise delay={0.62} className="mt-6">
+            <p className="text-sm text-muted-foreground">
+              <span className="tnum">Typical delivery 3–5 weeks</span>
+              <span aria-hidden="true"> · </span>
+              Senior engineers only
+            </p>
+          </Rise>
+        </div>
+      </div>
+
+      {/* Full-bleed systems strip along the hero's bottom edge. */}
+      <div className="relative border-t border-border py-5">
+        <Marquee duration={44}>
+          {marqueeSystems.map((s) => (
+            <span key={s} className="flex items-center">
+              <span className="eyebrow-type px-6 text-muted-foreground">{s}</span>
+              <FoxquartIcon className="size-3 shrink-0 text-primary/50" />
+            </span>
+          ))}
+        </Marquee>
+      </div>
+    </section>
   );
 }

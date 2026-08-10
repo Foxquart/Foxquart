@@ -1,19 +1,23 @@
-import { useState } from "react";
-import { Check, Send, Mail, ExternalLink, Phone } from "lucide-react";
-import { GlassPanel, Reveal, Section, SectionHeading } from "./ui";
-import { GMAIL_COMPOSE_URL, MAILTO_TEMPLATE_URL, EMAIL_ADDRESS, PHONE_NUMBERS } from "@/lib/site-data";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
+import { Check, Loader2, Mail, Phone, Send } from "lucide-react";
+import { Section, SectionHeading } from "./ui";
+import { EMAIL_ADDRESS, MAILTO_URL, PHONE_NUMBERS } from "@/lib/site-data";
+import {
+  PREFERRED_TIMES,
+  PROJECT_TYPES,
+  TIMELINES,
+  contactSubmissionSchema,
+} from "@/lib/contact-schema";
 
-const projectTypes = [
-  "Custom software / ERP",
-  "AI & workflow automation",
-  "Cloud & DevOps",
-  "Data intelligence",
-  "Website / landing page",
-  "Mobile application",
-];
-const budgets = ["Under $10k", "$10k – $30k", "$30k – $75k", "$75k – $200k", "$200k+"];
-const timelines = ["ASAP", "1–3 months", "3–6 months", "Exploring options"];
-const slots = ["Tue 10:00", "Tue 15:30", "Wed 09:00", "Wed 14:00", "Thu 11:30", "Fri 16:00"];
+/**
+ * The form POSTs to /api/contact, which stores the enquiry and notifies the
+ * team inbox; "sent" means the server accepted it. On failure the form stays
+ * intact and a direct mailto link is offered as the escape hatch.
+ */
+type Status = "idle" | "submitting" | "sent";
+type FieldName = "name" | "email" | "message";
+type Errors = Partial<Record<FieldName, string>>;
 
 export function ContactSection() {
   const [name, setName] = useState("");
@@ -21,41 +25,129 @@ export function ContactSection() {
   const [company, setCompany] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
-  const [type, setType] = useState(projectTypes[0]);
-  const [budget, setBudget] = useState(budgets[2]);
-  const [timeline, setTimeline] = useState(timelines[1]);
-  const [slot, setSlot] = useState(slots[0]);
-  const [sent, setSent] = useState(false);
+  const [type, setType] = useState<string>(PROJECT_TYPES[0]);
+  const [timeline, setTimeline] = useState<string>(TIMELINES[0]);
+  const [preferredTime, setPreferredTime] = useState<string>(PREFERRED_TIMES[0]);
+  const [timezone, setTimezone] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot: humans never see it
+  const [errors, setErrors] = useState<Errors>({});
+  const [notice, setNotice] = useState("");
+  const [failed, setFailed] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const formRef = useRef<HTMLFormElement>(null);
+  const statusHeadingRef = useRef<HTMLHeadingElement>(null);
+  const hasSent = useRef(false);
+
+  // Resolved after mount so the server-rendered HTML and the first client render match.
+  useEffect(() => {
+    try {
+      setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone ?? "");
+    } catch {
+      setTimezone("");
+    }
+  }, []);
+
+  // The form and the success panel replace each other, so focus would otherwise land on
+  // <body> and the keyboard user would lose their place.
+  useEffect(() => {
+    if (status === "sent") {
+      hasSent.current = true;
+      statusHeadingRef.current?.focus();
+    } else if (status === "idle" && hasSent.current) {
+      formRef.current?.querySelector<HTMLElement>("#name")?.focus();
+    }
+  }, [status]);
+
+  const payload = {
+    name,
+    email,
+    company,
+    phone,
+    message,
+    projectType: type,
+    timeline,
+    preferredTime,
+    timezone,
+    website,
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const mailBody = `Hello Foxquart Team,
+    if (status === "submitting") return;
 
-My name is ${name}${company ? ` from ${company}` : ""}. I am reaching out to discuss a strategy call regarding our engineering requirements.
+    const parsed = contactSubmissionSchema.safeParse(payload);
+    if (!parsed.success) {
+      const found: Errors = {};
+      for (const issue of parsed.error.issues) {
+        const field = issue.path[0];
+        if ((field === "name" || field === "email" || field === "message") && !found[field]) {
+          found[field] = issue.message;
+        }
+      }
+      setErrors(found);
+      setFailed(false);
+      setNotice("Nothing was sent. Check the highlighted fields below.");
+      const firstInvalid = (["name", "email", "message"] as FieldName[]).find((f) => found[f]);
+      if (firstInvalid) {
+        formRef.current?.querySelector<HTMLElement>(`#${firstInvalid}`)?.focus();
+      }
+      return;
+    }
 
-Contact Info:
-- Direct Email: ${email}
-- Phone: ${phone || "Not provided"}
+    setErrors({});
+    setNotice("");
+    setFailed(false);
+    setStatus("submitting");
 
-Project Overview:
-- Service Area: ${type}
-- Target Budget: ${budget}
-- Expected Timeline: ${timeline}
-- Preferred Call Time: ${slot}
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
+      });
+      const body = (await res.json().catch(() => null)) as {
+        ok?: boolean;
+        error?: string;
+        fieldErrors?: Partial<Record<string, string>>;
+      } | null;
 
-Notes & Requirements:
-${message || "No additional notes specified."}
+      if (res.ok && body?.ok) {
+        setStatus("sent");
+        return;
+      }
 
-Best regards,
-${name}`;
+      setStatus("idle");
+      if (res.status === 400 && body?.fieldErrors) {
+        const found: Errors = {};
+        for (const f of ["name", "email", "message"] as FieldName[]) {
+          if (body.fieldErrors[f]) found[f] = body.fieldErrors[f];
+        }
+        setErrors(found);
+        setNotice(body.error ?? "Nothing was sent. Check the highlighted fields below.");
+        return;
+      }
+      setFailed(true);
+      setNotice(body?.error ?? "We could not send your message. Please try again in a moment.");
+    } catch {
+      setStatus("idle");
+      setFailed(true);
+      setNotice("We could not reach the server. Check your connection and try again.");
+    }
+  };
 
-    const subject = `[Foxquart Inquiry] Strategy Call — ${name}${company ? ` (${company})` : ""}`;
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
-      EMAIL_ADDRESS,
-    )}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailBody)}`;
-
-    window.open(gmailUrl, "_blank");
-    setSent(true);
+  const resetForSecondMessage = () => {
+    setName("");
+    setCompany("");
+    setPhone("");
+    setMessage("");
+    setPreferredTime(PREFERRED_TIMES[0]);
+    setType(PROJECT_TYPES[0]);
+    setTimeline(TIMELINES[3]);
+    setErrors({});
+    setNotice("");
+    setFailed(false);
+    setStatus("idle");
   };
 
   return (
@@ -64,208 +156,375 @@ ${name}`;
         <div>
           <SectionHeading
             eyebrow="Contact"
-            title="Book a strategy call with an engineer, not a salesperson."
-            intro="Send the details and we will reply within one business day with an agenda and an honest first opinion."
+            title="Talk to the engineer who would build it, not a salesperson."
+            intro="We usually reply within one business day, with an honest first opinion."
           />
           <ul className="mt-8 space-y-3 text-sm text-muted-foreground">
             {[
               "30 minutes, no pitch deck",
-              "You leave with a prioritised automation shortlist",
+              "You leave with a shortlist of what to automate first",
               "NDA available before the call on request",
             ].map((l) => (
-              <li key={l} className="flex items-center gap-2">
-                <Check className="size-4 text-signal" /> {l}
+              <li key={l} className="flex items-start gap-2">
+                <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" /> {l}
               </li>
             ))}
           </ul>
-          <div className="mt-8 space-y-4">
+
+          <div className="mt-8 space-y-6">
             <div>
-              <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase font-bold">
-                Direct Phone / Call
-              </p>
-              <div className="mt-2 flex flex-wrap gap-2.5">
+              <h3 className="font-mono text-[11px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
+                Call us
+              </h3>
+              <ul className="mt-3 flex flex-wrap gap-2.5">
                 {PHONE_NUMBERS.map((p) => (
-                  <a
-                    key={p.raw}
-                    href={p.tel}
-                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface/60 px-3.5 py-2 text-xs font-mono font-semibold text-foreground transition-colors hover:border-primary/50 hover:bg-surface"
-                  >
-                    <Phone className="size-3.5 text-primary" /> {p.formatted}
-                  </a>
+                  <li key={p.raw}>
+                    <a
+                      href={p.tel}
+                      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-surface px-4 font-mono text-sm text-foreground transition-colors hover:border-primary/50 hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    >
+                      <Phone className="size-3.5 text-primary" aria-hidden="true" /> {p.formatted}
+                    </a>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
 
             <div>
-              <p className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase font-bold">
-                Direct Email &amp; Template
-              </p>
-              <div className="mt-2 flex flex-col gap-2">
-                <a
-                  href={GMAIL_COMPOSE_URL}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="inline-flex items-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/20"
-                >
-                  <Mail className="size-4" /> Open pre-filled template in Gmail <ExternalLink className="size-3.5 opacity-70" />
-                </a>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground px-1">
-                  <span>Direct email: <a href={MAILTO_TEMPLATE_URL} className="text-foreground hover:underline font-mono">{EMAIL_ADDRESS}</a></span>
-                </div>
-              </div>
+              <h3 className="font-mono text-[11px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
+                Email us directly
+              </h3>
+              <a
+                href={MAILTO_URL}
+                className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-surface px-4 font-mono text-sm text-foreground transition-colors hover:border-primary/50 hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <Mail className="size-4 text-primary" aria-hidden="true" /> {EMAIL_ADDRESS}
+              </a>
             </div>
           </div>
         </div>
 
-        <Reveal>
-          <GlassPanel lift={false} className="glass-strong p-7 md:p-8">
-            {sent ? (
-              <div className="flex min-h-80 flex-col items-center justify-center text-center">
-                <span className="grid size-12 place-items-center rounded-full bg-primary/15">
-                  <Check className="size-5 text-primary" />
-                </span>
-                <h3 className="mt-5 font-display text-xl font-semibold">Request Prepared in Gmail</h3>
-                <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-                  We opened Gmail with your filled details for <span className="text-foreground font-mono font-medium">{EMAIL_ADDRESS}</span>.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setSent(false)}
-                  className="mt-6 text-xs text-primary hover:underline font-mono"
+        <div className="rounded-xl border border-border bg-surface p-5 sm:p-7">
+          {status !== "sent" ? (
+            <form ref={formRef} className="grid gap-6" onSubmit={handleSubmit} noValidate>
+              <p className="text-sm text-muted-foreground">
+                Fill in what you know. Only the starred fields are required. See our{" "}
+                <Link
+                  to="/privacy"
+                  className="text-foreground underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
-                  ← Submit another inquiry
-                </button>
-              </div>
-            ) : (
-              <form className="grid gap-5" onSubmit={handleSubmit}>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Full name" id="name">
-                    <input
-                      id="name"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className={inputCls}
-                      placeholder="Jane Okafor"
-                    />
-                  </Field>
-                  <Field label="Work email" id="email">
-                    <input
-                      id="email"
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className={inputCls}
-                      placeholder="jane@company.com"
-                    />
-                  </Field>
-                  <Field label="Company" id="company">
-                    <input
-                      id="company"
-                      value={company}
-                      onChange={(e) => setCompany(e.target.value)}
-                      className={inputCls}
-                      placeholder="Company Ltd"
-                    />
-                  </Field>
-                  <Field label="Phone" id="phone">
-                    <input
-                      id="phone"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className={inputCls}
-                      placeholder="+00 000 000 000"
-                    />
-                  </Field>
-                </div>
+                  privacy policy
+                </Link>
+                .
+              </p>
 
-                <Chips label="Project type" options={projectTypes} value={type} onChange={setType} />
-                <Chips label="Budget" options={budgets} value={budget} onChange={setBudget} />
-                <Chips label="Timeline" options={timelines} value={timeline} onChange={setTimeline} />
-                <Chips label="Preferred slot" options={slots} value={slot} onChange={setSlot} />
-
-                <Field label="What process is costing you the most?" id="message">
-                  <textarea
-                    id="message"
-                    rows={4}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+              <div className="grid gap-5 sm:grid-cols-2">
+                <Field label="Your name" id="name" error={errors.name} required>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    aria-required="true"
+                    aria-invalid={errors.name ? true : undefined}
+                    aria-describedby={errors.name ? "name-error" : undefined}
                     className={inputCls}
-                    placeholder="We reconcile 400 supplier invoices a month by hand…"
                   />
                 </Field>
+                <Field label="Email for the reply" id="email" error={errors.email} required>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    spellCheck={false}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    aria-required="true"
+                    aria-invalid={errors.email ? true : undefined}
+                    aria-describedby={errors.email ? "email-error" : undefined}
+                    className={inputCls}
+                  />
+                </Field>
+                <Field label="Company" id="company" hint="Optional">
+                  <input
+                    id="company"
+                    name="company"
+                    type="text"
+                    autoComplete="organization"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    aria-describedby="company-hint"
+                    className={inputCls}
+                  />
+                </Field>
+                <Field label="Phone" id="phone" hint="Optional. Include your country code.">
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    aria-describedby="phone-hint"
+                    className={inputCls}
+                  />
+                </Field>
+              </div>
 
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-                >
-                  Request strategy call <Send className="size-4" />
+              <Choice
+                label="What is this about?"
+                name="project-type"
+                options={PROJECT_TYPES}
+                value={type}
+                onChange={setType}
+              />
+              <Choice
+                label="When do you want this live?"
+                name="timeline"
+                options={TIMELINES}
+                value={timeline}
+                onChange={setTimeline}
+              />
+
+              <Choice
+                label="Best time for a call?"
+                name="preferred-time"
+                options={PREFERRED_TIMES}
+                value={preferredTime}
+                onChange={setPreferredTime}
+                hint={
+                  timezone
+                    ? `Times read in your timezone (${timezone}). We confirm by email before anything is booked.`
+                    : "We confirm the exact time by email before anything is booked."
+                }
+              />
+
+              <Field
+                label="What process is costing you the most?"
+                id="message"
+                error={errors.message}
+                required
+              >
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={5}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  aria-required="true"
+                  aria-invalid={errors.message ? true : undefined}
+                  aria-describedby={errors.message ? "message-error" : undefined}
+                  placeholder="We reconcile 400 supplier invoices a month by hand…"
+                  className={`${inputCls} min-h-32 resize-y`}
+                />
+              </Field>
+
+              {/* Honeypot: off-screen rather than display:none so naive bots still fill it,
+                  and hidden from the accessibility tree so real users never meet it. */}
+              <div
+                aria-hidden="true"
+                className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden"
+              >
+                <label htmlFor="website">Leave this field empty</label>
+                <input
+                  id="website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                />
+              </div>
+
+              {/* Persistent live region: it must already be in the DOM for a screen reader
+                  to announce the validation result when `notice` changes. */}
+              <div className="grid gap-3">
+                <p role="status" aria-live="polite" className="text-sm text-primary">
+                  {notice}
+                  {failed ? (
+                    <>
+                      {" "}
+                      If it keeps failing, email us directly at{" "}
+                      <a
+                        href={MAILTO_URL}
+                        className="font-mono text-foreground underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                      >
+                        {EMAIL_ADDRESS}
+                      </a>
+                      . Your details are still in the form.
+                    </>
+                  ) : null}
+                </p>
+                <button type="submit" disabled={status === "submitting"} className={primaryBtnCls}>
+                  {status === "submitting" ? (
+                    <>
+                      Sending… <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                    </>
+                  ) : (
+                    <>
+                      Send message <Send className="size-4" aria-hidden="true" />
+                    </>
+                  )}
                 </button>
-              </form>
-            )}
-          </GlassPanel>
-        </Reveal>
+              </div>
+            </form>
+          ) : (
+            <div className="grid gap-5">
+              <span className="grid size-11 place-items-center rounded-full border border-border bg-surface-2">
+                <Check className="size-5 text-primary" aria-hidden="true" />
+              </span>
+
+              {/* The form has unmounted, so focus is moved to this heading as well as
+                  announcing the region; a newly inserted live region alone is unreliable. */}
+              <div role="status" aria-live="polite">
+                <h3
+                  ref={statusHeadingRef}
+                  tabIndex={-1}
+                  className="font-display text-xl font-semibold text-balance text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                >
+                  Message received. It is in our inbox.
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Thanks{name.trim() ? `, ${name.trim()}` : ""}. An engineer reads it and replies
+                  from <span className="font-mono text-foreground">{EMAIL_ADDRESS}</span>, usually
+                  within one business day, with an agenda and a proposed time. Nothing is booked
+                  until we both confirm it.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <button type="button" onClick={resetForSecondMessage} className={secondaryBtnCls}>
+                  <Send className="size-4 text-primary" aria-hidden="true" /> Send another message
+                </button>
+                <a href={MAILTO_URL} className={secondaryBtnCls}>
+                  <Mail className="size-4 text-primary" aria-hidden="true" /> Email us directly
+                </a>
+              </div>
+
+              <div className="border-t border-border pt-5">
+                <h4 className="font-mono text-[11px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
+                  What happens next
+                </h4>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  If it is urgent, call{" "}
+                  <a
+                    href={PHONE_NUMBERS[0].tel}
+                    className="font-mono text-foreground underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  >
+                    {PHONE_NUMBERS[0].formatted}
+                  </a>{" "}
+                  and mention you already sent the form; we pull it up.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </Section>
   );
 }
 
 const inputCls =
-  "w-full rounded-xl border border-border bg-surface/60 px-4 py-2.5 text-sm outline-none placeholder:text-muted-foreground/70 focus:border-primary/60";
+  "min-h-11 w-full rounded-xl border border-border bg-surface-2 px-4 py-2.5 text-base text-foreground outline-none placeholder:text-muted-foreground/70 focus-visible:border-primary/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary aria-[invalid=true]:border-destructive";
+
+const primaryBtnCls =
+  "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto sm:justify-self-start";
+
+const secondaryBtnCls =
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-border bg-surface-2 px-4 text-center text-sm text-foreground transition-colors hover:border-primary/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 
 function Field({
   label,
   id,
+  hint,
+  error,
+  required,
   children,
 }: {
   label: string;
   id: string;
-  children: React.ReactNode;
+  hint?: string;
+  error?: string;
+  required?: boolean;
+  children: ReactNode;
 }) {
   return (
     <div className="grid gap-2">
-      <label htmlFor={id} className="font-mono text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
+      <label htmlFor={id} className="text-sm font-medium text-foreground">
         {label}
+        {required ? (
+          <span className="ml-1 text-primary" aria-hidden="true">
+            *
+          </span>
+        ) : null}
       </label>
       {children}
+      {hint && !error ? (
+        <p id={`${id}-hint`} className="text-xs text-muted-foreground">
+          {hint}
+        </p>
+      ) : null}
+      {error ? (
+        <p id={`${id}-error`} className="text-xs text-destructive">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
 
-function Chips({
+/**
+ * Single-select group built from real radio inputs, so arrow keys, screen readers and
+ * form semantics all work. The input is visually hidden; the sibling span is the target.
+ */
+function Choice({
   label,
+  name,
   options,
   value,
   onChange,
+  hint,
 }: {
   label: string;
-  options: string[];
+  name: string;
+  options: readonly string[];
   value: string;
   onChange: (v: string) => void;
+  hint?: string;
 }) {
   return (
-    <fieldset className="grid gap-2">
-      <legend className="mb-2 font-mono text-[10px] tracking-[0.16em] text-muted-foreground uppercase">
-        {label}
-      </legend>
+    <fieldset className="grid gap-3">
+      <legend className="text-sm font-medium text-foreground">{label}</legend>
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
-          <button
-            key={o}
-            type="button"
-            onClick={() => onChange(o)}
-            aria-pressed={value === o}
-            className={`rounded-full border px-3.5 py-1.5 text-xs transition-colors ${
-              value === o
-                ? "border-primary/60 bg-primary/15 text-foreground"
-                : "border-border bg-surface/50 text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {o}
-          </button>
+          <label key={o} className="cursor-pointer">
+            <input
+              type="radio"
+              name={name}
+              value={o}
+              checked={value === o}
+              onChange={() => onChange(o)}
+              className="peer sr-only"
+            />
+            <span
+              className={`inline-flex min-h-11 items-center rounded-full border px-4 text-sm transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary ${
+                value === o
+                  ? "border-primary bg-primary/15 text-foreground"
+                  : "border-border bg-surface-2 text-muted-foreground hover:border-primary/40 hover:text-foreground"
+              }`}
+            >
+              {o}
+            </span>
+          </label>
         ))}
       </div>
+      {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
     </fieldset>
   );
 }

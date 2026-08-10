@@ -3,23 +3,33 @@ import { ArrowRight } from "lucide-react";
 import { GlassPanel, Reveal, Section, SectionHeading } from "@/components/site/ui";
 import { CtaBand } from "@/components/site/sections";
 import { services } from "@/lib/site-data";
+import { breadcrumbNode, canonicalLink, collectionNode, jsonLdScript, pageMeta } from "@/lib/seo";
 
-const title = "Services — Custom Software, AI Automation & Cloud Engineering | foxquart";
+const path = "/services";
+const title = "Services: Software, AI Automation & Cloud | Foxquart";
 const description =
-  "Six engineering practices: custom software, AI workflow automation, cloud and DevOps, data intelligence, enterprise web and mobile applications.";
+  "Six engineering practices from Foxquart: custom software, AI workflow automation, cloud and DevOps, data intelligence, enterprise web and mobile apps.";
 
 export const Route = createFileRoute("/services/")({
   head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/services" },
-      { name: "twitter:card", content: "summary_large_image" },
+    meta: pageMeta({ title, description, path }),
+    links: [canonicalLink(path)],
+    scripts: [
+      // Publishes the six-practice taxonomy as an ItemList so an answer engine
+      // can enumerate what Foxquart does without parsing the card grid.
+      jsonLdScript([
+        collectionNode({
+          name: "Foxquart services",
+          description,
+          path,
+          items: services.map((s) => ({ name: s.name, path: `/services/${s.slug}` })),
+        }),
+        breadcrumbNode([
+          { name: "Home", path: "/" },
+          { name: "Services", path },
+        ]),
+      ]),
     ],
-    links: [{ rel: "canonical", href: "/services" }],
   }),
   component: ServicesIndex,
 });

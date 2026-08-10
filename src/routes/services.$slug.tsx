@@ -3,6 +3,16 @@ import { ArrowRight, Check } from "lucide-react";
 import { GlassPanel, Reveal, Section, SectionHeading, Eyebrow } from "@/components/site/ui";
 import { CtaBand } from "@/components/site/sections";
 import { services, type Service } from "@/lib/site-data";
+import {
+  SITE_NAME,
+  breadcrumbNode,
+  canonicalLink,
+  composeDescription,
+  faqNode,
+  jsonLdScript,
+  pageMeta,
+  serviceNode,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/services/$slug")({
   loader: ({ params }): { service: Service } => {
@@ -12,34 +22,46 @@ export const Route = createFileRoute("/services/$slug")({
   },
   head: ({ params, loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: "Service unavailable — foxquart" }, { name: "robots", content: "noindex" }] };
+      return {
+        meta: [
+          { title: `Service unavailable | ${SITE_NAME}` },
+          { name: "robots", content: "noindex" },
+        ],
+      };
     }
-    const t = `${loaderData.service.name} — foxquart`;
-    const d = loaderData.service.tagline;
+    const service = loaderData.service;
+    const path = `/services/${params.slug}`;
+    const title = `${service.name} | ${SITE_NAME}`;
+    // The tagline alone is ~60 characters, which search and answer engines pad
+    // with page text. Adding the measured outcome keeps the description inside
+    // the 140–160 window and makes it a self-contained, quotable claim.
+    const description = composeDescription([
+      service.tagline,
+      service.impact,
+      `Typical return: ${service.roi}.`,
+      `Built by ${SITE_NAME}.`,
+    ]);
+
     return {
-      meta: [
-        { title: t },
-        { name: "description", content: d },
-        { property: "og:title", content: t },
-        { property: "og:description", content: d },
-        { property: "og:type", content: "article" },
-        { property: "og:url", content: `/services/${params.slug}` },
-        { name: "twitter:card", content: "summary_large_image" },
-      ],
-      links: [{ rel: "canonical", href: `/services/${params.slug}` }],
+      meta: pageMeta({ title, description, path }),
+      links: [canonicalLink(path)],
       scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: loaderData.service.faqs.map((f) => ({
-              "@type": "Question",
-              name: f.q,
-              acceptedAnswer: { "@type": "Answer", text: f.a },
-            })),
+        jsonLdScript([
+          serviceNode({
+            name: service.name,
+            description,
+            path,
+            capabilities: service.capabilities,
           }),
-        },
+          // Mirrors the FAQ section rendered below; required for FAQ rich
+          // results and the single highest-yield block for answer engines.
+          faqNode(service.faqs, path),
+          breadcrumbNode([
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+            { name: service.name, path },
+          ]),
+        ]),
       ],
     };
   },
