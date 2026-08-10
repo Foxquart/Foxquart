@@ -15,6 +15,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader, SiteFooter } from "@/components/site/chrome";
+import { SmoothScroll } from "@/components/site/smooth-scroll";
+import { LiftScrollbar } from "@/components/site/lift-scrollbar";
 import { EMAIL_ADDRESS, PHONE_NUMBERS } from "@/lib/site-data";
 import {
   OG_IMAGE_ALT,
@@ -138,16 +140,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
-        // Two families, matching --font-display/--font-sans/--font-mono in styles.css.
-        // Space Grotesk and DM Sans are retired; requesting them would ship bytes for
-        // faces nothing references, and Geist would silently fall back to system UI.
+        // Three roles, matching --font-display/--font-sans/--font-mono in styles.css:
+        // Instrument Serif (display), Geist (body), JetBrains Mono (micro-labels).
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap",
       },
-      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-      { rel: "icon", href: "/favicon.png", type: "image/png" },
-      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
-      { rel: "shortcut icon", href: "/favicon.svg" },
+      // Favicon set supplied by the founder (generator output from the brand artwork).
+      { rel: "icon", href: "/favicon.ico", sizes: "48x48" },
+      { rel: "icon", href: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+      { rel: "icon", href: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
+      { rel: "manifest", href: "/site.webmanifest" },
     ],
   }),
   shellComponent: RootShell,
@@ -183,10 +186,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SiteHeader />
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
-      <SiteFooter />
+      <SmoothScroll>
+        <SiteHeader />
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+        <SiteFooter />
+        <LiftScrollbar />
+      </SmoothScroll>
       <SpeedInsights route={route} />
       <Analytics route={route} path={path} />
     </QueryClientProvider>

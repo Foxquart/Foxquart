@@ -1,42 +1,23 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Check, Copy, ExternalLink, Mail, Phone, Send } from "lucide-react";
+import { Check, Loader2, Mail, Phone, Send } from "lucide-react";
 import { Section, SectionHeading } from "./ui";
+import { EMAIL_ADDRESS, MAILTO_URL, PHONE_NUMBERS } from "@/lib/site-data";
 import {
-  EMAIL_ADDRESS,
-  GMAIL_COMPOSE_URL,
-  MAILTO_TEMPLATE_URL,
-  PHONE_NUMBERS,
-} from "@/lib/site-data";
-
-const projectTypes = [
-  "Custom software / ERP",
-  "AI & workflow automation",
-  "Cloud & DevOps",
-  "Data intelligence",
-  "Website / landing page",
-  "Mobile application",
-];
-const budgets = [
-  "Not sure yet",
-  "Under $10k",
-  "$10k – $30k",
-  "$30k – $75k",
-  "$75k – $200k",
-  "$200k+",
-];
-const timelines = ["ASAP", "1–3 months", "3–6 months", "Exploring options"];
+  PREFERRED_TIMES,
+  PROJECT_TYPES,
+  TIMELINES,
+  contactSubmissionSchema,
+} from "@/lib/contact-schema";
 
 /**
- * The form has no backend. It composes an email and hands it to the visitor's own mail
- * client, so `status` describes what happened to that handoff — never "we received it".
- * "gmail" and "client" are the two handoff routes; "blocked" is a popup the browser ate.
+ * The form POSTs to /api/contact, which stores the enquiry and notifies the
+ * team inbox — "sent" means the server accepted it. On failure the form stays
+ * intact and a direct mailto link is offered as the escape hatch.
  */
-type Status = "idle" | "gmail" | "client" | "blocked";
+type Status = "idle" | "submitting" | "sent";
 type FieldName = "name" | "email" | "message";
 type Errors = Partial<Record<FieldName, string>>;
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export function ContactSection() {
   const [name, setName] = useState("");
@@ -44,19 +25,19 @@ export function ContactSection() {
   const [company, setCompany] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
-  const [type, setType] = useState(projectTypes[0]);
-  const [budget, setBudget] = useState(budgets[0]);
-  const [timeline, setTimeline] = useState(timelines[3]);
-  const [preferredTime, setPreferredTime] = useState("");
+  const [type, setType] = useState<string>(PROJECT_TYPES[0]);
+  const [timeline, setTimeline] = useState<string>(TIMELINES[0]);
+  const [preferredTime, setPreferredTime] = useState<string>(PREFERRED_TIMES[0]);
   const [timezone, setTimezone] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot — humans never see it
   const [errors, setErrors] = useState<Errors>({});
   const [notice, setNotice] = useState("");
+  const [failed, setFailed] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
-  const [copied, setCopied] = useState<"idle" | "done" | "failed">("idle");
 
   const formRef = useRef<HTMLFormElement>(null);
   const statusHeadingRef = useRef<HTMLHeadingElement>(null);
-  const hasHandedOff = useRef(false);
+  const hasSent = useRef(false);
 
   // Resolved after mount so the server-rendered HTML and the first client render match.
   useEffect(() => {
@@ -67,83 +48,106 @@ export function ContactSection() {
     }
   }, []);
 
-  // The form and the status panel replace each other, so focus would otherwise land on
+  // The form and the success panel replace each other, so focus would otherwise land on
   // <body> and the keyboard user would lose their place.
   useEffect(() => {
-    if (status !== "idle") {
-      hasHandedOff.current = true;
+    if (status === "sent") {
+      hasSent.current = true;
       statusHeadingRef.current?.focus();
-    } else if (hasHandedOff.current) {
+    } else if (status === "idle" && hasSent.current) {
       formRef.current?.querySelector<HTMLElement>("#name")?.focus();
     }
   }, [status]);
 
-  const draft = buildDraft({
+  const payload = {
     name,
     email,
     company,
     phone,
     message,
-    type,
-    budget,
+    projectType: type,
     timeline,
     preferredTime,
     timezone,
-  });
-  const gmailUrl = composeUrl("gmail", draft);
-  const mailtoUrl = composeUrl("mailto", draft);
-
-  const validate = (): Errors => {
-    const next: Errors = {};
-    if (!name.trim()) next.name = "Tell us who to address the reply to.";
-    if (!email.trim()) next.email = "We need an address to reply to.";
-    else if (!EMAIL_PATTERN.test(email.trim()))
-      next.email = "That does not look like an email address.";
-    if (message.trim().length < 10)
-      next.message = "A sentence or two is enough — what should we look at?";
-    return next;
+    website,
   };
 
-  const handOff = (route: "gmail" | "client") => {
-    const found = validate();
-    setErrors(found);
-
-    const firstInvalid = (["name", "email", "message"] as FieldName[]).find((f) => found[f]);
-    if (firstInvalid) {
-      setNotice("Nothing was sent. Check the highlighted fields below.");
-      formRef.current?.querySelector<HTMLElement>(`#${firstInvalid}`)?.focus();
-      return;
-    }
-
-    setNotice("");
-    setCopied("idle");
-
-    if (route === "client") {
-      // A mailto: navigation hands off to the OS handler and leaves the page in place.
-      // There is no way to detect whether a handler exists, so the panel says "should".
-      window.location.href = mailtoUrl;
-      setStatus("client");
-      return;
-    }
-
-    // No `noopener` here on purpose: it forces window.open to return null, and we need the
-    // handle to tell whether the popup was blocked rather than claim a tab we never opened.
-    const opened = window.open(gmailUrl, "_blank");
-    setStatus(opened ? "gmail" : "blocked");
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    handOff("gmail");
+    if (status === "submitting") return;
+
+    const parsed = contactSubmissionSchema.safeParse(payload);
+    if (!parsed.success) {
+      const found: Errors = {};
+      for (const issue of parsed.error.issues) {
+        const field = issue.path[0];
+        if ((field === "name" || field === "email" || field === "message") && !found[field]) {
+          found[field] = issue.message;
+        }
+      }
+      setErrors(found);
+      setFailed(false);
+      setNotice("Nothing was sent. Check the highlighted fields below.");
+      const firstInvalid = (["name", "email", "message"] as FieldName[]).find((f) => found[f]);
+      if (firstInvalid) {
+        formRef.current?.querySelector<HTMLElement>(`#${firstInvalid}`)?.focus();
+      }
+      return;
+    }
+
+    setErrors({});
+    setNotice("");
+    setFailed(false);
+    setStatus("submitting");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
+      });
+      const body = (await res.json().catch(() => null)) as {
+        ok?: boolean;
+        error?: string;
+        fieldErrors?: Partial<Record<string, string>>;
+      } | null;
+
+      if (res.ok && body?.ok) {
+        setStatus("sent");
+        return;
+      }
+
+      setStatus("idle");
+      if (res.status === 400 && body?.fieldErrors) {
+        const found: Errors = {};
+        for (const f of ["name", "email", "message"] as FieldName[]) {
+          if (body.fieldErrors[f]) found[f] = body.fieldErrors[f];
+        }
+        setErrors(found);
+        setNotice(body.error ?? "Nothing was sent. Check the highlighted fields below.");
+        return;
+      }
+      setFailed(true);
+      setNotice(body?.error ?? "We could not send your message. Please try again in a moment.");
+    } catch {
+      setStatus("idle");
+      setFailed(true);
+      setNotice("We could not reach the server. Check your connection and try again.");
+    }
   };
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(`${draft.subject}\n\n${draft.body}`);
-      setCopied("done");
-    } catch {
-      setCopied("failed");
-    }
+  const resetForSecondMessage = () => {
+    setName("");
+    setCompany("");
+    setPhone("");
+    setMessage("");
+    setPreferredTime(PREFERRED_TIMES[0]);
+    setType(PROJECT_TYPES[0]);
+    setTimeline(TIMELINES[3]);
+    setErrors({});
+    setNotice("");
+    setFailed(false);
+    setStatus("idle");
   };
 
   return (
@@ -190,35 +194,22 @@ export function ContactSection() {
               <h3 className="font-mono text-[11px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
                 Email us directly
               </h3>
-              <div className="mt-3 flex flex-col items-start gap-2">
-                <a
-                  href={GMAIL_COMPOSE_URL}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-surface px-4 text-sm text-foreground transition-colors hover:border-primary/50 hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                >
-                  <Mail className="size-4 text-primary" aria-hidden="true" /> Blank template in
-                  Gmail
-                  <ExternalLink className="size-3.5 text-muted-foreground" aria-hidden="true" />
-                </a>
-                <a
-                  href={MAILTO_TEMPLATE_URL}
-                  className="inline-flex min-h-11 items-center font-mono text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                >
-                  {EMAIL_ADDRESS}
-                </a>
-              </div>
+              <a
+                href={MAILTO_URL}
+                className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-surface px-4 font-mono text-sm text-foreground transition-colors hover:border-primary/50 hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <Mail className="size-4 text-primary" aria-hidden="true" /> {EMAIL_ADDRESS}
+              </a>
             </div>
           </div>
         </div>
 
         <div className="rounded-xl border border-border bg-surface p-5 sm:p-7">
-          {status === "idle" ? (
+          {status !== "sent" ? (
             <form ref={formRef} className="grid gap-6" onSubmit={handleSubmit} noValidate>
               <p className="text-sm text-muted-foreground">
-                This form has no send button of ours behind it. It opens a draft in your own mail
-                app with these details filled in — nothing reaches us until you press send there.
-                See our{" "}
+                Fill in what you know and press send — it goes straight to our inbox and we reply to
+                the address you give us. Only the starred fields are required. See our{" "}
                 <Link
                   to="/privacy"
                   className="text-foreground underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
@@ -289,45 +280,30 @@ export function ContactSection() {
               <Choice
                 label="What is this about?"
                 name="project-type"
-                options={projectTypes}
+                options={PROJECT_TYPES}
                 value={type}
                 onChange={setType}
               />
               <Choice
-                label="Budget range"
-                name="budget"
-                options={budgets}
-                value={budget}
-                onChange={setBudget}
-              />
-              <Choice
-                label="Timeline"
+                label="When do you want this live?"
                 name="timeline"
-                options={timelines}
+                options={TIMELINES}
                 value={timeline}
                 onChange={setTimeline}
               />
 
-              <Field
-                label="When suits you for a call?"
-                id="preferred-time"
+              <Choice
+                label="Best time for a call?"
+                name="preferred-time"
+                options={PREFERRED_TIMES}
+                value={preferredTime}
+                onChange={setPreferredTime}
                 hint={
                   timezone
-                    ? `Optional, in your own words. We read it as ${timezone} and confirm by email before anything is booked.`
-                    : "Optional, in your own words. We confirm the time by email before anything is booked."
+                    ? `Times read in your timezone (${timezone}). We confirm by email before anything is booked.`
+                    : "We confirm the exact time by email before anything is booked."
                 }
-              >
-                <input
-                  id="preferred-time"
-                  name="preferred-time"
-                  type="text"
-                  value={preferredTime}
-                  onChange={(e) => setPreferredTime(e.target.value)}
-                  aria-describedby="preferred-time-hint"
-                  placeholder="Weekday mornings, or Thursday after 15:00"
-                  className={inputCls}
-                />
-              </Field>
+              />
 
               <Field
                 label="What process is costing you the most?"
@@ -349,34 +325,60 @@ export function ContactSection() {
                 />
               </Field>
 
+              {/* Honeypot: off-screen rather than display:none so naive bots still fill it,
+                  and hidden from the accessibility tree so real users never meet it. */}
+              <div
+                aria-hidden="true"
+                className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden"
+              >
+                <label htmlFor="website">Leave this field empty</label>
+                <input
+                  id="website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                />
+              </div>
+
               {/* Persistent live region: it must already be in the DOM for a screen reader
                   to announce the validation result when `notice` changes. */}
               <div className="grid gap-3">
                 <p role="status" aria-live="polite" className="text-sm text-primary">
                   {notice}
+                  {failed ? (
+                    <>
+                      {" "}
+                      If it keeps failing, email us directly at{" "}
+                      <a
+                        href={MAILTO_URL}
+                        className="font-mono text-foreground underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                      >
+                        {EMAIL_ADDRESS}
+                      </a>
+                      . Your details are still in the form.
+                    </>
+                  ) : null}
                 </p>
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <button type="submit" className={primaryBtnCls}>
-                    Open this in Gmail <Send className="size-4" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handOff("client")}
-                    className={secondaryBtnCls}
-                  >
-                    <Mail className="size-4 text-primary" aria-hidden="true" /> Open in my mail app
-                  </button>
-                </div>
+                <button type="submit" disabled={status === "submitting"} className={primaryBtnCls}>
+                  {status === "submitting" ? (
+                    <>
+                      Sending… <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                    </>
+                  ) : (
+                    <>
+                      Send message <Send className="size-4" aria-hidden="true" />
+                    </>
+                  )}
+                </button>
               </div>
             </form>
           ) : (
             <div className="grid gap-5">
               <span className="grid size-11 place-items-center rounded-full border border-border bg-surface-2">
-                {status === "blocked" ? (
-                  <Mail className="size-5 text-primary" aria-hidden="true" />
-                ) : (
-                  <Check className="size-5 text-primary" aria-hidden="true" />
-                )}
+                <Check className="size-5 text-primary" aria-hidden="true" />
               </span>
 
               {/* The form has unmounted, so focus is moved to this heading as well as
@@ -387,88 +389,38 @@ export function ContactSection() {
                   tabIndex={-1}
                   className="font-display text-xl font-semibold text-balance text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                 >
-                  {status === "gmail"
-                    ? "Your message is waiting in Gmail"
-                    : status === "client"
-                      ? "Your mail app should have opened"
-                      : "Your browser blocked the new tab"}
+                  Message received — it is in our inbox.
                 </h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  {status === "gmail" ? (
-                    <>
-                      We opened a Gmail tab addressed to{" "}
-                      <span className="font-mono text-foreground">{EMAIL_ADDRESS}</span> with
-                      everything filled in.{" "}
-                      <span className="text-foreground">
-                        It has not been sent yet — press send in that tab.
-                      </span>{" "}
-                      Read it over first, and add anything we should know.
-                    </>
-                  ) : status === "client" ? (
-                    <>
-                      We handed a draft to this device&rsquo;s mail app, addressed to{" "}
-                      <span className="font-mono text-foreground">{EMAIL_ADDRESS}</span>.{" "}
-                      <span className="text-foreground">
-                        It has not been sent yet — press send there.
-                      </span>{" "}
-                      If nothing opened, this device has no mail app set up: copy the message below
-                      and send it from wherever you read mail.
-                    </>
-                  ) : (
-                    <>
-                      Nothing was sent, and nothing was lost. Your details are still in the form
-                      behind this panel. Use one of the routes below to get the message to{" "}
-                      <span className="font-mono text-foreground">{EMAIL_ADDRESS}</span>.
-                    </>
-                  )}
+                  Thanks{name.trim() ? `, ${name.trim()}` : ""}. An engineer reads it and replies
+                  from <span className="font-mono text-foreground">{EMAIL_ADDRESS}</span>, usually
+                  within one business day, with an agenda and a proposed time. Nothing is booked
+                  until we both confirm it.
                 </p>
               </div>
 
-              <div className="grid gap-2 sm:grid-cols-2">
-                <a
-                  href={gmailUrl}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className={secondaryBtnCls}
-                >
-                  <Mail className="size-4 text-primary" aria-hidden="true" />
-                  {status === "gmail" ? "Reopen the Gmail tab" : "Open in Gmail"}
-                </a>
-                <a href={mailtoUrl} className={secondaryBtnCls}>
-                  <ExternalLink className="size-4 text-primary" aria-hidden="true" />
-                  {status === "client" ? "Try my mail app again" : "Use my own mail app"}
-                </a>
-                <button type="button" onClick={handleCopy} className={secondaryBtnCls}>
-                  <Copy className="size-4 text-primary" aria-hidden="true" />
-                  {copied === "done" ? "Copied to clipboard" : "Copy the message"}
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <button type="button" onClick={resetForSecondMessage} className={secondaryBtnCls}>
+                  <Send className="size-4 text-primary" aria-hidden="true" /> Send another message
                 </button>
-                <button type="button" onClick={() => setStatus("idle")} className={secondaryBtnCls}>
-                  <Send className="size-4 text-primary" aria-hidden="true" /> Edit and try again
-                </button>
+                <a href={MAILTO_URL} className={secondaryBtnCls}>
+                  <Mail className="size-4 text-primary" aria-hidden="true" /> Email us directly
+                </a>
               </div>
-
-              <p aria-live="polite" className="text-sm text-muted-foreground">
-                {copied === "failed"
-                  ? `Your browser would not let us copy. Select the message in the mail draft, or write to ${EMAIL_ADDRESS} directly.`
-                  : ""}
-              </p>
 
               <div className="border-t border-border pt-5">
                 <h4 className="font-mono text-[11px] font-medium tracking-[0.16em] text-muted-foreground uppercase">
                   What happens next
                 </h4>
                 <p className="mt-3 text-sm text-muted-foreground">
-                  Once your mail arrives, an engineer reads it and replies from{" "}
-                  <span className="font-mono text-foreground">{EMAIL_ADDRESS}</span>, usually within
-                  one business day, with an agenda and a proposed time. Nothing is booked until we
-                  both confirm it. If it is urgent, call{" "}
+                  If it is urgent, call{" "}
                   <a
                     href={PHONE_NUMBERS[0].tel}
                     className="font-mono text-foreground underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                   >
                     {PHONE_NUMBERS[0].formatted}
-                  </a>
-                  .
+                  </a>{" "}
+                  — mention you already sent the form and we pull it up.
                 </p>
               </div>
             </div>
@@ -483,7 +435,7 @@ const inputCls =
   "min-h-11 w-full rounded-xl border border-border bg-surface-2 px-4 py-2.5 text-base text-foreground outline-none placeholder:text-muted-foreground/70 focus-visible:border-primary/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary aria-[invalid=true]:border-destructive";
 
 const primaryBtnCls =
-  "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-auto sm:justify-self-start";
+  "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto sm:justify-self-start";
 
 const secondaryBtnCls =
   "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-border bg-surface-2 px-4 text-center text-sm text-foreground transition-colors hover:border-primary/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
@@ -538,12 +490,14 @@ function Choice({
   options,
   value,
   onChange,
+  hint,
 }: {
   label: string;
   name: string;
-  options: string[];
+  options: readonly string[];
   value: string;
   onChange: (v: string) => void;
+  hint?: string;
 }) {
   return (
     <fieldset className="grid gap-3">
@@ -571,63 +525,7 @@ function Choice({
           </label>
         ))}
       </div>
+      {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
     </fieldset>
   );
-}
-
-type Draft = { subject: string; body: string };
-
-function buildDraft(v: {
-  name: string;
-  email: string;
-  company: string;
-  phone: string;
-  message: string;
-  type: string;
-  budget: string;
-  timeline: string;
-  preferredTime: string;
-  timezone: string;
-}): Draft {
-  const who = v.name.trim() || "a visitor";
-  const org = v.company.trim();
-  const when = v.preferredTime.trim();
-
-  const lines = [
-    `Hello Foxquart,`,
-    ``,
-    `I am ${who}${org ? ` from ${org}` : ""}, writing about an engineering project.`,
-    ``,
-    `Reply to: ${v.email.trim() || "(not provided)"}`,
-    `Phone: ${v.phone.trim() || "(not provided)"}`,
-    ``,
-    `Area: ${v.type}`,
-    `Budget: ${v.budget}`,
-    `Timeline: ${v.timeline}`,
-    `Preferred time to talk: ${when || "(no preference)"}${when && v.timezone ? ` — ${v.timezone}` : ""}`,
-    ``,
-    `What is costing us the most:`,
-    v.message.trim() || "(nothing written yet)",
-    ``,
-    `Thanks,`,
-    v.name.trim(),
-  ];
-
-  return {
-    subject: `Project enquiry — ${v.name.trim() || "new enquiry"}${org ? ` (${org})` : ""}`,
-    body: lines.join("\n"),
-  };
-}
-
-/**
- * mailto: URLs are length-limited in some clients (~2000 characters on Windows), so a very
- * long message can be truncated by the mail app. The copy-to-clipboard route on the status
- * panel is the escape hatch when that happens.
- */
-function composeUrl(target: "gmail" | "mailto", draft: Draft) {
-  const su = encodeURIComponent(draft.subject);
-  const body = encodeURIComponent(draft.body);
-  return target === "gmail"
-    ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(EMAIL_ADDRESS)}&su=${su}&body=${body}`
-    : `mailto:${EMAIL_ADDRESS}?subject=${su}&body=${body}`;
 }

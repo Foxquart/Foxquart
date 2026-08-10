@@ -12,4 +12,7 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Pinned so every build targets Vercel deterministically instead of falling
+  // back to the config's cloudflare-module default when built outside Vercel CI.
+  nitro: { preset: "vercel" },
 });

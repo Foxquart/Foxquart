@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Hero } from "@/components/site/hero";
 import { WhatWeDo } from "@/components/site/what-we-do";
-import { FeaturedWork } from "@/components/site/featured-work";
 import { BookingCta } from "@/components/site/booking-cta";
-import { CaseStudies, Pricing, Process, SocialProof } from "@/components/site/sections";
+import { CaseStudies, Process, WhyBuild } from "@/components/site/sections";
+import { DemoTeaser } from "@/components/site/demo-teaser";
 import { DeepCaseStudy } from "@/components/site/deep-case-study";
 import { Faq } from "@/components/site/faq";
 import { StickyCta } from "@/components/site/sticky-cta";
@@ -30,14 +30,14 @@ function Home() {
       {/* 1. The promise */}
       <Hero />
 
-      {/* 2. Scale of the practice, in numbers */}
-      <SocialProof />
+      {/* 2. Why go online — in the owner's language */}
+      <WhyBuild />
 
       {/* 3. What we build */}
       <WhatWeDo />
 
-      {/* 4. What it looks like */}
-      <FeaturedWork />
+      {/* 4. A few live systems, inline — the full gallery lives at /work */}
+      <DemoTeaser />
 
       {/* 5. One build told properly, before the summary grid */}
       <DeepCaseStudy />
@@ -47,9 +47,6 @@ function Home() {
 
       {/* 7. How the work runs */}
       <Process />
-
-      {/* 8. What it costs to start */}
-      <Pricing />
 
       {/* 9. The last reasons not to call */}
       <Faq />

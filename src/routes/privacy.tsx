@@ -14,10 +14,10 @@ import {
 /*
  * DRAFT — NOT YET REVIEWED BY A LAWYER.
  *
- * Written to match what this site actually does (no backend, no accounts, Vercel
- * Analytics + Speed Insights, iframe demo embeds, Gmail mailbox). Before launch a
- * qualified Indian data-protection lawyer must review it, and these open items must
- * be resolved:
+ * Written to match what this site actually does (contact form stored in a Neon
+ * Postgres database + notification email via Resend, no accounts, Vercel Analytics
+ * + Speed Insights, iframe demo embeds). Before launch a qualified Indian
+ * data-protection lawyer must review it, and these open items must be resolved:
  *
  *   1. Registered legal entity name and address. The page currently says the postal
  *      address is available on request; DPDP / GDPR contact-detail expectations may
@@ -28,14 +28,14 @@ import {
  *      books of account) are drafted from Indian tax/company-law norms — confirm.
  *   4. Vercel Analytics retention window depends on the plan; the wording is
  *      deliberately non-numeric. Confirm the plan and consider naming the number.
- *   5. Confirm whether a DPA is in place with Vercel and Google, and whether the SCC
- *      reliance described in section 09 is accurate for EEA/UK visitors.
+ *   5. Confirm whether a DPA is in place with Vercel, Google, Neon and Resend, and
+ *      whether the SCC reliance described in section 09 is accurate for EEA/UK visitors.
  *   6. Decide whether embedded third-party demo frames require a consent banner for
  *      EEA/UK visitors (they can set their own storage before any consent is given).
  */
 
-const LAST_UPDATED_ISO = "2026-08-10";
-const LAST_UPDATED_LABEL = "10 August 2026";
+const LAST_UPDATED_ISO = "2026-08-11";
+const LAST_UPDATED_LABEL = "11 August 2026";
 
 const path = "/privacy";
 const title = "Privacy Policy | Foxquart";
@@ -103,15 +103,16 @@ const sections: LegalSection[] = [
     body: (
       <>
         <p>
-          The form on our contact page has no server behind it. Nothing you type is transmitted to
-          Foxquart while you type it, and pressing the button does not send a message. The button
-          assembles what you entered into a draft email and opens it in your own mail application —
-          Gmail in a new tab, or your default mail client. Nothing reaches us until you press send
-          yourself, in your own account, and you can edit or delete the draft first.
+          Nothing you type is transmitted while you type it. When you press send, the form submits
+          what you entered to our own server, which does two things: it stores the enquiry in our
+          database (hosted by Neon) so it cannot be lost, and it emails a copy to our enquiry
+          mailbox (delivered by Resend) so we see it quickly. Both copies contain only what you put
+          in the form.
         </p>
         <p>
-          The practical consequence: there is no database of form submissions to leak, and the copy
-          of your enquiry that we hold is an ordinary email in our inbox, sent by you.
+          Alongside the fields you fill in, the server records the time of the submission, your
+          browser&rsquo;s user-agent string, and a one-way hash of your IP address. The hash is used
+          only to slow down abuse of the form (rate limiting); the IP address itself is not stored.
         </p>
       </>
     ),
@@ -121,12 +122,12 @@ const sections: LegalSection[] = [
     title: "Information you give us",
     body: (
       <>
-        <p>The enquiry draft is built from the fields you fill in:</p>
+        <p>The enquiry we receive is built from the fields you fill in:</p>
         <Bullets
           items={[
             "Your name, and the email address you want a reply at.",
             "Optionally your company name and a phone number.",
-            "The kind of work you are asking about, a budget range, a timeline, and a free-text note about when you prefer to talk, together with the timezone your browser reports.",
+            "The kind of work you are asking about, a timeline, and your preferred time of day for a call, together with the timezone your browser reports.",
             "Whatever you write in the message field — usually a description of the process or system you want fixed.",
           ]}
         />
@@ -220,8 +221,15 @@ const sections: LegalSection[] = [
             Hosts the site and provides Web Analytics and Speed Insights. It processes traffic data
             on our instructions.
           </DefRow>
+          <DefRow term="Neon">
+            Hosts the database where contact-form enquiries are stored, on our instructions.
+          </DefRow>
+          <DefRow term="Resend">
+            Delivers the notification email that carries your enquiry from our server to our
+            mailbox. It processes the message in order to deliver it.
+          </DefRow>
           <DefRow term="Google">
-            Our enquiry mailbox is a Google account, so emails you send us are stored in
+            Our enquiry mailbox is a Google account, so emails that reach us are stored in
             Google&rsquo;s systems. Google also serves the web fonts this site uses.
           </DefRow>
           <DefRow term="Unsplash">Serves some of the photography used in the work section.</DefRow>
@@ -265,7 +273,7 @@ const sections: LegalSection[] = [
       <>
         <Bullets
           items={[
-            "Enquiry emails and call notes: kept while the conversation is live and for 24 months after the last message, then deleted from the mailbox.",
+            "Enquiries — the database record, the email copy and call notes: kept while the conversation is live and for 24 months after the last message, then deleted from both the database and the mailbox.",
             "If an engagement starts: correspondence and project records are kept for the life of the engagement, then for the period Indian tax and company law require of business records — currently eight financial years for books of account.",
             "Analytics: aggregate, non-identifying counts held by Vercel for the retention window of our plan. No profile of you is built or stored, and nothing there can be traced back to a person.",
             "Hosting logs: short-lived, kept by our host for its standard operational window.",
@@ -283,7 +291,8 @@ const sections: LegalSection[] = [
         <p>
           Foxquart operates from India. The site is served from Vercel&rsquo;s global edge network,
           so your request is usually handled by whichever server is closest to you, which may be
-          outside India. Our mailbox is hosted by Google.
+          outside India. Enquiries are stored with Neon and delivered by Resend, whose
+          infrastructure may also be outside India. Our mailbox is hosted by Google.
         </p>
         <p>
           Where information about visitors in the EEA or the UK is processed outside those regions,
@@ -334,10 +343,12 @@ const sections: LegalSection[] = [
     body: (
       <>
         <p>
-          Traffic to this site is encrypted in transit over HTTPS. Because the site holds no visitor
-          database — no accounts, no stored form submissions — there is very little here to breach
-          in the first place. The mailbox that receives enquiries is protected with two-factor
-          authentication and is reachable only by the people who answer enquiries.
+          Traffic to this site is encrypted in transit over HTTPS, and so is the connection between
+          our server and the enquiry database. There are no visitor accounts; the only personal data
+          the site stores is what you send through the contact form, and that database is not
+          readable from the website itself — it is reachable only with credentials held by the
+          people who answer enquiries. The mailbox that receives enquiries is protected with
+          two-factor authentication.
         </p>
         <p>
           No system is completely secure. If a breach affects your information we will tell you and
@@ -449,8 +460,8 @@ function PrivacyPage() {
           <div className="mt-4 text-sm text-muted-foreground sm:text-base">
             <Bullets
               items={[
-                "There are no accounts and no database of visitors on this site.",
-                "The contact form sends nothing by itself. It opens a draft in your own mail app; you press send.",
+                "There are no visitor accounts. The only thing the site stores about you is an enquiry you choose to send.",
+                "The contact form sends your enquiry to us: it is saved in our database and emailed to our inbox, and we reply to the address you give.",
                 "Two cookieless tools from Vercel measure page views and load speed. Neither builds a profile of you.",
                 "The work section embeds live demo sites. Those run in your browser and can set their own storage.",
                 "We do not sell personal data and there is no advertising network here.",

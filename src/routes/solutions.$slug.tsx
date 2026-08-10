@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRight, Check, X } from "lucide-react";
 import { GlassPanel, Reveal, Section, SectionHeading, Eyebrow } from "@/components/site/ui";
 import { CtaBand } from "@/components/site/sections";
+import { SolutionDemo } from "@/components/site/solution-demo";
 import { solutionPages, services, type LandingPage } from "@/lib/site-data";
 import {
   SITE_NAME,
@@ -131,6 +132,9 @@ function SolutionPage() {
             </GlassPanel>
           </Reveal>
         </div>
+
+        {/* The live build that demonstrates this exact solution (or the gallery band). */}
+        <SolutionDemo slug={page.slug} />
       </Section>
 
       <Section className="py-10">

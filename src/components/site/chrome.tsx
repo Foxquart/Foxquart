@@ -1,13 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
-import {
-  EMAIL_ADDRESS,
-  GMAIL_COMPOSE_URL,
-  PHONE_NUMBERS,
-  services,
-  solutionPages,
-} from "@/lib/site-data";
+import { EMAIL_ADDRESS, MAILTO_URL, PHONE_NUMBERS, services, solutionPages } from "@/lib/site-data";
+import { gsap, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
+import { cn } from "@/lib/utils";
 import { FoxquartLogo } from "./ui";
 
 /*
@@ -76,6 +72,7 @@ const footerLinkCls = "text-muted-foreground transition-colors hover:text-foregr
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
 
   // Includes search + hash, so a same-page jump like /#work also closes the sheet.
   const href = useRouterState({ select: (s) => s.location.href });
@@ -120,27 +117,73 @@ export function SiteHeader() {
   // Transparent over the hero; solid once scrolled, and always solid behind an open sheet.
   const solid = scrolled || open;
 
+  // Load cascade: the shell settles down 12px while its items stagger in behind it.
+  // Runs once per full page load from an already-laid-out state (transform/opacity
+  // only, so nothing shifts), skips entirely under prefers-reduced-motion, and the
+  // last item lands at ~670ms. clearProps hands styling back to the stylesheet so
+  // the dropdown's transforms and the scroll transitions are untouched afterwards.
+  useGSAP(
+    () => {
+      const root = headerRef.current;
+      if (!root || prefersReducedMotion()) return;
+      const shell = root.querySelector("[data-nav-shell]");
+      const items = root.querySelectorAll("[data-nav-item]");
+      if (!shell) return;
+      const tl = gsap.timeline({ defaults: { ease: EASE } });
+      tl.from(shell, { y: -12, opacity: 0, duration: 0.5 });
+      tl.from(items, { y: -8, opacity: 0, duration: 0.35, stagger: 0.04 }, 0.12);
+      tl.set([shell, ...items], { clearProps: "transform,opacity" });
+    },
+    { scope: headerRef },
+  );
+
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-colors duration-[var(--dur-base)] ease-[var(--ease-brand)] ${
-          solid ? "glass-strong" : "bg-transparent"
-        }`}
+        ref={headerRef}
+        className="fixed inset-x-0 top-0 z-50 md:pointer-events-none md:flex md:justify-center md:px-6 md:pt-4"
       >
-        <div className="mx-auto flex h-18 w-full max-w-7xl items-center justify-between gap-4 px-5 md:px-8">
-          <Link to="/" aria-label="Foxquart — home" className="press flex items-center">
+        {/* Mobile: slim full-width bar, transparent over the hero. md:+ — a floating
+            glass pill, centered and sized to its content, that tightens its padding
+            slightly once the page is scrolled. The wrapper spans the viewport only to
+            centre the pill, so it drops pointer events at md and the pill takes them
+            back. glass-strong's border-bottom matches border-border, so the pill's
+            full rounded border stays a consistent 1px hairline. */}
+        <div
+          data-nav-shell
+          className={cn(
+            "flex h-18 w-full items-center justify-between gap-4 px-5 transition-[background-color,padding,gap] duration-[var(--dur-base)] ease-[var(--ease-brand)]",
+            "md:glass-strong md:pointer-events-auto md:h-14 md:w-auto md:rounded-full md:border md:border-border md:shadow-[var(--shadow-panel)]",
+            solid ? "max-md:glass-strong" : "max-md:bg-transparent",
+            scrolled ? "md:gap-1 md:pr-1.5 md:pl-4" : "md:gap-2 md:pr-2 md:pl-5",
+          )}
+        >
+          <Link
+            to="/"
+            aria-label="Foxquart — home"
+            data-nav-item
+            className="press flex items-center"
+            onClick={() => {
+              // Same-route clicks don't navigate, so the logo must scroll instead —
+              // clicking the mark should always land the visitor back on the hero.
+              if (window.location.pathname === "/") {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            }}
+          >
             <FoxquartLogo
-              iconClassName="size-7 text-primary"
+              iconClassName="size-7"
               textClassName="font-display text-xl font-semibold tracking-tight text-foreground"
             />
           </Link>
 
           <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
-            <Link to="/" hash="work" className={deskLinkCls}>
+            <Link to="/work" data-nav-item className={deskLinkCls}>
               Work
             </Link>
             <Link
               to="/services"
+              data-nav-item
               className={deskLinkCls}
               activeProps={{ className: "text-foreground" }}
             >
@@ -153,6 +196,7 @@ export function SiteHeader() {
             <div className="group relative">
               <Link
                 to="/solutions"
+                data-nav-item
                 className={`${deskLinkCls} gap-1.5`}
                 activeProps={{ className: "text-foreground" }}
               >
@@ -163,7 +207,11 @@ export function SiteHeader() {
                 />
               </Link>
 
-              <div className="invisible absolute top-full left-1/2 w-[min(36rem,calc(100vw-3rem))] -translate-x-1/2 pt-3 opacity-0 transition-opacity duration-[var(--dur-base)] ease-[var(--ease-brand)] group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              {/* Opens with a small rise: translate-y-2 → 0 plus opacity, on the motion
+                  tokens. visibility rides the same transition so the panel stays
+                  hoverable while fading out, and --dur-base collapses to 0ms under
+                  reduced motion. */}
+              <div className="invisible absolute top-full left-1/2 w-[min(36rem,calc(100vw-3rem))] -translate-x-1/2 translate-y-2 pt-3 opacity-0 transition-[opacity,transform,visibility] duration-[var(--dur-base)] ease-[var(--ease-brand)] group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
                 <div className="rounded-xl border border-border bg-surface p-5 shadow-[var(--shadow-panel)]">
                   <div className="columns-2 gap-x-6">
                     {solutionGroups.map((group) => (
@@ -199,7 +247,7 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <Link to="/contact" className={`${ctaCls} hidden md:inline-flex`}>
+            <Link to="/contact" data-nav-item className={`${ctaCls} hidden md:inline-flex`}>
               <span className="whitespace-nowrap">{CTA_LABEL}</span>
             </Link>
             <button
@@ -207,6 +255,7 @@ export function SiteHeader() {
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
               aria-controls="site-mobile-nav"
+              data-nav-item
               onClick={() => setOpen((v) => !v)}
               className="press grid size-11 place-items-center rounded-xl border border-border bg-surface text-foreground md:hidden"
             >
@@ -220,9 +269,9 @@ export function SiteHeader() {
         </div>
       </header>
 
-      {/* Rendered outside <header> on purpose: glass-strong sets backdrop-filter, which
-          makes the header a containing block for fixed children and would pin this
-          panel to the 72px bar instead of the viewport. */}
+      {/* Rendered outside <header> on purpose: the bar's glass-strong sets
+          backdrop-filter, which makes it a containing block for fixed children and
+          would pin this panel to the 72px bar instead of the viewport. */}
       {open ? (
         <div
           id="site-mobile-nav"
@@ -230,7 +279,7 @@ export function SiteHeader() {
         >
           <nav aria-label="Mobile" className="flex-1 overflow-y-auto overscroll-contain px-4 py-4">
             <div className="flex flex-col gap-2">
-              <Link to="/" hash="work" className={sheetRowCls}>
+              <Link to="/work" className={sheetRowCls}>
                 Work
               </Link>
               <Link to="/services" className={sheetRowCls}>
@@ -262,12 +311,7 @@ export function SiteHeader() {
             </div>
 
             <div className="mt-8 border-t border-border pt-4">
-              <a
-                href={GMAIL_COMPOSE_URL}
-                target="_blank"
-                rel="noreferrer noopener"
-                className={`${sheetSubRowCls} font-mono`}
-              >
+              <a href={MAILTO_URL} className={`${sheetSubRowCls} font-mono`}>
                 {EMAIL_ADDRESS}
               </a>
               {PHONE_NUMBERS.map((phone) => (
@@ -305,8 +349,7 @@ export function SiteFooter() {
               />
             </Link>
             <p className="max-w-xs text-sm text-muted-foreground">
-              Product engineering studio. Software your business runs on — built in weeks, built to
-              keep.
+              Software your business runs on — built in weeks, built to keep.
             </p>
             <Link to="/contact" className={`${ctaCls} inline-flex`}>
               {CTA_LABEL}
@@ -345,7 +388,7 @@ export function SiteFooter() {
                 <h2 className="eyebrow-type text-muted-foreground">Company</h2>
                 <ul className="mt-4 space-y-2.5 text-sm">
                   <li>
-                    <Link to="/" hash="work" className={footerLinkCls}>
+                    <Link to="/work" className={footerLinkCls}>
                       Work
                     </Link>
                   </li>
@@ -371,13 +414,7 @@ export function SiteFooter() {
                 <h2 className="eyebrow-type text-muted-foreground">Talk to us</h2>
                 <ul className="mt-4 space-y-2.5 text-sm">
                   <li>
-                    <a
-                      href={GMAIL_COMPOSE_URL}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      title="Open a pre-filled enquiry in Gmail"
-                      className={`${footerLinkCls} font-mono text-xs`}
-                    >
+                    <a href={MAILTO_URL} className={`${footerLinkCls} font-mono text-xs`}>
                       {EMAIL_ADDRESS}
                     </a>
                   </li>

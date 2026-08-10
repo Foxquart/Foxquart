@@ -1,29 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Foxquart">
   <title>Foxquart</title>
-  <rect width="512" height="512" rx="122" fill="#1E2128" />
+  <rect width="512" height="512" rx="118" fill="#1C1F26" />
   <!--
-    Fox head: two ear points sweeping down into a shield that tapers to a rounded
-    chin, with a Q counter cut out of the muzzle. Counter and tail stroke are
-    punched with even-odd fill so the mark stays one path and recolours cleanly.
+    Fox head "Q": two wide sharp ears meeting in a deep V at mid-face, cheeks
+    tapering to a pointed chin, circular counter low in the face. The tail is a
+    rotated rect straddling the circle edge - even-odd fill flips it orange
+    inside the counter and dark outside, forming the interlocked Q key.
   -->
-  <g transform="translate(256 256) scale(0.952) translate(-256 -294)">
   <path
-    fill="#FF5A0F"
+    fill="#FB4F02"
     fill-rule="evenodd"
-    d="M97 84 L256 216 L415 84
-       C415 84 413 246 404 318
-       C396 382 380 424 356 456
-       C332 488 292 504 256 504
-       C220 504 180 488 156 456
-       C132 424 116 382 108 318
-       C99 246 97 84 97 84 Z
-       M256 262
-       C205 262 180 300 180 344
-       C180 388 205 426 256 426
-       C275 426 291 420 303 410
-       L284 389 L311 366 L332 390
-       C339 376 343 361 343 344
-       C343 300 307 262 256 262 Z"
+    d="M104 88
+       C154 136 206 184 256 216
+       C306 184 358 134 408 86
+       C404 214 396 300 336 372
+       C310 402 282 426 256 431
+       C230 426 202 402 176 372
+       C116 300 108 214 104 88
+       Z
+       M256 266
+       a62 62 0 1 0 0.01 0
+       Z
+       M284 373 L301 356 L322 377 L305 394 Z"
   />
-  </g>
 </svg>

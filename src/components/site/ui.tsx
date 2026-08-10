@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { motion, useInView, useMotionValue, useSpring, animate } from "motion/react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 
 export function Section({
   id,
@@ -213,27 +214,21 @@ export function FoxquartIcon({ className = "size-7", ...props }: React.SVGProps<
       aria-hidden="true"
       {...props}
     >
-      {/* Centres the mark in its 512 box: without this it sits 84px from the top
-          and 8px from the bottom, which reads as bottom-heavy at large sizes. */}
-      <g transform="translate(256 256) scale(0.952) translate(-256 -294)">
-        <path
-          fillRule="evenodd"
-          d="M97 84 L256 216 L415 84
-           C415 84 413 246 404 318
-           C396 382 380 424 356 456
-           C332 488 292 504 256 504
-           C220 504 180 488 156 456
-           C132 424 116 382 108 318
-           C99 246 97 84 97 84 Z
-           M256 262
-           C205 262 180 300 180 344
-           C180 388 205 426 256 426
-           C275 426 291 420 303 410
-           L284 389 L311 366 L332 390
-           C339 376 343 361 343 344
-           C343 300 307 262 256 262 Z"
-        />
-      </g>
+      <path
+        fillRule="evenodd"
+        d="M104 88
+           C154 136 206 184 256 216
+           C306 184 358 134 408 86
+           C404 214 396 300 336 372
+           C310 402 282 426 256 431
+           C230 426 202 402 176 372
+           C116 300 108 214 104 88
+           Z
+           M256 266
+           a62 62 0 1 0 0.01 0
+           Z
+           M284 373 L301 356 L322 377 L305 394 Z"
+      />
     </svg>
   );
 }
@@ -245,9 +240,56 @@ export function FoxquartLogo({
   iconClassName?: string;
   textClassName?: string;
 }) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  // The cartoon idle: the mark rocks on its own axis twice, settles with a
+  // little spring, waits a beat, then a gloss sweeps across. Repeats forever,
+  // never on reduced motion, transform/opacity only.
+  useGSAP(
+    () => {
+      const root = ref.current;
+      if (!root || prefersReducedMotion()) return;
+      const mark = root.querySelector("[data-mark]");
+      const shine = root.querySelector("[data-shine]");
+      if (!mark || !shine) return;
+
+      gsap.set(shine, { xPercent: -180 });
+      const tl = gsap.timeline({ repeat: -1, repeatDelay: 3.4, delay: 1.4 });
+      tl.to(mark, { rotation: -14, duration: 0.16, ease: "power2.out" })
+        .to(mark, { rotation: 12, duration: 0.3, ease: "power2.inOut" })
+        .to(mark, { rotation: -9, duration: 0.28, ease: "power2.inOut" })
+        .to(mark, { rotation: 6, duration: 0.24, ease: "power2.inOut" })
+        .to(mark, { rotation: 0, duration: 0.4, ease: "elastic.out(1, 0.45)" })
+        .to(shine, { xPercent: 320, duration: 0.65, ease: "power2.inOut" }, "+=0.4")
+        .set(shine, { xPercent: -180 });
+    },
+    { scope: ref },
+  );
+
   return (
-    <span className="flex items-center gap-2.5">
-      <FoxquartIcon className={iconClassName} />
+    <span ref={ref} className="flex items-center gap-2.5">
+      {/* The founder's artwork, verbatim — the vector FoxquartIcon is only for
+          decorative tinted uses (e.g. the hero's parallax mark), never the lockup. */}
+      <span
+        data-mark
+        className={cn(
+          "relative inline-flex shrink-0 overflow-hidden rounded-lg will-change-transform",
+          iconClassName,
+        )}
+      >
+        <img
+          src="/android-chrome-192x192.png"
+          alt=""
+          width={192}
+          height={192}
+          className="size-full"
+        />
+        <span
+          data-shine
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-foreground/45 to-transparent"
+        />
+      </span>
       <span className={textClassName}>Foxquart</span>
     </span>
   );

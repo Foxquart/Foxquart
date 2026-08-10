@@ -27,6 +27,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           // Home changes most often; the taxonomy indexes gain a page whenever a
           // service or solution is added; detail pages and contact are stable.
           { path: "/", changefreq: "weekly", priority: "1.0" },
+          { path: "/work", changefreq: "weekly", priority: "0.9" },
           { path: "/services", changefreq: "monthly", priority: "0.9" },
           { path: "/solutions", changefreq: "monthly", priority: "0.9" },
           { path: "/contact", changefreq: "yearly", priority: "0.7" },

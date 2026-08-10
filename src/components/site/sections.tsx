@@ -1,7 +1,47 @@
+import { useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Check } from "lucide-react";
-import { Counter, Eyebrow, Reveal, Section, SectionHeading } from "./ui";
+import { Counter, Section } from "./ui";
+import { MaskLines, Magnetic, Rise } from "./motion";
+import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { caseStudies } from "@/lib/site-data";
+
+/**
+ * Shared section opener: the headline reveals through line masks (contract §3 —
+ * headline text always MaskLines, never block-fades), the intro rises after it.
+ * The eyebrow slot exists only for labels that carry real content ("From
+ * $2,500 per month"); label-only pills are banned, so most sections omit it.
+ */
+function SectionIntro({
+  eyebrow,
+  title,
+  intro,
+}: {
+  eyebrow?: string;
+  title: string;
+  intro?: string;
+}) {
+  return (
+    <div className="flex max-w-3xl flex-col gap-4">
+      {eyebrow ? (
+        <Rise y={16}>
+          <p className="eyebrow-type text-primary">{eyebrow}</p>
+        </Rise>
+      ) : null}
+      <MaskLines
+        as="h2"
+        className="text-2xl leading-[1.08] font-semibold text-balance sm:text-3xl md:text-5xl"
+      >
+        {title}
+      </MaskLines>
+      {intro ? (
+        <Rise y={20} delay={0.12}>
+          <p className="text-base text-muted-foreground md:text-lg">{intro}</p>
+        </Rise>
+      ) : null}
+    </div>
+  );
+}
 
 /**
  * Stat strip, directly under the hero.
@@ -14,6 +54,78 @@ import { caseStudies } from "@/lib/site-data";
  * site. Do not reinstate a logo row until there are real clients who have given
  * written permission to be named.
  */
+/**
+ * Why go online at all — written for the owner, not the engineer. Plain English,
+ * no jargon, no numbers (the case studies below carry the numbers exactly once).
+ */
+const whyReasons = [
+  {
+    title: "Be open after you close",
+    body: "Most people look for you at night, from their phone. A good website or booking page takes the order while your shop is shut.",
+  },
+  {
+    title: "Stop writing the same thing twice",
+    body: "When bookings live in one place, nobody copies numbers between notebooks, chats and registers — and nothing gets lost on the way.",
+  },
+  {
+    title: "Look as good as you are",
+    body: "People judge a business by its website before they ever call. A clean, fast, modern site makes you look like the company you are becoming.",
+  },
+  {
+    title: "Know your numbers today",
+    body: "See what sold, what is in stock and what is due — today, on your phone. Not at the end of the month, from a pile of paper.",
+  },
+];
+
+const howPromises = [
+  "Built around how your shop or office actually works",
+  "Live in weeks, not months",
+  "Fast on cheap phones and slow networks",
+  "We watch it and fix it after launch",
+  "It is yours — code, data, everything",
+];
+
+export function WhyBuild() {
+  return (
+    <Section className="py-32 md:py-48">
+      <MaskLines
+        as="h2"
+        className="max-w-4xl font-display text-4xl leading-[1.08] text-foreground sm:text-5xl md:text-6xl"
+      >
+        Your customers are already online.{" "}
+        <em className="text-primary italic">Your business should be too.</em>
+      </MaskLines>
+
+      <Rise className="mt-14 grid gap-4 sm:grid-cols-2" childSelector="[data-why]" stagger={0.07}>
+        {whyReasons.map((r) => (
+          <div
+            key={r.title}
+            data-why
+            className="card-lift rounded-xl border border-border bg-surface p-6 md:p-8"
+          >
+            <h3 className="font-display text-xl text-foreground md:text-2xl">{r.title}</h3>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
+              {r.body}
+            </p>
+          </div>
+        ))}
+      </Rise>
+
+      <Rise className="mt-10 rounded-xl border border-border bg-surface-2 p-6 md:p-8">
+        <p className="eyebrow-type text-primary">What working with us means</p>
+        <ul className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
+          {howPromises.map((p) => (
+            <li key={p} className="flex items-center gap-2 text-sm text-foreground">
+              <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
+              {p}
+            </li>
+          ))}
+        </ul>
+      </Rise>
+    </Section>
+  );
+}
+
 export function SocialProof() {
   const stats = [
     {
@@ -38,96 +150,156 @@ export function SocialProof() {
     },
   ];
 
-  // Tighter than a full Section: this is a strip under the hero, not a stop.
   // Every breakpoint is restated because `twMerge` scopes overrides per variant —
-  // `py-12` on its own would leave the Section's base `sm:py-24` in place.
+  // `py-32` on its own would leave the Section's base `sm:py-24` in place.
   return (
-    <Section className="py-12 sm:py-14 md:py-16">
-      <Reveal className="flex flex-col gap-5 md:gap-6">
-        <p className="eyebrow-type text-primary">The practice to date</p>
-        {/* gap-px over a border-coloured ground gives true 1px hairlines between
-            cells — depth from tint and rules, not shadows (contract §3). */}
-        <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-4">
+    <Section className="py-32 sm:py-32 md:py-48">
+      <MaskLines
+        as="h2"
+        className="max-w-3xl text-2xl leading-[1.08] font-semibold text-balance sm:text-3xl md:text-5xl"
+      >
+        What nine years of delivery adds up to
+      </MaskLines>
+      {/* Open grid over hairline rules — monumental figures, not a table.
+          The Counter SSRs the real value, so crawlers and no-JS visitors read
+          the true figure; the count-up is a client-side embellishment only. */}
+      <Rise className="mt-12 md:mt-20" childSelector="[data-stat]" stagger={0.1} y={28}>
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 md:gap-x-10">
           {stats.map((stat) => (
-            <div key={stat.label} className="bg-surface p-4 sm:p-5">
-              <dt className="tnum font-display text-2xl font-semibold text-foreground sm:text-3xl md:text-4xl">
+            <div key={stat.label} data-stat className="border-t border-border pt-5 md:pt-6">
+              <dt className="tnum font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl md:text-6xl xl:text-7xl">
                 {stat.value}
               </dt>
-              <dd className="mt-2 text-sm font-medium text-foreground">{stat.label}</dd>
+              <dd className="mt-3 text-sm font-medium text-foreground">{stat.label}</dd>
               <dd className="mt-1 text-xs text-muted-foreground">{stat.note}</dd>
             </div>
           ))}
         </dl>
-      </Reveal>
+      </Rise>
     </Section>
   );
 }
 
+/* Sticky offsets for the desktop card stack: each card pins a little lower than
+   the one before, so the covered edges read as a deck. 96px clears the header. */
+const STACK_TOP = 96;
+const STACK_GAP = 20;
+
 /**
  * Three production systems with their measured results.
+ *
+ * Desktop (lg:+) runs a card stack: every card is `position: sticky` with a
+ * per-card top offset, so each one pins while the next scrolls up over it —
+ * CSS does the pinning (cheap, robust, and native scroll means no fight with
+ * Lenis), and a scrubbed GSAP tween adds the scale-down + dim on the covered
+ * card (transform/opacity only). Mobile is a simple flow with Rise.
  *
  * The technology chip row was dropped: contract §5 says name systems, not
  * technologies. Every number rendered here comes from `caseStudies` in
  * src/lib/site-data.ts and needs the same founder confirmation as the stat strip.
  */
 export function CaseStudies() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const root = ref.current;
+      if (!root || prefersReducedMotion()) return;
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 1024px)", () => {
+        const cards = gsap.utils.toArray<HTMLElement>("[data-stack-card]", root);
+        cards.forEach((card, i) => {
+          const next = cards[i + 1];
+          if (!next) return; // the top card of the deck is never covered
+          const veil = card.querySelector("[data-stack-veil]");
+          const trigger = {
+            trigger: next,
+            start: "top bottom",
+            // Fully covered the moment the next card reaches its own pin line.
+            end: `top ${STACK_TOP + (i + 1) * STACK_GAP}px`,
+            scrub: true,
+          };
+          gsap.to(card, {
+            scale: 0.95,
+            transformOrigin: "center top",
+            ease: "none",
+            scrollTrigger: trigger,
+          });
+          // Dim via an opaque ground-coloured veil, not card opacity — a
+          // transparent card would let the deck underneath bleed through.
+          if (veil) {
+            gsap.to(veil, { opacity: 0.55, ease: "none", scrollTrigger: trigger });
+          }
+        });
+      });
+      return () => mm.revert();
+    },
+    { scope: ref },
+  );
+
   return (
-    <Section id="case-studies">
-      <SectionHeading
-        eyebrow="Production proof"
+    <Section id="case-studies" className="py-32 sm:py-32 md:py-48">
+      <SectionIntro
         title="Three systems in production, with the numbers attached."
         intro="Before and after, measured on the metric the client actually cared about."
       />
-      <div className="mt-10 space-y-4 md:mt-12 md:space-y-6">
+      <div ref={ref} className="mt-10 flex flex-col gap-5 md:mt-12 md:gap-6">
         {caseStudies.map((study, i) => (
-          <Reveal key={study.client} delay={i * 0.04}>
-            <article className="grid gap-6 rounded-xl border border-border bg-surface p-5 sm:p-7 lg:grid-cols-[1.6fr_1fr] lg:gap-10 lg:p-8">
-              <div>
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                  <span className="eyebrow-type text-primary">
-                    Case {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="tnum font-mono text-xs text-muted-foreground">
+          <div
+            key={study.client}
+            data-stack-card
+            className="relative lg:sticky"
+            style={{ top: `${STACK_TOP + i * STACK_GAP}px` }}
+          >
+            <div
+              data-stack-veil
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-10 rounded-xl bg-background opacity-0"
+            />
+            <Rise>
+              <article className="grid gap-6 rounded-xl border border-border bg-surface p-5 sm:p-7 lg:grid-cols-[1.6fr_1fr] lg:gap-10 lg:p-8">
+                <div>
+                  <p className="tnum font-mono text-xs text-muted-foreground">
                     {study.timeline} to live
-                  </span>
+                  </p>
+                  <h3 className="mt-3 font-display text-xl font-semibold sm:text-2xl">
+                    {study.client}
+                  </h3>
+
+                  <dl className="mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4">
+                    <div className="rounded-xl border border-border bg-surface-2 p-4">
+                      <dt className="eyebrow-type text-muted-foreground">Before</dt>
+                      <dd className="mt-2.5 text-sm leading-relaxed text-foreground/85">
+                        {study.challenge}
+                      </dd>
+                    </div>
+                    <div className="rounded-xl border border-border bg-surface-2 p-4">
+                      <dt className="eyebrow-type text-primary">What we built</dt>
+                      <dd className="mt-2.5 text-sm leading-relaxed text-foreground/85">
+                        {study.solution}
+                      </dd>
+                    </div>
+                  </dl>
                 </div>
-                <h3 className="mt-3 font-display text-xl font-semibold sm:text-2xl">
-                  {study.client}
-                </h3>
 
-                <dl className="mt-5 grid gap-3 sm:grid-cols-2 sm:gap-4">
-                  <div className="rounded-xl border border-border bg-surface-2 p-4">
-                    <dt className="eyebrow-type text-muted-foreground">Before</dt>
-                    <dd className="mt-2.5 text-sm leading-relaxed text-foreground/85">
-                      {study.challenge}
-                    </dd>
-                  </div>
-                  <div className="rounded-xl border border-border bg-surface-2 p-4">
-                    <dt className="eyebrow-type text-primary">What we built</dt>
-                    <dd className="mt-2.5 text-sm leading-relaxed text-foreground/85">
-                      {study.solution}
-                    </dd>
-                  </div>
+                {/* Rows rather than a tile grid: values like "< 3 min" keep their
+                    full width at 375px instead of wrapping to three lines. */}
+                <dl className="divide-y divide-border self-start rounded-xl border border-border bg-surface-2">
+                  {study.results.map((result) => (
+                    <div
+                      key={result.label}
+                      className="flex items-baseline justify-between gap-4 px-4 py-3.5"
+                    >
+                      <dt className="text-sm text-muted-foreground">{result.label}</dt>
+                      <dd className="tnum font-display text-xl font-semibold text-primary sm:text-2xl">
+                        {result.value}
+                      </dd>
+                    </div>
+                  ))}
                 </dl>
-              </div>
-
-              {/* Rows rather than a tile grid: values like "< 3 min" keep their
-                  full width at 375px instead of wrapping to three lines. */}
-              <dl className="divide-y divide-border self-start rounded-xl border border-border bg-surface-2">
-                {study.results.map((result) => (
-                  <div
-                    key={result.label}
-                    className="flex items-baseline justify-between gap-4 px-4 py-3.5"
-                  >
-                    <dt className="text-sm text-muted-foreground">{result.label}</dt>
-                    <dd className="tnum font-display text-xl font-semibold text-primary sm:text-2xl">
-                      {result.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </article>
-          </Reveal>
+              </article>
+            </Rise>
+          </div>
         ))}
       </div>
     </Section>
@@ -139,6 +311,10 @@ export function CaseStudies() {
  * Architecture, Design, Development, Testing, Deployment, Monitoring and
  * Improvement — accurate, but a spec sheet. Design/Development/Testing collapse
  * into Build; Deployment/Monitoring/Improvement collapse into Operate.
+ *
+ * The numbered markers stay: this is a genuine sequence, the one place the
+ * contract allows indices. An accent spine draws down the list as you scroll
+ * (scrubbed scaleY on a 1px element — transform only, no layout work).
  */
 export function Process() {
   const steps: Array<[string, string]> = [
@@ -160,26 +336,67 @@ export function Process() {
     ],
   ];
 
+  const listRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (!listRef.current || !lineRef.current || prefersReducedMotion()) return;
+      // Without JS (or with reduced motion) the accent spine simply shows in
+      // full — fromTo sets the collapsed state only once the tween exists.
+      gsap.fromTo(
+        lineRef.current,
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: listRef.current,
+            start: "top 75%",
+            end: "bottom 65%",
+            scrub: true,
+          },
+        },
+      );
+    },
+    { scope: listRef },
+  );
+
   return (
-    <Section id="process">
-      <SectionHeading
-        eyebrow="How we work"
+    <Section id="process" className="py-32 sm:py-32 md:py-48">
+      <SectionIntro
         title="A delivery process built for accountability."
         intro="Four stages on every engagement, whether it is a single automation or a full ERP."
       />
-      <ol className="mt-10 grid gap-3 sm:grid-cols-2 md:mt-12 lg:grid-cols-4">
-        {steps.map(([title, body], i) => (
-          <li key={title} className="list-none">
-            <Reveal delay={i * 0.04} className="h-full">
-              <div className="card-lift h-full rounded-xl border border-border bg-surface p-5">
-                <span className="eyebrow-type text-primary">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="mt-3 font-display text-base font-semibold">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
-              </div>
-            </Reveal>
-          </li>
-        ))}
-      </ol>
+      <div ref={listRef} className="relative mt-12 md:mt-16">
+        {/* The spine: a hairline track with an accent line drawing down it. */}
+        <div aria-hidden="true" className="absolute inset-y-0 left-0 w-px bg-border" />
+        <div
+          ref={lineRef}
+          aria-hidden="true"
+          className="absolute inset-y-0 left-0 w-px origin-top bg-primary"
+        />
+        <Rise childSelector="li" stagger={0.1}>
+          <ol className="flex flex-col">
+            {steps.map(([title, body], i) => (
+              <li
+                key={title}
+                className="list-none py-7 pl-7 sm:pl-10 md:grid md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-10 md:py-10"
+              >
+                <div>
+                  <span className="eyebrow-type tnum text-primary">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="mt-3 font-display text-xl font-semibold sm:text-2xl">{title}</h3>
+                </div>
+                <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-muted-foreground sm:text-base md:mt-0 md:self-center">
+                  {body}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </Rise>
+      </div>
     </Section>
   );
 }
@@ -190,6 +407,9 @@ export function Process() {
  * The featured tier is marked "Recommended" — our own editorial stance, which we
  * are entitled to hold. It previously read "Most Chosen Model", which is a claim
  * about client behaviour we cannot evidence (contract §6.7).
+ *
+ * Hover physics per contract §3: cards lift by surface tint (card-lift), the
+ * featured tier may also translate -4px — transform only, no shadows.
  */
 export function Pricing() {
   const models = [
@@ -241,58 +461,66 @@ export function Pricing() {
   ];
 
   return (
-    <Section id="pricing">
-      <SectionHeading
-        eyebrow="Engagement models"
+    <Section id="pricing" className="py-32 sm:py-32 md:py-48">
+      <SectionIntro
+        eyebrow="From $2,500 per month"
         title="Three ways to work with us. Starting prices, not final ones."
         intro="Scope and the exact figure are fixed after a 30-minute call, once the requirements are on the table."
       />
-      <div className="mt-10 grid gap-4 md:mt-12 lg:grid-cols-3">
-        {models.map((model, i) => (
-          <Reveal key={model.name} delay={i * 0.04} className="h-full">
-            <div
-              className={`flex h-full flex-col rounded-xl border p-6 md:p-7 ${
-                model.featured ? "border-primary bg-surface-2" : "border-border bg-surface"
-              }`}
-            >
-              {model.featured ? (
-                <span className="mb-4 w-fit rounded-full border border-primary/40 bg-primary/10 px-3 py-1 eyebrow-type text-primary">
-                  Recommended
-                </span>
-              ) : null}
-              <h3 className="font-display text-lg font-semibold text-foreground">{model.name}</h3>
+      <Rise
+        className="mt-12 grid gap-4 md:mt-16 lg:grid-cols-3"
+        childSelector="[data-tier]"
+        stagger={0.1}
+      >
+        {models.map((model) => (
+          <div
+            key={model.name}
+            data-tier
+            className={`flex h-full flex-col rounded-xl border p-6 md:p-7 ${
+              model.featured
+                ? "border-primary bg-surface-2 transition-transform duration-[var(--dur-base)] ease-[var(--ease-brand)] hover:-translate-y-1"
+                : "card-lift border-border bg-surface"
+            }`}
+          >
+            {model.featured ? (
+              <span className="eyebrow-type mb-4 w-fit rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-primary">
+                Recommended
+              </span>
+            ) : null}
+            <h3 className="font-display text-lg font-semibold text-foreground">{model.name}</h3>
 
-              <p className="eyebrow-type mt-5 text-muted-foreground">From</p>
-              <p className="tnum mt-1.5 font-display text-3xl font-semibold text-foreground">
-                {model.price}
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">{model.cadence}</p>
+            <p className="eyebrow-type mt-6 text-muted-foreground">From</p>
+            <p className="tnum mt-2 font-display text-5xl font-semibold tracking-tight text-foreground md:text-6xl">
+              {model.price}
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">{model.cadence}</p>
 
-              <p className="mt-5 text-sm leading-relaxed text-foreground/85">{model.for}</p>
+            <p className="mt-5 text-sm leading-relaxed text-foreground/85">{model.for}</p>
 
-              <ul className="mt-6 flex-1 space-y-3">
-                {model.includes.map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm text-foreground/85">
-                    <Check className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden="true" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+            <ul className="mt-6 flex-1 space-y-3">
+              {model.includes.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm text-foreground/85">
+                  <Check className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden="true" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
 
-              <dl className="mt-6 space-y-2 border-t border-border pt-5 text-xs">
-                <div className="flex items-baseline justify-between gap-3">
-                  <dt className="text-muted-foreground">Support</dt>
-                  <dd className="font-medium text-foreground">{model.support}</dd>
-                </div>
-                <div className="flex items-baseline justify-between gap-3">
-                  <dt className="text-muted-foreground">Commitment</dt>
-                  <dd className="font-medium text-foreground">{model.commitment}</dd>
-                </div>
-              </dl>
+            <dl className="mt-6 space-y-2 border-t border-border pt-5 text-xs">
+              <div className="flex items-baseline justify-between gap-3">
+                <dt className="text-muted-foreground">Support</dt>
+                <dd className="font-medium text-foreground">{model.support}</dd>
+              </div>
+              <div className="flex items-baseline justify-between gap-3">
+                <dt className="text-muted-foreground">Commitment</dt>
+                <dd className="font-medium text-foreground">{model.commitment}</dd>
+              </div>
+            </dl>
 
+            <Magnetic className="mt-6 w-full">
               <Link
                 to="/contact"
-                className={`press mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-colors ${
+                className={`press inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-colors ${
                   model.featured
                     ? "bg-primary text-primary-foreground hover:bg-primary/90"
                     : "border border-border text-foreground hover:border-primary/50 hover:text-primary"
@@ -301,36 +529,44 @@ export function Pricing() {
                 Discuss {model.name}
                 <ArrowRight className="size-3.5" aria-hidden="true" />
               </Link>
-            </div>
-          </Reveal>
+            </Magnetic>
+          </div>
         ))}
-      </div>
+      </Rise>
     </Section>
   );
 }
 
+/**
+ * Closing band for the interior pages (services/solutions). The home page uses
+ * BookingCta instead. Surface tint + hairline, per contract §3 — the old glass
+ * panel and gradient mesh are gone.
+ */
 export function CtaBand() {
   return (
     <Section className="pb-8">
-      <Reveal>
-        <div className="glass-strong grain relative overflow-hidden rounded-2xl px-5 py-10 text-center sm:rounded-3xl sm:px-7 sm:py-14 md:px-16">
-          <div className="mesh-bg animate-drift absolute inset-0 -z-10 opacity-70" />
-          <Eyebrow>Next step</Eyebrow>
-          <h2 className="mx-auto mt-5 max-w-2xl text-3xl font-semibold text-balance md:text-4xl">
-            Tell us the process that is costing you the most hours.
-          </h2>
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-surface px-5 py-12 text-center sm:px-7 sm:py-16 md:px-16">
+        <MaskLines
+          as="h2"
+          className="mx-auto max-w-2xl text-3xl font-semibold text-balance md:text-4xl"
+        >
+          Tell us the process that is costing you the most hours.
+        </MaskLines>
+        <Rise y={20} delay={0.1}>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
             A 30-minute strategy call. We will tell you what to automate first, what to rebuild, and
             what to leave alone.
           </p>
-          <Link
-            to="/contact"
-            className="press mt-8 inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Schedule a strategy call <ArrowRight className="size-4" aria-hidden="true" />
-          </Link>
-        </div>
-      </Reveal>
+          <Magnetic className="mt-8">
+            <Link
+              to="/contact"
+              className="press inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              Schedule a strategy call <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+          </Magnetic>
+        </Rise>
+      </div>
     </Section>
   );
 }

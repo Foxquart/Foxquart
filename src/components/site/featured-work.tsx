@@ -31,6 +31,19 @@ type Project = {
  */
 const projects: Project[] = [
   {
+    id: "spares-control",
+    category: "Inventory System",
+    businessName: "Six Mile Motor Works",
+    summary:
+      "A motor-works spares counter loses parts to guesswork: what is on the shelf, what is reserved, what needs reordering. This build runs the whole counter — catalogue, stock levels and movements — on our own domain.",
+    capability: "Live parts catalogue with stock levels and movement history in one screen.",
+    features: ["Parts Catalogue", "Stock Levels", "Movement Log", "Reorder Signals"],
+    buildWindow: "5 weeks",
+    image: "/images/spares_control.png",
+    liveLink: "https://inventory.foxquart.com/",
+    demoLabel: "Spares Control Center",
+  },
+  {
     id: "school-management",
     category: "School Management System",
     businessName: "Vidya Bharati International School",

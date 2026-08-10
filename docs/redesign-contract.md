@@ -23,12 +23,12 @@ Dark is the only mode. There is no light theme.
 | `--ink` | `#ECEDEF` | headings + body (never pure white) |
 | `--ink-2` | `#B9BEC6` | secondary text |
 | `--muted` | `#878D97` | captions, labels, metadata |
-| `--accent` | `#FF5A0F` | CTA fill, links, eyebrows, live dots |
-| `--accent-hover` | `#FF6E2E` | accent hover only |
+| `--accent` | `#FB4F02` | CTA fill, links, eyebrows, live dots |
+| `--accent-hover` | `#FF6420` | accent hover only |
 | `--accent-ink` | `#0B0C0F` | text **on** an accent fill |
 
-**Contrast law.** White on `#FF5A0F` is 3.1:1 and fails. Buttons are `--accent-ink` on
-`--accent` (6.3:1). `--accent` on `--ground` is 6.3:1, so accent text on dark is fine.
+**Contrast law.** White on `#FB4F02` is 3.4:1 and fails. Buttons are `--accent-ink` on
+`--accent` (5.8:1). `--accent` on `--ground` is 5.8:1, so accent text on dark is fine.
 
 Use the Tailwind token classes (`bg-surface`, `text-muted`, `border-border`, `bg-primary`).
 Never hardcode a hex or a Tailwind palette colour (`bg-white`, `text-gray-500`) in a component.
@@ -47,11 +47,18 @@ Headings get `text-wrap: balance`.
 - Radius: `rounded-xl` (12px) cards, `rounded-full` pills/buttons, `rounded-2xl` media frames.
 - Depth comes from surface tint + 1px hairline, **not** drop shadows. Shadows only under
   floating elements (sticky bar, menu sheet).
-- Motion: 140ms micro / 240ms transition / 160ms exit, easing `cubic-bezier(0.16, 1, 0.3, 1)`.
-  Stagger 40ms, capped at 6 items. Press = `scale(0.97)`.
-- Animate `transform` and `opacity` only. Everything collapses to 0ms under
-  `prefers-reduced-motion: reduce`.
-- One signature moment per page, not a reveal on every section.
+- Motion (2026-08-11 revision — rich choreography is now REQUIRED, not optional):
+  GSAP + ScrollTrigger + Lenis are installed and mounted. Use the shared primitives in
+  `src/components/site/motion.tsx` (`MaskLines`, `Parallax`, `Rise`, `Marquee`, `Magnetic`)
+  and `src/lib/gsap.ts` (EASE = expo.out). Micro-interactions keep 140ms/240ms tokens.
+- Scroll choreography rules: scrub-driven parallax on decorative layers only (never text
+  or CTAs); pinning at `lg:`+ via `gsap.matchMedia` only; images may scale 0.9→1 and
+  fade on exit; headline text reveals via MaskLines, never block-fades.
+- Animate `transform` and `opacity` only. Everything must no-op under
+  `prefers-reduced-motion: reduce` (the primitives handle this — use them).
+- Meta-labels are BANNED: no "01/02/03" card indices, no "SECTION"-style eyebrow pills.
+  A mono eyebrow is allowed only when it says something real ("Live demo", "From $12,000").
+- Section rhythm: `py-32 md:py-48` between major sections — cinematic chapters, not a feed.
 
 ## 4. Mobile-first, non-negotiable
 

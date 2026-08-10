@@ -54,9 +54,10 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  /* Two families, not three. Geist carries display and body; mono is for eyebrows,
-     metrics and indices only. Space Grotesk and DM Sans are retired. */
-  --font-display: "Geist", ui-sans-serif, system-ui, sans-serif;
+  /* Instrument Serif carries the display voice (regular + italic only — it has no
+     bold, so display type must never ask for one); Geist is the working sans;
+     mono is for micro-labels and metrics only. */
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
   --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
@@ -78,10 +79,10 @@
   --popover: oklch(0.235 0.012 264);
   --popover-foreground: oklch(0.946 0.003 264);
 
-  /* The accent. Its foreground is near-black: white on this orange is 3.1:1 and fails. */
-  --primary: oklch(0.682 0.213 39); /* #FF5A0F */
+  /* The accent. Its foreground is near-black: white on this orange is 3.4:1 and fails. */
+  --primary: oklch(0.663 0.218 37.6); /* #FB4F02 — sampled from public/foxquart.png */
   --primary-foreground: oklch(0.155 0.007 271); /* #0B0C0F */
-  --primary-hover: oklch(0.708 0.192 42); /* #FF6E2E */
+  --primary-hover: oklch(0.694 0.203 40.4); /* #FF6420 */
 
   --secondary: oklch(0.235 0.012 264);
   --secondary-foreground: oklch(0.946 0.003 264);
@@ -99,9 +100,9 @@
   --border: oklch(0.284 0.016 264); /* #262A32 — solid hairline, not an alpha wash */
   --border-strong: oklch(0.352 0.019 264); /* #363B45 */
   --input: oklch(0.284 0.016 264);
-  --ring: oklch(0.682 0.213 39 / 55%);
+  --ring: oklch(0.663 0.218 37.6 / 55%);
 
-  --chart-1: oklch(0.682 0.213 39);
+  --chart-1: oklch(0.663 0.218 37.6);
   --chart-2: oklch(0.731 0.146 163);
   --chart-3: oklch(0.782 0.158 72);
   --chart-4: oklch(0.8 0.013 260);
@@ -109,12 +110,12 @@
 
   --sidebar: oklch(0.2 0.01 268);
   --sidebar-foreground: oklch(0.946 0.003 264);
-  --sidebar-primary: oklch(0.682 0.213 39);
+  --sidebar-primary: oklch(0.663 0.218 37.6);
   --sidebar-primary-foreground: oklch(0.155 0.007 271);
   --sidebar-accent: oklch(0.235 0.012 264);
   --sidebar-accent-foreground: oklch(0.946 0.003 264);
   --sidebar-border: oklch(0.284 0.016 264);
-  --sidebar-ring: oklch(0.682 0.213 39 / 55%);
+  --sidebar-ring: oklch(0.663 0.218 37.6 / 55%);
 
   /* One accent means one light source: a single warm wash from the top left. */
   --gradient-hero: radial-gradient(
@@ -164,13 +165,16 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* Instrument Serif ships one weight. Any font-semibold/font-bold that reaches a
+     display element would synthesize an ugly faux-bold, so weight is pinned here
+     and in the font-display utility below. */
   h1,
   h2,
   h3,
   h4 {
     font-family: var(--font-display);
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-weight: 400;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
 
@@ -296,6 +300,79 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* SplitText line masks — each line clips inside its own box while it slides in. */
+.mask-line {
+  will-change: transform;
+}
+
+/* Infinite marquee. The track holds two identical groups; translating the track
+   by exactly -50% loops seamlessly. CSS-only, so it costs no JS per frame, and
+   the global reduced-motion killswitch freezes it. */
+@utility marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 36s linear infinite;
+}
+
+.marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+@keyframes marquee-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Outlined display type — the fill is the ground, the letterform is a hairline. */
+@utility text-stroke {
+  -webkit-text-stroke: 1px var(--border-strong);
+  color: transparent;
+}
+
+/* Overrides Tailwind's generated font-display utility so every existing
+   `font-display font-semibold` combination renders the serif at its one true
+   weight instead of a synthesized bold. */
+@utility font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Icons are never static: inside any `group`, an icon carrying one of these
+   classes moves on hover/focus. Transform-only; frozen by the reduced-motion
+   killswitch like everything else. */
+@utility icon-nudge {
+  transition: transform var(--dur-base) var(--ease-brand);
+  .group:hover &,
+  .group:focus-visible & {
+    transform: translateX(0.3rem);
+  }
+}
+
+@utility icon-nudge-up {
+  transition: transform var(--dur-base) var(--ease-brand);
+  .group:hover &,
+  .group:focus-visible & {
+    transform: translate(0.2rem, -0.2rem);
+  }
+}
+
+@utility icon-pop {
+  transition: transform var(--dur-base) var(--ease-brand);
+  .group:hover &,
+  .group:focus-visible & {
+    transform: scale(1.18) rotate(-6deg);
+  }
+}
+
 @keyframes drift {
   0% {
     transform: translate3d(0, 0, 0) scale(1);
@@ -349,4 +426,15 @@
 
 @utility animate-pulse-soft {
   animation: pulse-soft 2.6s ease-in-out infinite;
+}
+
+/* The lift component replaces the native scrollbar visual on desktop only.
+   Scrolling itself (wheel, keys, touchpad) is untouched. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  html {
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
+  }
 }

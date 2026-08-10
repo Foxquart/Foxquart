@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
 import { faqNode } from "@/lib/seo";
-import { Reveal, Section, SectionHeading } from "./ui";
+import { Section } from "./ui";
+import { MaskLines, Rise } from "./motion";
 
 /**
  * Objection handling, and the site's primary AEO/GEO surface.
@@ -105,19 +106,27 @@ function FaqJsonLd({ path }: { path: string }) {
 
 export function Faq({ path = "/" }: { path?: string } = {}) {
   return (
-    <Section id="faq">
+    <Section id="faq" className="py-32 sm:py-32 md:py-48">
       <FaqJsonLd path={path} />
 
       <div className="grid gap-10 md:grid-cols-12 md:gap-12">
-        <div className="md:col-span-4 md:self-start lg:sticky lg:top-28">
-          <SectionHeading
-            eyebrow="FAQ"
-            title="What buyers ask before they commit"
-            intro="Cost, timelines, ownership, security, and what happens once the system is live."
-          />
+        <div className="flex max-w-3xl flex-col gap-4 md:col-span-4 md:self-start lg:sticky lg:top-28">
+          <MaskLines
+            as="h2"
+            className="text-2xl leading-[1.08] font-semibold text-balance sm:text-3xl md:text-5xl"
+          >
+            What buyers ask before they commit
+          </MaskLines>
+          <Rise y={20} delay={0.12}>
+            <p className="text-base text-muted-foreground md:text-lg">
+              Cost, timelines, ownership, security, and what happens once the system is live.
+            </p>
+          </Rise>
         </div>
 
-        <Reveal className="md:col-span-8" delay={0.06}>
+        {/* Items stagger in; open/close itself stays native CSS — no JS height
+            animation, the marker rotates on the motion tokens. */}
+        <Rise className="md:col-span-8" delay={0.06} childSelector="details" stagger={0.06} y={24}>
           {/* Native disclosure: keyboard accessible, no JS, no layout shift. */}
           <div className="border-t border-border">
             {faqs.map((faq) => (
@@ -138,7 +147,7 @@ export function Faq({ path = "/" }: { path?: string } = {}) {
               </details>
             ))}
           </div>
-        </Reveal>
+        </Rise>
       </div>
     </Section>
   );

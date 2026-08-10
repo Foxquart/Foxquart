@@ -18,7 +18,9 @@ export const OG_IMAGE_URL = `${SITE_URL}/og.png`;
 export const OG_IMAGE_WIDTH = "1200";
 export const OG_IMAGE_HEIGHT = "630";
 export const OG_IMAGE_ALT = "Foxquart — product engineering studio";
-export const LOGO_URL = `${SITE_URL}/logo.svg`;
+/* The founder's original raster artwork — Google prefers a raster for Organization
+   logo, and this is the authoritative version of the mark. */
+export const LOGO_URL = `${SITE_URL}/foxquart.png`;
 
 /**
  * Date the site copy last changed, used for `<lastmod>` in the sitemap.

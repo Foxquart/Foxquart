@@ -1,26 +1,5 @@
-export const EMAIL_ADDRESS = "businessfoxquart@gmail.com";
-export const EMAIL_SUBJECT = "Inquiry: Strategy Call for Custom Engineering";
-export const EMAIL_BODY_TEMPLATE = `Hello Foxquart Team,
-
-I am interested in discussing a software or automation engineering project for our business.
-
-Here are a few initial details:
-- Organization Name: 
-- Primary Requirement / Bottleneck: 
-- Expected Timeline: 
-- Estimated Budget: 
-
-Looking forward to hearing from you.
-
-Best regards,`;
-
-export const GMAIL_COMPOSE_URL = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
-  EMAIL_ADDRESS,
-)}&su=${encodeURIComponent(EMAIL_SUBJECT)}&body=${encodeURIComponent(EMAIL_BODY_TEMPLATE)}`;
-
-export const MAILTO_TEMPLATE_URL = `mailto:${EMAIL_ADDRESS}?subject=${encodeURIComponent(
-  EMAIL_SUBJECT,
-)}&body=${encodeURIComponent(EMAIL_BODY_TEMPLATE)}`;
+export const EMAIL_ADDRESS = "business@foxquart.com";
+export const MAILTO_URL = `mailto:${EMAIL_ADDRESS}`;
 
 export const PHONE_NUMBERS = [
   { raw: "6909519692", formatted: "+91 69095 19692", tel: "tel:+916909519692" },

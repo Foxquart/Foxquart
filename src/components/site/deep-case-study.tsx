@@ -1,7 +1,10 @@
+import { useRef, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { caseStudies } from "@/lib/site-data";
-import { Reveal, Section, SectionHeading } from "./ui";
+import { Section } from "./ui";
+import { MaskLines, Rise } from "./motion";
+import { gsap, SplitText, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 
 /**
  * One engagement told properly, rather than six cards told badly.
@@ -26,32 +29,79 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+/**
+ * Scrubbed word reveal for the narrative copy. The paragraph is plain text in
+ * SSR HTML — SplitText runs client-side only — then each word starts at
+ * opacity 0.15 and scrubs to 1 sequentially as the block passes through the
+ * viewport. Opacity only; reduced motion gets the plain paragraph.
+ */
+function ScrubWords({ children, className }: { children: ReactNode; className?: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+
+  useGSAP(
+    () => {
+      const el = ref.current;
+      if (!el || prefersReducedMotion()) return;
+      const split = SplitText.create(el, { type: "words" });
+      gsap.set(split.words, { opacity: 0.15 });
+      gsap.to(split.words, {
+        opacity: 1,
+        duration: 0.5,
+        ease: "none",
+        stagger: 0.12,
+        scrollTrigger: {
+          trigger: el,
+          start: "top 82%",
+          end: "bottom 55%",
+          scrub: true,
+        },
+      });
+      return () => split.revert();
+    },
+    { scope: ref },
+  );
+
+  return (
+    <p ref={ref} className={className}>
+      {children}
+    </p>
+  );
+}
+
 export function DeepCaseStudy() {
   return (
-    <Section id="case-study">
-      <SectionHeading
-        eyebrow="Case study"
-        title="Nine warehouses, three days behind"
-        intro="The problem, the system we built, and the three numbers that moved."
-      />
+    <Section id="case-study" className="py-32 sm:py-32 md:py-48">
+      <div className="flex max-w-3xl flex-col gap-4">
+        <MaskLines
+          as="h2"
+          className="text-2xl leading-[1.08] font-semibold text-balance sm:text-3xl md:text-5xl"
+        >
+          Nine warehouses, three days behind
+        </MaskLines>
+        <Rise y={20} delay={0.12}>
+          <p className="text-base text-muted-foreground md:text-lg">
+            The problem, the system we built, and the three numbers that moved.
+          </p>
+        </Rise>
+      </div>
 
       <div className="mt-12 grid gap-10 md:mt-16 md:grid-cols-12 md:gap-12">
         {/* Narrative. Single column on mobile, seven of twelve on desktop. */}
-        <Reveal className="flex flex-col gap-8 md:col-span-7 md:gap-10">
+        <Rise className="flex flex-col gap-8 md:col-span-7 md:gap-10">
           <Field label="Client">
             <p className="text-lg font-semibold text-foreground md:text-xl">{study.client}</p>
           </Field>
 
           <Field label="The problem">
-            <p className="max-w-[60ch] text-base leading-relaxed text-[color:var(--subtle)] md:text-lg">
+            <ScrubWords className="max-w-[60ch] text-base leading-relaxed text-[color:var(--subtle)] md:text-lg">
               {study.challenge}
-            </p>
+            </ScrubWords>
           </Field>
 
           <Field label="What we built">
-            <p className="max-w-[60ch] text-base leading-relaxed text-[color:var(--subtle)] md:text-lg">
+            <ScrubWords className="max-w-[60ch] text-base leading-relaxed text-[color:var(--subtle)] md:text-lg">
               {study.solution}
-            </p>
+            </ScrubWords>
           </Field>
 
           <Field label="Stack">
@@ -77,16 +127,25 @@ export function DeepCaseStudy() {
               <ArrowRight aria-hidden="true" className="size-4" />
             </Link>
           </div>
-        </Reveal>
+        </Rise>
 
-        {/* Metric rail. Stacks under the narrative on mobile. */}
-        <Reveal className="md:col-span-5" delay={0.08}>
+        {/* Metric rail. Stacks under the narrative on mobile; the figures
+            stagger up one after another as the rail enters. */}
+        <Rise
+          className="md:col-span-5"
+          delay={0.08}
+          childSelector="[data-metric]"
+          stagger={0.12}
+          y={28}
+        >
           <div className="rounded-xl border border-border bg-surface p-6 md:p-8">
-            <Field label="Delivered in">
-              <p className="tnum font-display text-3xl leading-none font-semibold text-primary md:text-4xl">
-                {study.timeline}
-              </p>
-            </Field>
+            <div data-metric>
+              <Field label="Delivered in">
+                <p className="tnum font-display text-3xl leading-none font-semibold text-primary md:text-4xl">
+                  {study.timeline}
+                </p>
+              </Field>
+            </div>
 
             <hr className="my-7 border-t border-border md:my-8" />
 
@@ -95,7 +154,7 @@ export function DeepCaseStudy() {
               {study.results.map((result) => (
                 /* Reversed so the number reads first but the label still
                    precedes its value in the DOM for assistive tech. */
-                <div key={result.label} className="flex flex-col-reverse gap-1.5">
+                <div key={result.label} data-metric className="flex flex-col-reverse gap-1.5">
                   <dt className="text-sm text-muted-foreground">{result.label}</dt>
                   <dd className="tnum font-display text-3xl leading-none font-semibold text-foreground md:text-4xl">
                     {result.value}
@@ -104,7 +163,7 @@ export function DeepCaseStudy() {
               ))}
             </dl>
           </div>
-        </Reveal>
+        </Rise>
       </div>
     </Section>
   );
