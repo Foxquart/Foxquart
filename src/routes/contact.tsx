@@ -1,22 +1,51 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ContactSection } from "@/components/site/contact";
+import { EMAIL_ADDRESS, PHONE_NUMBERS } from "@/lib/site-data";
+import {
+  ORGANIZATION_ID,
+  SITE_NAME,
+  WEBSITE_ID,
+  absoluteUrl,
+  breadcrumbNode,
+  canonicalLink,
+  jsonLdScript,
+  pageMeta,
+} from "@/lib/seo";
 
-const title = "Contact — Book A Strategy Call | foxquart";
+const path = "/contact";
+const title = "Contact — Book a Strategy Call | Foxquart";
 const description =
-  "Book a 30-minute strategy call with an engineer. Tell us the process costing you the most hours and get a prioritised automation shortlist.";
+  "Book a 30-minute strategy call with a Foxquart engineer. Tell us the process costing you the most hours and get a prioritised automation shortlist.";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/contact" },
-      { name: "twitter:card", content: "summary_large_image" },
+    meta: pageMeta({ title, description, path }),
+    links: [canonicalLink(path)],
+    scripts: [
+      // Publishes the email and both phone numbers in a form an agent can read
+      // without parsing the page, and points them at the same Organization @id
+      // declared on the root route.
+      jsonLdScript([
+        {
+          "@type": "ContactPage",
+          "@id": absoluteUrl(path),
+          name: `Contact ${SITE_NAME}`,
+          description,
+          url: absoluteUrl(path),
+          isPartOf: { "@id": WEBSITE_ID },
+          about: { "@id": ORGANIZATION_ID },
+          mainEntity: {
+            "@id": ORGANIZATION_ID,
+            email: EMAIL_ADDRESS,
+            telephone: PHONE_NUMBERS.map((p) => p.tel.replace("tel:", "")),
+          },
+        },
+        breadcrumbNode([
+          { name: "Home", path: "/" },
+          { name: "Contact", path },
+        ]),
+      ]),
     ],
-    links: [{ rel: "canonical", href: "/contact" }],
   }),
   component: ContactPage,
 });

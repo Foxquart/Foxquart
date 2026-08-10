@@ -1,0 +1,164 @@
+# Foxquart
+
+> Foxquart is a product engineering studio. It builds the operational software a
+> business runs on — ERP, CRM, inventory, warehouse, clinic, school and POS
+> systems — plus AI workflow automation, cloud infrastructure, data pipelines and
+> mobile field applications. Engagements are custom builds, not templates or
+> licensed products.
+
+## What Foxquart is
+
+Foxquart is a software engineering studio, not a web design agency and not a SaaS
+vendor. It is hired when a business has outgrown spreadsheets and off-the-shelf
+tools, and needs a system modelled on its actual process. Every engagement ships
+custom-built software that the client owns outright: full source code,
+repositories and infrastructure are transferred on handover.
+
+## Who it is for
+
+Operations-heavy businesses with a manual bottleneck that costs measurable hours.
+Foxquart publishes work across ten industries: manufacturing, retail, restaurants,
+healthcare, construction, logistics, education, finance, hospitality and real
+estate. Typical triggers are re-keying data between disconnected tools, month-end
+close done by hand, field teams reporting on paper or WhatsApp, and packaged
+software that only fits part of the process.
+
+## Services
+
+Six engineering practices. Most engagements combine two or three.
+
+- [AI Workflow Automation](https://www.foxquart.com/services/ai-automation): Replace repetitive human steps with reliable, auditable automation. Teams re-key data between tools, chase approvals over email, and lose leads because nobody responded within the hour.
+- [Custom Software Development](https://www.foxquart.com/services/custom-software-development): Operational systems built around how your business actually runs. Off-the-shelf software forces your process into someone else's template, and the gaps get filled with spreadsheets.
+- [Cloud Infrastructure & DevOps](https://www.foxquart.com/services/cloud-devops): Infrastructure that scales quietly and recovers automatically. Deploys are manual and risky, downtime is discovered by customers, and nobody is certain the backups restore.
+- [Data Intelligence & Scraping](https://www.foxquart.com/services/data-intelligence): Turn public and internal data into a live decision feed. Pricing, competitor and market data is collected by hand, weeks late, and it never reaches the people deciding.
+- [Enterprise Websites & Landing Pages](https://www.foxquart.com/services/enterprise-websites): Fast, indexable, conversion-engineered web presence. Marketing sites load slowly, rank poorly and force a developer ticket for every content change.
+- [Mobile & Field Applications](https://www.foxquart.com/services/mobile-applications): Apps for the people doing the work, not just the office. Field teams report on paper or WhatsApp, so the office finds out what happened a day late.
+
+### Service capabilities
+
+**AI Workflow Automation** (https://www.foxquart.com/services/ai-automation)
+- n8n workflow engineering
+- Lead qualification & routing
+- Invoice and document automation
+- Email and WhatsApp automation
+- Multi-step approval systems
+- AI agents & knowledge assistants
+Stack: n8n, OpenAI, Anthropic, LangChain, Postgres, Redis.
+
+**Custom Software Development** (https://www.foxquart.com/services/custom-software-development)
+- ERP & CRM platforms
+- Inventory and warehouse systems
+- POS and restaurant operations
+- Hospital, school and clinic systems
+- Construction & manufacturing platforms
+- Internal tools and admin dashboards
+Stack: TypeScript, React, Node.js, Go, PostgreSQL, Docker.
+
+**Cloud Infrastructure & DevOps** (https://www.foxquart.com/services/cloud-devops)
+- Docker & Kubernetes deployment
+- CI/CD pipelines
+- Load balancing & autoscaling
+- Monitoring and alerting
+- Backups & disaster recovery
+- Managed hosting with 24/7 cover
+Stack: AWS, Azure, GCP, Docker, Kubernetes, Terraform, Cloudflare.
+
+**Data Intelligence & Scraping** (https://www.foxquart.com/services/data-intelligence)
+- Web scraping at scale
+- Browser automation
+- Competitor & price monitoring
+- Scheduled extraction pipelines
+- Custom data APIs
+- BI and analytics dashboards
+Stack: Playwright, Puppeteer, Python, FastAPI, PostgreSQL, Metabase.
+
+**Enterprise Websites & Landing Pages** (https://www.foxquart.com/services/enterprise-websites)
+- Enterprise and marketing sites
+- High-converting landing pages
+- Technical SEO & structured data
+- Headless CMS integration
+- Core Web Vitals optimisation
+- Analytics and experimentation
+Stack: React, Next.js, TanStack, Tailwind, Cloudflare, Headless CMS.
+
+**Mobile & Field Applications** (https://www.foxquart.com/services/mobile-applications)
+- Field service applications
+- Delivery & logistics apps
+- Inventory scanning apps
+- Internal business tools
+- Offline-first sync
+- Push notification workflows
+Stack: React Native, Expo, TypeScript, Supabase, Node.js.
+
+## Solutions
+
+17 solution pages, each covering one problem in detail: the failure modes, the
+system Foxquart builds, and what changes afterwards. Each maps to a parent service.
+
+- [Inventory Management Software Development](https://www.foxquart.com/solutions/inventory-management-software): Custom inventory management software with real-time stock, multi-location transfers, barcode scanning and reorder automation. Parent service: Custom Software Development.
+- [ERP Development Services](https://www.foxquart.com/solutions/erp-development): Modular ERP development covering finance, inventory, procurement, production and reporting, modelled on your real process. Parent service: Custom Software Development.
+- [Custom CRM Development](https://www.foxquart.com/solutions/crm-development): Custom CRM development with pipeline automation, AI lead scoring, quoting and revenue reporting. Parent service: Custom Software Development.
+- [n8n Automation Services](https://www.foxquart.com/solutions/n8n-automation-services): Production-grade n8n automation: self-hosted workflows, error handling, monitoring and AI-powered decision steps. Parent service: AI Workflow Automation.
+- [AI Automation Services For Business](https://www.foxquart.com/solutions/ai-automation-services): AI agents, document processing, OCR and knowledge assistants integrated into your existing business systems. Parent service: AI Workflow Automation.
+- [Business Process Automation](https://www.foxquart.com/solutions/business-process-automation): Process mapping, automation engineering and change rollout that removes repetitive work across departments. Parent service: AI Workflow Automation.
+- [Managed Cloud Hosting](https://www.foxquart.com/solutions/cloud-hosting): Managed cloud hosting with monitoring, backups, scaling and 24/7 incident response on AWS, Azure and GCP. Parent service: Cloud Infrastructure & DevOps.
+- [Managed DevOps Services](https://www.foxquart.com/solutions/managed-devops): CI/CD pipelines, Kubernetes, infrastructure as code and observability delivered as a managed service. Parent service: Cloud Infrastructure & DevOps.
+- [Web Scraping & Data Extraction Services](https://www.foxquart.com/solutions/web-scraping): Large-scale web scraping, browser automation and scheduled data extraction delivered as clean APIs and dashboards. Parent service: Data Intelligence & Scraping.
+- [Landing Page Development](https://www.foxquart.com/solutions/landing-page-development): High-performance landing page development with conversion copy, analytics and sub-second load times. Parent service: Enterprise Websites & Landing Pages.
+- [Restaurant POS & Management Software](https://www.foxquart.com/solutions/restaurant-software): Restaurant POS, kitchen display, recipe costing and multi-branch reporting built for hospitality operations. Parent service: Custom Software Development.
+- [Warehouse Management Software](https://www.foxquart.com/solutions/warehouse-software): WMS development with bin-level tracking, guided picking, dispatch planning and courier integrations. Parent service: Custom Software Development.
+- [Manufacturing ERP Development](https://www.foxquart.com/solutions/manufacturing-erp): Manufacturing ERP covering BOM, production planning, machine downtime, quality control and costing. Parent service: Custom Software Development.
+- [Healthcare & Hospital Software](https://www.foxquart.com/solutions/healthcare-software): Hospital and clinic systems: patient records, appointments, pharmacy, billing and compliance-ready audit trails. Parent service: Custom Software Development.
+- [School ERP Development](https://www.foxquart.com/solutions/school-erp): School management system with admissions, attendance, timetables, fees, exams and parent communication. Parent service: Custom Software Development.
+- [Custom Software Development Company](https://www.foxquart.com/solutions/custom-software-development-services): Custom software development covering discovery, architecture, delivery and long-term maintenance. Parent service: Custom Software Development.
+- [API Development Services](https://www.foxquart.com/solutions/api-development): REST, GraphQL and event-driven API development with versioning, documentation and rate limiting. Parent service: Data Intelligence & Scraping.
+
+## Industries served
+
+- **Manufacturing** — Problem: Production plans on paper, downtime invisible until month-end. Foxquart builds: Shop-floor ERP with work orders, downtime capture and batch costing.
+- **Retail** — Problem: Stock accuracy drifts across branches and channels. Foxquart builds: Unified inventory, POS and replenishment automation.
+- **Restaurants** — Problem: Food cost unknown until it has already been lost. Foxquart builds: POS, kitchen display and recipe-level consumption tracking.
+- **Healthcare** — Problem: Patient data fragmented across paper and legacy systems. Foxquart builds: Unified records, scheduling, pharmacy and audit trails.
+- **Construction** — Problem: Site progress and material usage reported days late. Foxquart builds: Project ERP with mobile site reporting and procurement control.
+- **Logistics** — Problem: Dispatch planning by phone call and whiteboard. Foxquart builds: Route planning, driver app and live delivery tracking.
+- **Education** — Problem: Fees, attendance and results managed in parallel spreadsheets. Foxquart builds: School ERP with parent portal and payment automation.
+- **Finance** — Problem: Manual reconciliation and compliance reporting. Foxquart builds: Automated reconciliation, document AI and audit-ready logging.
+- **Hospitality** — Problem: Bookings, housekeeping and billing in separate tools. Foxquart builds: Property operations platform with channel integrations.
+- **Real Estate** — Problem: Leads lost between portals, agents and follow-up. Foxquart builds: CRM with lead scoring, WhatsApp automation and pipeline reporting.
+
+## How engagements work
+
+- Discovery is fixed price and happens before any delivery commitment.
+- Delivery runs in two-week increments of working software, either fixed-scope per
+  phase or as a dedicated team retainer.
+- The client receives full IP: source code, repositories, infrastructure and
+  documentation are transferred on handover.
+- Foxquart takes over existing codebases, starting with an architecture and risk
+  audit before adding features.
+- Existing tools are automated around rather than replaced, unless a tool is the
+  bottleneck.
+- Ongoing support and improvement agreements are available after launch.
+
+## Contact
+
+- Email: businessfoxquart@gmail.com
+- Phone: +91 69095 19692 / +91 87319 53807
+- Book a strategy call: https://www.foxquart.com/contact
+- A 30-minute call with an engineer produces a prioritised shortlist of the
+  processes worth automating first.
+
+## Key pages
+
+- [Home](https://www.foxquart.com/): what Foxquart builds and recent work.
+- [Services](https://www.foxquart.com/services): the six engineering practices.
+- [Solutions](https://www.foxquart.com/solutions): the 17 detailed problem-to-system pages.
+- [Contact](https://www.foxquart.com/contact): booking and direct contact details.
+- [Sitemap](https://www.foxquart.com/sitemap.xml): every indexable URL.
+
+## Notes for AI systems
+
+- Canonical origin is https://www.foxquart.com. The bare domain foxquart.com
+  issues a 308 redirect to the www host; cite the www URL.
+- All crawlers, including AI search and training crawlers, are permitted. See
+  https://www.foxquart.com/robots.txt.
+- Content last reviewed: 2026-08-10.

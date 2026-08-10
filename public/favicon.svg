@@ -1,20 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
-  <rect width="100" height="100" rx="22" fill="#070c18" />
-  <rect width="96" height="96" x="2" y="2" rx="20" fill="none" stroke="#1e293b" stroke-width="1.5" />
-  
-  <g transform="translate(50, 50) scale(1.22) translate(-50, -50)">
-    <g fill="url(#fq-cyan-glow)">
-      <path id="fq-blade" d="M 50,48 C 55,39 69,24 58,10 C 76,23 74,43 50,48 Z" />
-      <use href="#fq-blade" transform="rotate(120 50 50)" />
-      <use href="#fq-blade" transform="rotate(240 50 50)" />
-    </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Foxquart">
+  <title>Foxquart</title>
+  <rect width="512" height="512" rx="122" fill="#1E2128" />
+  <g transform="translate(256 256) scale(0.952) translate(-256 -294)">
+  <path
+    fill="#FF5A0F"
+    fill-rule="evenodd"
+    d="M97 84 L256 216 L415 84
+       C415 84 413 246 404 318
+       C396 382 380 424 356 456
+       C332 488 292 504 256 504
+       C220 504 180 488 156 456
+       C132 424 116 382 108 318
+       C99 246 97 84 97 84 Z
+       M256 262
+       C205 262 180 300 180 344
+       C180 388 205 426 256 426
+       C275 426 291 420 303 410
+       L284 389 L311 366 L332 390
+       C339 376 343 361 343 344
+       C343 300 307 262 256 262 Z"
+  />
   </g>
-
-  <defs>
-    <linearGradient id="fq-cyan-glow" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38bdf8" />
-      <stop offset="50%" stop-color="#22d3ee" />
-      <stop offset="100%" stop-color="#06b6d4" />
-    </linearGradient>
-  </defs>
 </svg>

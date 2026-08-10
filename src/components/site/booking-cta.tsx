@@ -1,60 +1,112 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, MessageCircle, Phone, Mail } from "lucide-react";
-import { Reveal, Section, Eyebrow } from "./ui";
-import { GMAIL_COMPOSE_URL, PHONE_NUMBERS } from "@/lib/site-data";
+import { ArrowRight, Phone } from "lucide-react";
+import { PHONE_NUMBERS } from "@/lib/site-data";
+import { Reveal, Section } from "./ui";
+
+/** The thirty minutes, as they actually run. Specific beats "free consultation". */
+const AGENDA = [
+  {
+    slot: "00–10",
+    title: "You walk us through the process",
+    detail:
+      "The one held together by spreadsheets, WhatsApp threads and paper. Every handoff, every place the same number gets typed twice.",
+  },
+  {
+    slot: "10–20",
+    title: "We mark what software should own",
+    detail:
+      "Some steps are worth building. Some are cheaper left manual, and we will say so. You see where the data sits and where it breaks.",
+  },
+  {
+    slot: "20–30",
+    title: "We size the first release",
+    detail:
+      "Scope, order of work and a week count for the version that goes live first — not a roadmap for everything you could eventually have.",
+  },
+];
+
+/** Terms of the call. Commitments we control — nothing claimed on anyone else's behalf. */
+const TERMS = ["30 minutes", "No deck", "Straight to the engineer who would build it"];
 
 export function BookingCta() {
+  const phone = PHONE_NUMBERS[0];
+
   return (
-    <Section id="contact" className="pb-10">
+    <Section id="contact">
       <Reveal>
-        <div className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 via-surface to-surface-2/60 px-7 py-14 text-center md:px-16">
-          {/* Decorative blur spots */}
-          <div className="absolute -top-20 -right-20 size-64 rounded-full bg-primary/8 blur-[100px]" />
-          <div className="absolute -bottom-20 -left-20 size-64 rounded-full bg-chart-4/8 blur-[100px]" />
+        <div className="overflow-hidden rounded-2xl border border-border bg-surface">
+          {/* The one accent in the panel. */}
+          <div className="hairline" aria-hidden="true" />
 
-          <div className="relative">
-            <h2 className="mx-auto max-w-2xl text-3xl font-semibold text-balance md:text-4xl">
-              Ready to take your business online?
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-              Tell us about your business. We'll show you exactly how a custom
-              website, app, or automation can help you get more customers and
-              save time.
-            </p>
+          <div className="px-5 py-10 sm:px-8 sm:py-12 md:px-14 md:py-16">
+            <div className="grid gap-10 md:grid-cols-2 md:gap-16">
+              <div className="flex flex-col gap-4">
+                <span className="eyebrow-type text-primary">Book a build review</span>
+                <h2 className="text-2xl leading-[1.1] font-semibold text-balance sm:text-3xl md:text-4xl">
+                  Show us the workflow. We'll scope the build.
+                </h2>
+                <p className="max-w-[54ch] text-base text-muted-foreground md:text-lg">
+                  A build review is a working call, not a pitch. Bring the process your team runs by
+                  hand — intake, scheduling, stock, rosters, billing — and we take it apart together
+                  on the call.
+                </p>
+              </div>
 
-            {/* Action Buttons */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Link
-                to="/contact"
-                className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-              >
-                <MessageCircle className="size-4" />
-                Book a free consultation
-              </Link>
-              <a
-                href={PHONE_NUMBERS[0].tel}
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-6 py-3 text-sm font-medium text-foreground transition-colors hover:border-primary/50 hover:bg-surface"
-              >
-                <Phone className="size-4 text-primary" />
-                Call us now
-              </a>
+              <div className="flex flex-col gap-6">
+                <span className="eyebrow-type text-muted-foreground">
+                  What the thirty minutes look like
+                </span>
+                <ol className="flex flex-col gap-6">
+                  {AGENDA.map((step) => (
+                    <li
+                      key={step.slot}
+                      className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1.5"
+                    >
+                      <span className="eyebrow-type tnum mt-1.5 text-primary">{step.slot}</span>
+                      <h3 className="text-base font-semibold">{step.title}</h3>
+                      <p className="col-start-2 text-sm text-muted-foreground">{step.detail}</p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
             </div>
 
-            {/* Trust signals */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-signal" />
-                Free 30-min consultation
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-signal" />
-                No commitment required
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-signal" />
-                Response within 24 hours
-              </span>
+            <div className="mt-10 flex flex-col gap-8 border-t border-border pt-8 md:mt-14 md:flex-row md:items-end md:justify-between md:gap-14 md:pt-10">
+              <div className="max-w-[52ch]">
+                <span className="eyebrow-type text-muted-foreground">You leave with</span>
+                <p className="mt-3 text-base text-foreground">
+                  A written scope note: the first release, the manual work it takes off your team,
+                  and a week count. It is yours whether or not you hire us — and if software is not
+                  the fix, we will tell you that on the call.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row md:shrink-0">
+                <Link
+                  to="/contact"
+                  className="press inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-colors duration-[var(--dur-micro)] ease-[var(--ease-brand)] hover:bg-[var(--primary-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-auto"
+                >
+                  Book a build review
+                  <ArrowRight className="size-4" aria-hidden="true" />
+                </Link>
+                <a
+                  href={phone.tel}
+                  className="press inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-border bg-surface-2 px-6 text-sm font-medium text-foreground transition-colors duration-[var(--dur-micro)] ease-[var(--ease-brand)] hover:border-[var(--border-strong)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-auto"
+                >
+                  <Phone className="size-4 text-primary" aria-hidden="true" />
+                  Call {phone.formatted}
+                </a>
+              </div>
             </div>
+
+            <ul className="tnum mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+              {TERMS.map((term) => (
+                <li key={term} className="flex items-center gap-2">
+                  <span className="size-1 rounded-full bg-primary" aria-hidden="true" />
+                  {term}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </Reveal>

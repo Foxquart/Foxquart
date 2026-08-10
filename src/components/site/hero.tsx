@@ -1,314 +1,109 @@
-import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import { useEffect, useRef } from "react";
-import { ArrowRight, Boxes, Activity, Bot, Cloud, Workflow, Bell } from "lucide-react";
-import { Counter, MagneticLink } from "./ui";
-import { WovenCanvas } from "@/components/ui/woven-canvas";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 
-function Particles() {
-  const dots = Array.from({ length: 26 }, (_, i) => ({
-    id: i,
-    left: (i * 37) % 100,
-    top: (i * 53) % 100,
-    delay: (i % 9) * 0.7,
-    size: i % 5 === 0 ? 3 : 2,
-  }));
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {dots.map((d) => (
-        <motion.span
-          key={d.id}
-          className="absolute rounded-full bg-primary/60"
-          style={{ left: `${d.left}%`, top: `${d.top}%`, width: d.size, height: d.size }}
-          animate={{ y: [0, -40, 0], opacity: [0, 0.9, 0] }}
-          transition={{ duration: 9 + (d.id % 5), repeat: Infinity, delay: d.delay, ease: "easeInOut" }}
-        />
-      ))}
-    </div>
-  );
-}
+/*
+ * Hero — the LCP element on `/` is the <h1> text, deliberately.
+ *
+ * Nothing in this file animates on mount and nothing here pulls in three.js.
+ * `WovenCanvas` (three.js, ~236 kB gz) used to be a static import in this module,
+ * which put a whole WebGL renderer on the critical path of the home route for a
+ * decoration that never appeared above the fold on a phone. It is gone, along with
+ * the unrendered dashboard mock and the 26 infinitely-looping particle spans.
+ *
+ * One decorative layer remains: `mesh-bg`, a static CSS gradient painted on the
+ * section itself — no extra DOM, no compositing work, not an LCP candidate.
+ */
 
-function Sparkline({ points }: { points: number[] }) {
-  const max = Math.max(...points);
-  const d = points
-    .map((p, i) => `${(i / (points.length - 1)) * 100},${34 - (p / max) * 30}`)
-    .join(" ");
-  return (
-    <svg viewBox="0 0 100 36" preserveAspectRatio="none" className="h-10 w-full">
-      <motion.polyline
-        points={d}
-        fill="none"
-        stroke="var(--primary)"
-        strokeWidth="1.6"
-        vectorEffect="non-scaling-stroke"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 1.8, ease: "easeOut" }}
-      />
-      <polyline
-        points={`0,36 ${d} 100,36`}
-        fill="color-mix(in oklab, var(--primary) 14%, transparent)"
-        stroke="none"
-      />
-    </svg>
-  );
-}
-
-function Bars() {
-  const bars = [42, 68, 55, 84, 61, 92, 74];
-  return (
-    <div className="flex h-16 items-end gap-1.5">
-      {bars.map((b, i) => (
-        <motion.span
-          key={i}
-          className="flex-1 rounded-sm bg-primary/70"
-          initial={{ height: 0 }}
-          animate={{ height: `${b}%` }}
-          transition={{ duration: 1, delay: 0.2 + i * 0.08, ease: [0.2, 0.7, 0.2, 1] }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function DashboardCard({
-  title,
-  icon,
-  children,
-  className,
-  float = 0,
-}: {
-  title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-  className?: string;
-  float?: number;
-}) {
-  return (
-    <motion.div
-      className={`glass rounded-xl p-4 ${className ?? ""}`}
-      animate={{ y: [0, -8, 0] }}
-      transition={{ duration: 6 + float, repeat: Infinity, ease: "easeInOut", delay: float }}
-    >
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <span className="text-primary">{icon}</span>
-        <span className="font-mono text-[10px] tracking-[0.16em] uppercase">{title}</span>
-      </div>
-      <div className="mt-3">{children}</div>
-    </motion.div>
-  );
-}
-
-function HeroDashboard() {
-  const rx = useSpring(useMotionValue(0), { stiffness: 120, damping: 20 });
-  const ry = useSpring(useMotionValue(0), { stiffness: 120, damping: 20 });
-  const rotateX = useTransform(rx, (v) => v);
-  const rotateY = useTransform(ry, (v) => v);
-
-  return (
-    <motion.div
-      className="relative w-full [perspective:1400px]"
-      onMouseMove={(e) => {
-        const r = e.currentTarget.getBoundingClientRect();
-        ry.set(((e.clientX - (r.left + r.width / 2)) / r.width) * 10);
-        rx.set(-((e.clientY - (r.top + r.height / 2)) / r.height) * 8);
-      }}
-      onMouseLeave={() => {
-        rx.set(0);
-        ry.set(0);
-      }}
-    >
-      <motion.div
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-        className="glass-strong rounded-3xl p-4 md:p-5"
-      >
-        <div className="flex items-center justify-between border-b border-border pb-3">
-          <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-signal" />
-            <span className="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
-              Operations Console
-            </span>
-          </div>
-          <span className="rounded-full border border-border px-2.5 py-1 font-mono text-[10px] text-signal">
-            LIVE
-          </span>
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <DashboardCard title="Client Impact" icon={<Activity className="size-3.5" />} float={0.2}>
-            <p className="font-display text-2xl font-semibold text-foreground">
-              <Counter to={4.82} prefix="$" suffix="M" decimals={2} />
-            </p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">Annualised value unlocked</p>
-            <Sparkline points={[12, 18, 15, 24, 22, 31, 29, 38, 44]} />
-          </DashboardCard>
-
-          <DashboardCard title="Inventory Sync" icon={<Boxes className="size-3.5" />} float={0.9}>
-            <p className="font-display text-2xl font-semibold text-foreground">
-              <Counter to={99.4} suffix="%" decimals={1} />
-            </p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">Stock accuracy across 9 hubs</p>
-            <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-              <motion.div
-                className="h-full rounded-full bg-primary"
-                initial={{ width: 0 }}
-                animate={{ width: "94%" }}
-                transition={{ duration: 1.4, delay: 0.4 }}
-              />
-            </div>
-          </DashboardCard>
-
-          <DashboardCard title="Daily Throughput" icon={<Activity className="size-3.5" />} float={1.4}>
-            <p className="font-display text-2xl font-semibold text-foreground">
-              <Counter to={1284} />
-            </p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">Orders auto-processed today</p>
-            <Bars />
-          </DashboardCard>
-
-          <DashboardCard title="AI Agent Actions" icon={<Bot className="size-3.5" />} float={0.6}>
-            <div className="space-y-1.5 text-xs">
-              <p className="rounded-lg bg-surface-2/90 px-2.5 py-1 text-muted-foreground font-mono text-[11px]">
-                Query: "Which SKUs risk stockout?"
-              </p>
-              <motion.p
-                className="rounded-lg bg-primary/20 px-2.5 py-1 text-foreground font-medium text-[11px]"
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2 }}
-              >
-                Action: 7 SKUs flagged · 3 POs drafted.
-              </motion.p>
-            </div>
-          </DashboardCard>
-
-          <DashboardCard title="Platform SLA" icon={<Cloud className="size-3.5" />} float={1.1}>
-            <p className="font-display text-2xl font-semibold text-signal">
-              <Counter to={99.98} suffix="%" decimals={2} />
-            </p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">30-day rolling uptime</p>
-            <div className="mt-2 flex gap-1">
-              {Array.from({ length: 14 }).map((_, i) => (
-                <span
-                  key={i}
-                  className={`h-5 flex-1 rounded-sm ${i === 9 ? "bg-warn/80" : "bg-signal/80"}`}
-                />
-              ))}
-            </div>
-          </DashboardCard>
-
-          <DashboardCard title="Automation Engine" icon={<Workflow className="size-3.5" />} float={1.7}>
-            <p className="font-display text-2xl font-semibold text-foreground">
-              <Counter to={38} suffix="k" />
-            </p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">Monthly runs · 0 downtime</p>
-            <div className="mt-3 flex items-center gap-1.5">
-              {["Form", "AI", "CRM", "ERP"].map((n) => (
-                <span
-                  key={n}
-                  className="rounded-md border border-border bg-surface px-1.5 py-0.5 font-mono text-[9px] font-medium text-foreground"
-                >
-                  {n}
-                </span>
-              ))}
-            </div>
-          </DashboardCard>
-        </div>
-
-        <motion.div
-          className="mt-3 flex items-center gap-3 rounded-xl border border-border bg-surface/60 px-4 py-3"
-          animate={{ opacity: [0.75, 1, 0.75] }}
-          transition={{ duration: 4, repeat: Infinity }}
-        >
-          <Bell className="size-4 text-accent" />
-          <p className="text-xs text-muted-foreground">
-            Invoice #48219 auto-approved · posted to ERP · Slack notified
-          </p>
-        </motion.div>
-      </motion.div>
-    </motion.div>
-  );
-}
+const systems = [
+  {
+    id: "01",
+    name: "Operations systems",
+    detail: "Records, scheduling, stock and billing in one place instead of six spreadsheets.",
+  },
+  {
+    id: "02",
+    name: "Customer-facing products",
+    detail: "Portals, booking and storefronts your customers use without being taught.",
+  },
+  {
+    id: "03",
+    name: "Automation",
+    detail: "The repeat work in between — intake, reminders, reconciliation, reporting.",
+  },
+  {
+    id: "04",
+    name: "Handover",
+    detail: "Documentation, a trained team and a codebase you own outright.",
+  },
+];
 
 export function Hero() {
-  const ref = useRef<HTMLDivElement>(null);
-  const mx = useMotionValue(50);
-  const my = useMotionValue(30);
-  const sx = useSpring(mx, { stiffness: 60, damping: 20 });
-  const sy = useSpring(my, { stiffness: 60, damping: 20 });
-  const light = useTransform(
-    [sx, sy],
-    ([x, y]) =>
-      `radial-gradient(45rem 30rem at ${x}% ${y}%, color-mix(in oklab, var(--primary) 16%, transparent), transparent 70%)`,
-  );
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const onMove = (e: MouseEvent) => {
-      const r = el.getBoundingClientRect();
-      mx.set(((e.clientX - r.left) / r.width) * 100);
-      my.set(((e.clientY - r.top) / r.height) * 100);
-    };
-    el.addEventListener("mousemove", onMove);
-    return () => el.removeEventListener("mousemove", onMove);
-  }, [mx, my]);
-
   return (
-    <div ref={ref} className="relative grain overflow-hidden pt-24 pb-14 sm:pt-32 sm:pb-20 md:pt-40 md:pb-28">
-      <div className="mesh-bg animate-drift absolute inset-0 -z-10" />
-      <motion.div className="absolute inset-0 -z-10" style={{ background: light }} />
-      <div className="absolute -top-24 left-1/4 -z-10 size-[32rem] rounded-full bg-primary/10 blur-[120px]" />
-      <div className="absolute right-0 bottom-0 -z-10 size-[28rem] rounded-full bg-chart-4/10 blur-[120px]" />
-      <Particles />
+    <section className="mesh-bg relative px-4 pt-28 pb-16 sm:px-5 sm:pt-32 sm:pb-20 md:px-8 lg:pt-40 lg:pb-28">
+      <div className="mx-auto grid w-full max-w-7xl items-start gap-12 lg:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] lg:items-center lg:gap-16">
+        <div className="flex max-w-2xl flex-col items-start">
+          <p className="eyebrow-type text-primary">Product engineering studio</p>
 
-      <div className="mx-auto grid w-full max-w-7xl items-center gap-8 px-4 sm:gap-12 sm:px-5 md:px-8 lg:grid-cols-[1.1fr_1fr]">
-        {/* Left Side Text Content */}
-        <div className="flex flex-col items-start text-left gap-5 sm:gap-7 max-w-2xl">
+          {/* LCP element. No entrance animation, no opacity ramp — it paints on first frame. */}
+          <h1 className="mt-5 text-[2.25rem] leading-[1.06] font-semibold text-balance sm:text-5xl xl:text-[4rem]">
+            Software your business runs on.
+            <span className="mt-2 block text-muted-foreground">Built in weeks. Built to keep.</span>
+          </h1>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.05 }}
-            className="text-[1.75rem] leading-[1.08] font-semibold text-balance sm:text-4xl md:text-6xl xl:text-[4.2rem]"
-          >
-            <span className="text-gradient">Engineering software that runs modern businesses.</span>
-          </motion.h1>
+          {/* Deliberately self-contained and entity-first: answer engines extract passages,
+              not pages, and "Foxquart is a…" is the sentence they can quote for "what is
+              Foxquart". Keep the definition in the first clause if this copy is revised. */}
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-foreground/80 sm:text-lg">
+            Foxquart is a product engineering studio. We build the operations systems,
+            customer-facing products and automation a company runs on day to day — for teams still
+            working out of spreadsheets, WhatsApp threads and paper files.
+          </p>
 
-          <motion.p
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.15 }}
-            className="max-w-xl text-sm text-foreground/80 sm:text-base md:text-lg font-medium"
-          >
-            We build custom software, AI automation, cloud infrastructure, enterprise dashboards and
-            intelligent workflows that eliminate repetitive work and help businesses scale faster.
-          </motion.p>
+          <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+            <Link
+              to="/contact"
+              className="press inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 text-base font-medium text-primary-foreground hover:bg-primary/90 sm:w-auto sm:text-sm"
+            >
+              Book a 30-min build review
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+            <a
+              href="#work"
+              className="press inline-flex min-h-12 w-full items-center justify-center rounded-full border border-border bg-surface px-6 text-base font-medium text-foreground hover:bg-surface-2 sm:w-auto sm:text-sm"
+            >
+              See live systems
+            </a>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.25 }}
-            className="flex flex-col items-stretch gap-3 pt-2 sm:flex-row sm:flex-wrap sm:items-center"
-          >
-            <MagneticLink to="/contact">
-              Schedule a strategy call <ArrowRight className="size-4" />
-            </MagneticLink>
-            <MagneticLink href="#services" variant="ghost">
-              Explore solutions
-            </MagneticLink>
-          </motion.div>
+          <p className="mt-5 text-sm text-muted-foreground">
+            <span className="tnum">Typical delivery 3–5 weeks</span>
+            <span aria-hidden="true" className="px-2">
+              ·
+            </span>
+            Senior engineers only
+          </p>
         </div>
 
-        {/* Right Side 3D Woven Animation */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="relative flex h-[280px] sm:h-[400px] md:h-[580px] w-full items-center justify-center"
-        >
-          <WovenCanvas className="h-full w-full pointer-events-auto" />
-        </motion.div>
+        <div className="w-full rounded-xl border border-border bg-surface">
+          <p
+            id="hero-systems-label"
+            className="eyebrow-type border-b border-border px-5 py-4 text-muted-foreground"
+          >
+            What we build
+          </p>
+          <ul aria-labelledby="hero-systems-label" className="divide-y divide-border">
+            {systems.map((system) => (
+              <li key={system.id} className="flex gap-4 px-5 py-4">
+                <span className="eyebrow-type tnum pt-1 text-primary">{system.id}</span>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{system.name}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{system.detail}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

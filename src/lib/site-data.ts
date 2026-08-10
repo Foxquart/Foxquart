@@ -796,20 +796,69 @@ export const industries = [
   },
 ];
 
-export const productPillars = ["All Foundations", "Core Operations", "Automation & AI", "Industry Systems"] as const;
+export const productPillars = [
+  "All Foundations",
+  "Core Operations",
+  "Automation & AI",
+  "Industry Systems",
+] as const;
 
 export const products = [
-  { name: "Inventory Management", pillar: "Core Operations", detail: "Multi-location stock, barcode workflows, reorder automation." },
-  { name: "Warehouse Management", pillar: "Core Operations", detail: "Bin-level tracking, guided picking, dispatch verification." },
-  { name: "CRM Platform", pillar: "Core Operations", detail: "Pipeline automation, AI lead scoring, quote-to-invoice." },
-  { name: "HRMS & Payroll", pillar: "Core Operations", detail: "Attendance, payroll inputs, leave and performance cycles." },
-  { name: "Automation Platform", pillar: "Automation & AI", detail: "Self-hosted n8n estate with monitoring and governance." },
-  { name: "Business Dashboard", pillar: "Automation & AI", detail: "Company-wide KPIs aggregated from every operational system." },
-  { name: "AI Lead & Support Agent", pillar: "Automation & AI", detail: "Autonomous triage, document extraction, and WhatsApp/Email actions." },
-  { name: "Restaurant POS", pillar: "Industry Systems", detail: "Offline-capable POS, kitchen display, recipe costing." },
-  { name: "Hospital ERP", pillar: "Industry Systems", detail: "Patient records, scheduling, pharmacy, billing." },
-  { name: "Construction ERP", pillar: "Industry Systems", detail: "Site progress, procurement, subcontractor control." },
-  { name: "School ERP", pillar: "Industry Systems", detail: "Admissions to alumni, fees, exams, parent portal." },
+  {
+    name: "Inventory Management",
+    pillar: "Core Operations",
+    detail: "Multi-location stock, barcode workflows, reorder automation.",
+  },
+  {
+    name: "Warehouse Management",
+    pillar: "Core Operations",
+    detail: "Bin-level tracking, guided picking, dispatch verification.",
+  },
+  {
+    name: "CRM Platform",
+    pillar: "Core Operations",
+    detail: "Pipeline automation, AI lead scoring, quote-to-invoice.",
+  },
+  {
+    name: "HRMS & Payroll",
+    pillar: "Core Operations",
+    detail: "Attendance, payroll inputs, leave and performance cycles.",
+  },
+  {
+    name: "Automation Platform",
+    pillar: "Automation & AI",
+    detail: "Self-hosted n8n estate with monitoring and governance.",
+  },
+  {
+    name: "Business Dashboard",
+    pillar: "Automation & AI",
+    detail: "Company-wide KPIs aggregated from every operational system.",
+  },
+  {
+    name: "AI Lead & Support Agent",
+    pillar: "Automation & AI",
+    detail: "Autonomous triage, document extraction, and WhatsApp/Email actions.",
+  },
+  {
+    name: "Restaurant POS",
+    pillar: "Industry Systems",
+    detail: "Offline-capable POS, kitchen display, recipe costing.",
+  },
+  {
+    name: "Hospital ERP",
+    pillar: "Industry Systems",
+    detail: "Patient records, scheduling, pharmacy, billing.",
+  },
+  {
+    name: "Construction ERP",
+    pillar: "Industry Systems",
+    detail: "Site progress, procurement, subcontractor control.",
+  },
+  {
+    name: "School ERP",
+    pillar: "Industry Systems",
+    detail: "Admissions to alumni, fees, exams, parent portal.",
+  },
 ];
 
 export const caseStudies = [

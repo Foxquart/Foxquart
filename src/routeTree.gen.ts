@@ -9,7 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SolutionsIndexRouteImport } from './routes/solutions.index'
@@ -17,9 +19,19 @@ import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as SolutionsSlugRouteImport } from './routes/solutions.$slug'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -56,7 +68,9 @@ const ServicesSlugRoute = ServicesSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/solutions/$slug': typeof SolutionsSlugRoute
   '/services/': typeof ServicesIndexRoute
@@ -65,7 +79,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/solutions/$slug': typeof SolutionsSlugRoute
   '/services': typeof ServicesIndexRoute
@@ -75,7 +91,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
+  '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/solutions/$slug': typeof SolutionsSlugRoute
   '/services/': typeof ServicesIndexRoute
@@ -86,7 +104,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/contact'
+    | '/privacy'
     | '/sitemap.xml'
+    | '/terms'
     | '/services/$slug'
     | '/solutions/$slug'
     | '/services/'
@@ -95,7 +115,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/contact'
+    | '/privacy'
     | '/sitemap.xml'
+    | '/terms'
     | '/services/$slug'
     | '/solutions/$slug'
     | '/services'
@@ -104,7 +126,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/contact'
+    | '/privacy'
     | '/sitemap.xml'
+    | '/terms'
     | '/services/$slug'
     | '/solutions/$slug'
     | '/services/'
@@ -114,7 +138,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContactRoute: typeof ContactRoute
+  PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
   SolutionsSlugRoute: typeof SolutionsSlugRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
@@ -123,11 +149,25 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -178,7 +218,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ContactRoute: ContactRoute,
+  PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   ServicesSlugRoute: ServicesSlugRoute,
   SolutionsSlugRoute: SolutionsSlugRoute,
   ServicesIndexRoute: ServicesIndexRoute,
