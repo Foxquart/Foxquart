@@ -4,8 +4,8 @@ import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
 
 /**
  * Weighted smooth scroll (Lenis) driven by GSAP's ticker so ScrollTrigger and the
- * scroll position never disagree. Touch devices keep native scrolling — Lenis only
- * smooths wheel input — and reduced-motion visitors get the browser's own scroll.
+ * scroll position never disagree. Touch devices keep native scrolling (Lenis only
+ * smooths wheel input), and reduced-motion visitors get the browser's own scroll.
  */
 function LenisScrollSync() {
   const lenis = useLenis();

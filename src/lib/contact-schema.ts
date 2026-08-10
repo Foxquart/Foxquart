@@ -26,7 +26,7 @@ export const PREFERRED_TIMES = [
 
 /**
  * Shared between the form (instant client-side feedback) and POST /api/contact
- * (the authority). Must stay free of secrets and server-only imports — it ships
+ * (the authority). Must stay free of secrets and server-only imports: it ships
  * in the client bundle.
  *
  * `website` is a honeypot: humans never see the field, so anything in it means
@@ -37,7 +37,7 @@ export const contactSubmissionSchema = z.object({
     .string()
     .trim()
     .min(1, "Tell us who to address the reply to.")
-    .max(200, "That name is too long — 200 characters at most."),
+    .max(200, "That name is too long: 200 characters at most."),
   email: z
     .string()
     .trim()
@@ -49,7 +49,7 @@ export const contactSubmissionSchema = z.object({
   message: z
     .string()
     .trim()
-    .min(10, "A sentence or two is enough — what should we look at?")
+    .min(10, "A sentence or two is enough. What should we look at?")
     .max(5000, "Please keep the message under 5,000 characters."),
   projectType: z.enum(PROJECT_TYPES),
   timeline: z.enum(TIMELINES),

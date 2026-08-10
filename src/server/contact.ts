@@ -56,7 +56,7 @@ export async function markEmailFailed(id: string): Promise<void> {
 
 /**
  * Notifies the team inbox. The sender must be on a Resend-verified domain
- * (foxquart.com) — reply_to points at the visitor so a plain reply from the
+ * (foxquart.com); reply_to points at the visitor so a plain reply from the
  * inbox reaches them directly.
  */
 export async function sendNotification(data: ContactSubmission): Promise<void> {
@@ -77,7 +77,7 @@ export async function sendNotification(data: ContactSubmission): Promise<void> {
     `Area: ${data.projectType}`,
     `Timeline: ${data.timeline}`,
     `Preferred time to talk: ${data.preferredTime || "(no preference)"}${
-      data.preferredTime && data.timezone ? ` — ${data.timezone}` : ""
+      data.preferredTime && data.timezone ? ` (${data.timezone})` : ""
     }`,
     ``,
     `Message:`,
@@ -89,7 +89,7 @@ export async function sendNotification(data: ContactSubmission): Promise<void> {
     from,
     to,
     replyTo: data.email,
-    subject: `Enquiry — ${data.name}${data.company ? ` (${data.company})` : ""}`,
+    subject: `Enquiry from ${data.name}${data.company ? ` (${data.company})` : ""}`,
     text: lines.join("\n"),
   });
   if (error) throw new Error(`Resend rejected the notification: ${error.message}`);

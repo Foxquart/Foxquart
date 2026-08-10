@@ -12,7 +12,7 @@ import {
 } from "@/lib/seo";
 
 /*
- * DRAFT — NOT YET REVIEWED BY A LAWYER.
+ * DRAFT: NOT YET REVIEWED BY A LAWYER.
  *
  * These terms govern use of the marketing website only: no accounts, no payments and
  * no user-generated content are involved, and project work is explicitly pushed to a
@@ -21,8 +21,8 @@ import {
  *
  *   1. Registered legal entity name and address (the page says "Foxquart" throughout
  *      and offers the postal address on request).
- *   2. Section 13 names the courts of India generally. The exclusive seat — city and
- *      state — must be inserted once the registered office is confirmed, or the
+ *   2. Section 13 names the courts of India generally. The exclusive seat (city and
+ *      state) must be inserted once the registered office is confirmed, or the
  *      jurisdiction clause is weak.
  *   3. Section 10's liability cap is drafted for a site that sells nothing. Confirm the
  *      figure, and confirm the carve-outs match what Indian law will not let us exclude.
@@ -74,7 +74,7 @@ export const Route = createFileRoute("/terms")({
 
 type LegalSection = { id: string; title: string; body: ReactNode };
 
-// Declared before `sections` — the JSX below is evaluated at module load, so a const
+// Declared before `sections`: the JSX below is evaluated at module load, so a const
 // defined further down would be in its temporal dead zone.
 const linkCls =
   "text-foreground underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
@@ -108,9 +108,9 @@ const sections: LegalSection[] = [
     body: (
       <>
         <p>
-          This site describes what Foxquart builds — operational software, automation, cloud
-          infrastructure — and gives you a way to start a conversation about it. That is all it
-          does. There is no login, no dashboard, no payment and no place to upload files.
+          This site describes what Foxquart builds (operational software, automation, cloud
+          infrastructure) and gives you a way to start a conversation about it. That is all it does.
+          There is no login, no dashboard, no payment and no place to upload files.
         </p>
         <p>
           We try to keep the site accurate and current, but it is marketing material. It is not
@@ -129,7 +129,7 @@ const sections: LegalSection[] = [
           items={[
             "Outcome figures on this site describe results from specific past projects with their own scope, data and constraints. They are evidence of what we have done, not a forecast of what you will get. Your result depends on your process, your data and your team.",
             "Timelines, budget ranges and delivery estimates shown here are indicative. A commitment on scope, price or date exists only in a signed agreement.",
-            "Demonstration sites shown in the work section are exactly that — demonstrations. Some are live client sites and some are our own reference builds. Availability is not guaranteed and they can change or be taken down without notice.",
+            "Demonstration sites shown in the work section are exactly that: demonstrations. Some are live client sites and some are our own reference builds. Availability is not guaranteed and they can change or be taken down without notice.",
             "Client and business names and logos shown on this site belong to their owners and appear to identify work we did. They do not imply that those owners endorse anything else on this site.",
           ]}
         />
@@ -146,7 +146,7 @@ const sections: LegalSection[] = [
           items={[
             "Probe, scan or test the security of this site or the systems behind it, or try to get access to anything not intentionally published.",
             "Run automated collection against this site at a volume that degrades it for others, or ignore the directives in our robots file.",
-            "Use our contact channels — the form, the mailbox or the phone numbers — for bulk marketing, recruitment spam or automated outreach.",
+            "Use our contact channels (the form, the mailbox or the phone numbers) for bulk marketing, recruitment spam or automated outreach.",
             "Copy the site's text, layout, code or imagery to present as your own, or resell any part of it.",
             "Frame or mirror the site in a way that misrepresents who published it, or remove attribution and notices.",
             "Impersonate Foxquart or a Foxquart employee, or use our name or mark in a way that suggests a relationship that does not exist.",
@@ -155,7 +155,7 @@ const sections: LegalSection[] = [
         />
         <p>
           We may block access if any of this happens. If you have found a security problem with this
-          site, we would rather hear about it than not — write to{" "}
+          site, we would rather hear about it than not. Write to{" "}
           <a className={linkCls} href={`mailto:${EMAIL_ADDRESS}`}>
             {EMAIL_ADDRESS}
           </a>{" "}
@@ -204,7 +204,7 @@ const sections: LegalSection[] = [
         </p>
         <p>
           Intellectual property in work we build for a client is dealt with in that client&rsquo;s
-          agreement — typically full transfer on final payment — and not by this page.
+          agreement (typically full transfer on final payment) and not by this page.
         </p>
       </>
     ),
@@ -237,7 +237,7 @@ const sections: LegalSection[] = [
       <p>
         This is a marketing site and carries no uptime commitment. We may change, suspend or
         withdraw any part of it, at any time, without notice. Uptime and response commitments apply
-        to systems we build and operate for clients, and live in those clients&rsquo; agreements —
+        to systems we build and operate for clients, and live in those clients&rsquo; agreements,
         never here.
       </p>
     ),
@@ -263,7 +263,7 @@ const sections: LegalSection[] = [
         <p>
           To the extent the law allows, Foxquart is not liable for any indirect, incidental, special
           or consequential loss, or for lost profits, lost revenue, lost data, lost business or lost
-          goodwill, arising out of your use of this site — even if we were told such loss was
+          goodwill, arising out of your use of this site, even if we were told such loss was
           possible.
         </p>
         <p>
@@ -300,7 +300,7 @@ const sections: LegalSection[] = [
         <Link className={linkCls} to="/privacy">
           privacy policy
         </Link>{" "}
-        explains what we do with information from this site — including the fact that the contact
+        explains what we do with information from this site, including the fact that the contact
         form has no server behind it and sends nothing until you press send in your own mail app. It
         forms part of these terms.
       </p>

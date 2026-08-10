@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * foxquart design system — dark, engineering-grade, AI-native.
+ * foxquart design system: dark, engineering-grade, AI-native.
  * All color values are oklch tokens. Never hardcode colors in components.
  */
 
@@ -54,7 +54,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  /* Instrument Serif carries the display voice (regular + italic only — it has no
+  /* Instrument Serif carries the display voice (regular + italic only; it has no
      bold, so display type must never ask for one); Geist is the working sans;
      mono is for micro-labels and metrics only. */
   --font-display: "Instrument Serif", ui-serif, Georgia, serif;
@@ -64,14 +64,14 @@
 
 /*
  * Palette derived from the fox mark: one saturated orange on a near-black ground.
- * Dark is the only mode — there is no light theme. Hex equivalents are noted so the
+ * Dark is the only mode; there is no light theme. Hex equivalents are noted so the
  * values stay checkable against the brand contract in docs/redesign-contract.md.
  */
 :root {
   --radius: 0.75rem;
 
   --background: oklch(0.155 0.007 271); /* #0B0C0F */
-  --foreground: oklch(0.946 0.003 264); /* #ECEDEF — never pure white */
+  --foreground: oklch(0.946 0.003 264); /* #ECEDEF, never pure white */
   --surface: oklch(0.2 0.01 268); /* #14161B */
   --surface-2: oklch(0.235 0.012 264); /* #1B1E24 */
   --card: oklch(0.2 0.01 268);
@@ -80,15 +80,15 @@
   --popover-foreground: oklch(0.946 0.003 264);
 
   /* The accent. Its foreground is near-black: white on this orange is 3.4:1 and fails. */
-  --primary: oklch(0.663 0.218 37.6); /* #FB4F02 — sampled from public/foxquart.png */
+  --primary: oklch(0.663 0.218 37.6); /* #FB4F02, sampled from public/foxquart.png */
   --primary-foreground: oklch(0.155 0.007 271); /* #0B0C0F */
   --primary-hover: oklch(0.694 0.203 40.4); /* #FF6420 */
 
   --secondary: oklch(0.235 0.012 264);
   --secondary-foreground: oklch(0.946 0.003 264);
   --muted: oklch(0.235 0.012 264);
-  --muted-foreground: oklch(0.642 0.016 261); /* #878D97 — 4.6:1 on ground */
-  --subtle: oklch(0.8 0.013 260); /* #B9BEC6 — secondary body text */
+  --muted-foreground: oklch(0.642 0.016 261); /* #878D97, 4.6:1 on ground */
+  --subtle: oklch(0.8 0.013 260); /* #B9BEC6, secondary body text */
   --accent: oklch(0.284 0.016 264);
   --accent-foreground: oklch(0.946 0.003 264);
 
@@ -97,7 +97,7 @@
   --destructive: oklch(0.637 0.21 28);
   --destructive-foreground: oklch(0.155 0.007 271);
 
-  --border: oklch(0.284 0.016 264); /* #262A32 — solid hairline, not an alpha wash */
+  --border: oklch(0.284 0.016 264); /* #262A32, solid hairline, not an alpha wash */
   --border-strong: oklch(0.352 0.019 264); /* #363B45 */
   --input: oklch(0.284 0.016 264);
   --ring: oklch(0.663 0.218 37.6 / 55%);
@@ -132,7 +132,7 @@
   --shadow-elevated: 0 24px 60px -32px oklch(0 0 0 / 85%);
   --shadow-panel: 0 18px 40px -24px oklch(0 0 0 / 70%);
 
-  /* Motion tokens — see contract §3. Everything collapses to 0ms under reduced motion. */
+  /* Motion tokens, see contract §3. Everything collapses to 0ms under reduced motion. */
   --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-micro: 140ms;
   --dur-base: 240ms;
@@ -178,7 +178,7 @@
     text-wrap: balance;
   }
 
-  /* Every interactive element gets a visible keyboard state — contract §6.3 */
+  /* Every interactive element gets a visible keyboard state (contract §6.3) */
   :focus-visible {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
@@ -213,7 +213,7 @@
   }
 }
 
-/* On a dark ground, surfaces separate by tint and hairline — not by blur.
+/* On a dark ground, surfaces separate by tint and hairline, not by blur.
    Both utilities keep their names so existing markup doesn't break, but the
    heavy backdrop-filters are gone: they cost real frames on low-end Android. */
 @utility glass {
@@ -278,7 +278,7 @@
   }
 }
 
-/* Press feedback for tappable cards and buttons — no layout shift. */
+/* Press feedback for tappable cards and buttons, with no layout shift. */
 @utility press {
   transition: transform var(--dur-micro) var(--ease-brand);
   &:active {
@@ -295,12 +295,12 @@
   text-transform: uppercase;
 }
 
-/* Digits that line up in columns — metrics, prices, timelines. */
+/* Digits that line up in columns: metrics, prices, timelines. */
 @utility tnum {
   font-variant-numeric: tabular-nums;
 }
 
-/* SplitText line masks — each line clips inside its own box while it slides in. */
+/* SplitText line masks: each line clips inside its own box while it slides in. */
 .mask-line {
   will-change: transform;
 }
@@ -331,7 +331,7 @@
   }
 }
 
-/* Outlined display type — the fill is the ground, the letterform is a hairline. */
+/* Outlined display type: the fill is the ground, the letterform is a hairline. */
 @utility text-stroke {
   -webkit-text-stroke: 1px var(--border-strong);
   color: transparent;

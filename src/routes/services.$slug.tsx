@@ -24,14 +24,14 @@ export const Route = createFileRoute("/services/$slug")({
     if (!loaderData) {
       return {
         meta: [
-          { title: `Service unavailable — ${SITE_NAME}` },
+          { title: `Service unavailable | ${SITE_NAME}` },
           { name: "robots", content: "noindex" },
         ],
       };
     }
     const service = loaderData.service;
     const path = `/services/${params.slug}`;
-    const title = `${service.name} — ${SITE_NAME}`;
+    const title = `${service.name} | ${SITE_NAME}`;
     // The tagline alone is ~60 characters, which search and answer engines pad
     // with page text. Adding the measured outcome keeps the description inside
     // the 140–160 window and makes it a self-contained, quotable claim.
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/services/$slug")({
             path,
             capabilities: service.capabilities,
           }),
-          // Mirrors the FAQ section rendered below — required for FAQ rich
+          // Mirrors the FAQ section rendered below; required for FAQ rich
           // results and the single highest-yield block for answer engines.
           faqNode(service.faqs, path),
           breadcrumbNode([

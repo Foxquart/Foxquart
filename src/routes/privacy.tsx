@@ -12,7 +12,7 @@ import {
 } from "@/lib/seo";
 
 /*
- * DRAFT — NOT YET REVIEWED BY A LAWYER.
+ * DRAFT: NOT YET REVIEWED BY A LAWYER.
  *
  * Written to match what this site actually does (contact form stored in a Neon
  * Postgres database + notification email via Resend, no accounts, Vercel Analytics
@@ -22,10 +22,10 @@ import {
  *   1. Registered legal entity name and address. The page currently says the postal
  *      address is available on request; DPDP / GDPR contact-detail expectations may
  *      require it to be printed.
- *   2. Grievance Officer name and contact — required under the IT Rules and expected
+ *   2. Grievance Officer name and contact, required under the IT Rules and expected
  *      under the DPDP Act, 2023. Section 15 has a placeholder route (the shared inbox).
  *   3. Retention periods in section 08 (24 months for enquiries, 8 financial years for
- *      books of account) are drafted from Indian tax/company-law norms — confirm.
+ *      books of account) are drafted from Indian tax/company-law norms. Confirm.
  *   4. Vercel Analytics retention window depends on the plan; the wording is
  *      deliberately non-numeric. Confirm the plan and consider naming the number.
  *   5. Confirm whether a DPA is in place with Vercel, Google, Neon and Resend, and
@@ -73,7 +73,7 @@ export const Route = createFileRoute("/privacy")({
 
 type LegalSection = { id: string; title: string; body: ReactNode };
 
-// Declared before `sections` — the JSX below is evaluated at module load, so a const
+// Declared before `sections`: the JSX below is evaluated at module load, so a const
 // defined further down would be in its temporal dead zone.
 const linkCls =
   "text-foreground underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
@@ -85,8 +85,8 @@ const sections: LegalSection[] = [
     body: (
       <>
         <p>
-          Foxquart is a product engineering studio based in India. We build operational software —
-          clinic systems, school and warehouse platforms, automation — and this website is where we
+          Foxquart is a product engineering studio based in India. We build operational software
+          (clinic systems, school and warehouse platforms, automation) and this website is where we
           describe that work and take enquiries.
         </p>
         <p>
@@ -128,7 +128,7 @@ const sections: LegalSection[] = [
             "Your name, and the email address you want a reply at.",
             "Optionally your company name and a phone number.",
             "The kind of work you are asking about, a timeline, and your preferred time of day for a call, together with the timezone your browser reports.",
-            "Whatever you write in the message field — usually a description of the process or system you want fixed.",
+            "Whatever you write in the message field, usually a description of the process or system you want fixed.",
           ]}
         />
         <p>
@@ -273,8 +273,8 @@ const sections: LegalSection[] = [
       <>
         <Bullets
           items={[
-            "Enquiries — the database record, the email copy and call notes: kept while the conversation is live and for 24 months after the last message, then deleted from both the database and the mailbox.",
-            "If an engagement starts: correspondence and project records are kept for the life of the engagement, then for the period Indian tax and company law require of business records — currently eight financial years for books of account.",
+            "Enquiries (the database record, the email copy and call notes): kept while the conversation is live and for 24 months after the last message, then deleted from both the database and the mailbox.",
+            "If an engagement starts: correspondence and project records are kept for the life of the engagement, then for the period Indian tax and company law require of business records, currently eight financial years for books of account.",
             "Analytics: aggregate, non-identifying counts held by Vercel for the retention window of our plan. No profile of you is built or stored, and nothing there can be traced back to a person.",
             "Hosting logs: short-lived, kept by our host for its standard operational window.",
           ]}
@@ -312,7 +312,7 @@ const sections: LegalSection[] = [
           items={[
             "Tell you what we hold about you and why.",
             "Correct anything that is wrong.",
-            "Delete it — including deleting an enquiry thread from our mailbox.",
+            "Delete it, including deleting an enquiry thread from our mailbox.",
             "Stop using it for a particular purpose.",
             "Send you a copy in a portable format.",
           ]}
@@ -346,9 +346,9 @@ const sections: LegalSection[] = [
           Traffic to this site is encrypted in transit over HTTPS, and so is the connection between
           our server and the enquiry database. There are no visitor accounts; the only personal data
           the site stores is what you send through the contact form, and that database is not
-          readable from the website itself — it is reachable only with credentials held by the
-          people who answer enquiries. The mailbox that receives enquiries is protected with
-          two-factor authentication.
+          readable from the website itself; it is reachable only with credentials held by the people
+          who answer enquiries. The mailbox that receives enquiries is protected with two-factor
+          authentication.
         </p>
         <p>
           No system is completely secure. If a breach affects your information we will tell you and
@@ -374,10 +374,10 @@ const sections: LegalSection[] = [
     body: (
       <>
         <p>
-          During an engagement we often process data belonging to a client&rsquo;s business —
-          patient records, staff rosters, stock movements, customer lists. In that relationship the
-          client decides what is collected and why; we act on their instructions under the agreement
-          signed for that project, with access limited to the engineers working on it.
+          During an engagement we often process data belonging to a client&rsquo;s business: patient
+          records, staff rosters, stock movements, customer lists. In that relationship the client
+          decides what is collected and why; we act on their instructions under the agreement signed
+          for that project, with access limited to the engineers working on it.
         </p>
         <p>
           If you are a customer, patient or employee of one of our clients, your rights sit with
@@ -424,7 +424,7 @@ const sections: LegalSection[] = [
         </ul>
         <p>
           If you are not satisfied with our answer, you may escalate to the Data Protection Board of
-          India, or — if you are in the EEA or the UK — to your local supervisory authority.
+          India, or (if you are in the EEA or the UK) to your local supervisory authority.
         </p>
       </>
     ),

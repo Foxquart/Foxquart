@@ -44,7 +44,7 @@ export const services: Service[] = [
     faqs: [
       {
         q: "Do we need to replace our current tools?",
-        a: "No. We automate across what you already run — CRM, accounting, spreadsheets, ERP — and only replace a tool when it is the bottleneck.",
+        a: "No. We automate across what you already run (CRM, accounting, spreadsheets, ERP) and only replace a tool when it is the bottleneck.",
       },
       {
         q: "How long before the first automation is live?",
@@ -90,7 +90,7 @@ export const services: Service[] = [
     problem:
       "Deploys are manual and risky, downtime is discovered by customers, and nobody is certain the backups restore.",
     solution:
-      "Containerised workloads, CI/CD pipelines, autoscaling, observability and tested disaster recovery — fully managed or handed to your team.",
+      "Containerised workloads, CI/CD pipelines, autoscaling, observability and tested disaster recovery, fully managed or handed to your team.",
     impact: "99.98% measured uptime and deploys that take minutes instead of evenings.",
     roi: "40–60% lower infra spend",
     tech: ["AWS", "Azure", "GCP", "Docker", "Kubernetes", "Terraform", "Cloudflare"],
@@ -105,7 +105,7 @@ export const services: Service[] = [
     faqs: [
       {
         q: "Can you migrate us without downtime?",
-        a: "Yes — we run parallel environments and cut over behind a load balancer, with a tested rollback path.",
+        a: "Yes, we run parallel environments and cut over behind a load balancer, with a tested rollback path.",
       },
       {
         q: "What does managed hosting include?",
@@ -165,7 +165,7 @@ export const services: Service[] = [
     faqs: [
       {
         q: "Can our team edit content?",
-        a: "Yes — content is modelled in a headless CMS with previews, so marketing ships without engineering.",
+        a: "Yes, content is modelled in a headless CMS with previews, so marketing ships without engineering.",
       },
       {
         q: "Do you handle SEO migration?",
@@ -199,7 +199,7 @@ export const services: Service[] = [
       },
       {
         q: "Will it work without signal?",
-        a: "Yes — offline-first storage with conflict-safe sync when connectivity returns.",
+        a: "Yes: offline-first storage with conflict-safe sync when connectivity returns.",
       },
     ],
   },
@@ -238,7 +238,7 @@ export const solutionPages: LandingPage[] = [
     faqs: [
       {
         q: "Can it integrate with our accounting system?",
-        a: "Yes — we sync purchases, sales and stock valuation with the accounting platform you already use.",
+        a: "Yes, we sync purchases, sales and stock valuation with the accounting platform you already use.",
       },
       {
         q: "How long does implementation take?",
@@ -262,7 +262,7 @@ export const solutionPages: LandingPage[] = [
       "One system across finance, stock, procurement and production",
       "Role-based approvals with full audit trail",
       "Live management reporting instead of monthly PDFs",
-      "Modular rollout — go live per department, not big bang",
+      "Modular rollout: go live per department, not big bang",
     ],
     faqs: [
       {
@@ -329,7 +329,7 @@ export const solutionPages: LandingPage[] = [
       },
       {
         q: "Can you fix workflows we already built?",
-        a: "Yes — audit, harden and instrument existing workflows is one of our most common engagements.",
+        a: "Yes. Audit, harden and instrument existing workflows is one of our most common engagements.",
       },
     ],
   },
@@ -441,7 +441,7 @@ export const solutionPages: LandingPage[] = [
     faqs: [
       {
         q: "Do you work with our in-house engineers?",
-        a: "Yes — most engagements are joint, and we document and train as we go.",
+        a: "Yes, most engagements are joint, and we document and train as we go.",
       },
       {
         q: "Is Kubernetes always the answer?",
@@ -528,7 +528,7 @@ export const solutionPages: LandingPage[] = [
     faqs: [
       {
         q: "Does it work if the internet drops?",
-        a: "Yes — the POS continues offline and syncs automatically on reconnection.",
+        a: "Yes, the POS continues offline and syncs automatically on reconnection.",
       },
       {
         q: "Can it run on existing hardware?",
@@ -586,7 +586,7 @@ export const solutionPages: LandingPage[] = [
     faqs: [
       {
         q: "Can you connect to machines?",
-        a: "Where the machines expose data, yes — via OPC-UA, Modbus or vendor APIs.",
+        a: "Where the machines expose data, yes: via OPC-UA, Modbus or vendor APIs.",
       },
       {
         q: "Discrete or process manufacturing?",
@@ -648,7 +648,7 @@ export const solutionPages: LandingPage[] = [
       },
       {
         q: "Is there a parent app?",
-        a: "Yes — attendance, fees, results and announcements in one place.",
+        a: "Yes: attendance, fees, results and announcements in one place.",
       },
     ],
   },
@@ -706,7 +706,7 @@ export const solutionPages: LandingPage[] = [
       },
       {
         q: "Can you expose data from a legacy system?",
-        a: "Yes — we wrap legacy databases and services behind a clean, safe API layer.",
+        a: "Yes, we wrap legacy databases and services behind a clean, safe API layer.",
       },
     ],
   },
@@ -878,3 +878,10 @@ export const caseStudies = [
     ],
   },
 ];
+
+/** Real, founder-confirmed profiles. Rendered in the footer and emitted as
+ *  Organization sameAs so knowledge graphs merge the entity correctly. */
+export const SOCIAL_LINKS = [
+  { name: "X", url: "https://x.com/Foxquart" },
+  { name: "Instagram", url: "https://www.instagram.com/foxquart/" },
+] as const;

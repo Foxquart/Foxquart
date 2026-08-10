@@ -104,14 +104,14 @@ export function SolutionDemo({ slug }: { slug: string }) {
             </div>
             <Picture
               src={demo.image}
-              alt={`${demo.name} — live demo preview`}
+              alt={`${demo.name} live demo preview`}
               sizes="(min-width: 1024px) 55vw, 100vw"
               className="aspect-[2/1] w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.02]"
             />
           </a>
 
           <div className="flex flex-col justify-center gap-4 p-6 lg:p-8">
-            <p className="eyebrow-type text-primary">Live demo — this exact solution</p>
+            <p className="eyebrow-type text-primary">Live demo: this exact solution</p>
             <h3 className="font-display text-2xl text-foreground md:text-3xl">{demo.business}</h3>
             <p className="text-sm leading-relaxed text-muted-foreground">{demo.blurb}</p>
             <div className="mt-2 flex flex-col gap-2 sm:flex-row">

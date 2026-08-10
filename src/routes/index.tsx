@@ -12,7 +12,7 @@ import { canonicalLink, pageMeta } from "@/lib/seo";
 const path = "/";
 const title = "Custom Software, ERP & AI Automation | Foxquart";
 const description =
-  "Foxquart is a product engineering studio. We build the systems a business runs on — clinic, school, warehouse, ERP and AI automation — in weeks, not quarters.";
+  "Foxquart builds the systems a business runs on: clinic, school, warehouse, ERP and AI automation. Live in weeks, not quarters.";
 
 export const Route = createFileRoute("/")({
   // Organization and WebSite JSON-LD are emitted once from __root.tsx; the home
@@ -30,13 +30,13 @@ function Home() {
       {/* 1. The promise */}
       <Hero />
 
-      {/* 2. Why go online — in the owner's language */}
+      {/* 2. Why go online, in the owner's language */}
       <WhyBuild />
 
       {/* 3. What we build */}
       <WhatWeDo />
 
-      {/* 4. A few live systems, inline — the full gallery lives at /work */}
+      {/* 4. A few live demos, inline; the full gallery lives at /work */}
       <DemoTeaser />
 
       {/* 5. One build told properly, before the summary grid */}

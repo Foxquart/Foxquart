@@ -8,7 +8,7 @@ type Capability = {
   title: string;
   /** One specific outcome. What is true after the system is live. */
   outcome: string;
-  /** Real systems, named as systems — never as the stack they are built on. */
+  /** Real systems, named as systems, never as the stack they are built on. */
   systems: string[];
   /** Closest existing practice page. Slug is a `services` entry in site-data. */
   slug: string;
@@ -20,8 +20,7 @@ const capabilities: Capability[] = [
     index: "01",
     icon: Boxes,
     title: "Operations systems",
-    outcome:
-      "Stock, ledgers, patient files and class rosters in one record, with roles, approvals and an audit trail behind every change.",
+    outcome: "Stock, ledgers, files and rosters in one record, every change audited.",
     systems: [
       "Inventory & warehouse",
       "Finance & procurement ERP",
@@ -36,8 +35,7 @@ const capabilities: Capability[] = [
     index: "02",
     icon: Store,
     title: "Customer-facing products",
-    outcome:
-      "Customers book, order, pay and check status themselves, so the front desk stops being the bottleneck.",
+    outcome: "Customers book, order and pay themselves, without the front desk.",
     systems: [
       "Appointment booking",
       "Table & delivery ordering",
@@ -51,8 +49,7 @@ const capabilities: Capability[] = [
     index: "03",
     icon: Workflow,
     title: "Automation & AI",
-    outcome:
-      "The repetitive middle of a process runs itself, with retries, alerts and a log of every decision it made.",
+    outcome: "Repetitive work runs itself, with alerts and a log of every step.",
     systems: [
       "Workflow automation",
       "Lead qualification",
@@ -66,8 +63,7 @@ const capabilities: Capability[] = [
     index: "04",
     icon: Activity,
     title: "Run & operate",
-    outcome:
-      "Outages reach us before they reach your customers, and changes keep shipping long after launch week.",
+    outcome: "We see outages before your customers do, and keep shipping after launch.",
     systems: ["Managed hosting", "Monitoring & alerting", "Tested restores", "Ongoing releases"],
     slug: "cloud-devops",
     linkLabel: "Cloud infrastructure & DevOps",
@@ -97,7 +93,7 @@ export function WhatWeDo() {
       <SectionHeading
         eyebrow="Capabilities"
         title="The systems your business runs on."
-        intro="Operations first. Customer-facing products second. Automation around both. And someone still on call after launch."
+        intro="Operations, customer products, automation, and someone on call after launch."
       />
 
       <div className="mt-10 grid gap-4 md:mt-14 md:grid-cols-2">

@@ -29,9 +29,9 @@ import {
   websiteNode,
 } from "@/lib/seo";
 
-const rootTitle = "Foxquart — Product Engineering Studio";
+const rootTitle = "Foxquart | Product Engineering Studio";
 const rootDescription =
-  "Foxquart is a product engineering studio building custom operational software, AI workflow automation, cloud infrastructure and mobile apps for business.";
+  "Foxquart is a remote-first product engineering studio building custom operational software, AI automation, cloud infrastructure and mobile apps worldwide.";
 
 function NotFoundComponent() {
   return (
@@ -96,8 +96,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     // Site-wide defaults. Every child route overrides the title, description and
-    // og:url for its own page — TanStack keeps the deepest match for a given
-    // name/property — so what survives here is only what is genuinely global.
+    // og:url for its own page (TanStack keeps the deepest match for a given
+    // name/property), so what survives here is only what is genuinely global.
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },

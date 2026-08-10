@@ -7,7 +7,7 @@ import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 import { caseStudies } from "@/lib/site-data";
 
 /**
- * Shared section opener: the headline reveals through line masks (contract §3 —
+ * Shared section opener: the headline reveals through line masks (contract §3:
  * headline text always MaskLines, never block-fades), the intro rises after it.
  * The eyebrow slot exists only for labels that carry real content ("From
  * $2,500 per month"); label-only pills are banned, so most sections omit it.
@@ -47,7 +47,7 @@ function SectionIntro({
  * Stat strip, directly under the hero.
  *
  * Every figure here is a claim about the practice and has to be confirmed by the
- * founder before launch — see docs/redesign-contract.md §6.7. The client logo row
+ * founder before launch (see docs/redesign-contract.md §6.7). The client logo row
  * that used to sit above these numbers was removed: the six names on it
  * (NORTHWIND, ATLAS FOODS, MERIDIAN, VOLTA LOGISTICS, CEDARCARE, KRAFTWORKS)
  * were invented, and an invented logo wall is the least defensible proof on a
@@ -55,25 +55,25 @@ function SectionIntro({
  * written permission to be named.
  */
 /**
- * Why go online at all — written for the owner, not the engineer. Plain English,
+ * Why go online at all, written for the owner, not the engineer. Plain English,
  * no jargon, no numbers (the case studies below carry the numbers exactly once).
  */
 const whyReasons = [
   {
     title: "Be open after you close",
-    body: "Most people look for you at night, from their phone. A good website or booking page takes the order while your shop is shut.",
+    body: "A booking page takes the order while your shop is shut.",
   },
   {
     title: "Stop writing the same thing twice",
-    body: "When bookings live in one place, nobody copies numbers between notebooks, chats and registers — and nothing gets lost on the way.",
+    body: "One record, so nobody copies numbers between notebooks and chats.",
   },
   {
     title: "Look as good as you are",
-    body: "People judge a business by its website before they ever call. A clean, fast, modern site makes you look like the company you are becoming.",
+    body: "People judge your business by its website before they ever call.",
   },
   {
     title: "Know your numbers today",
-    body: "See what sold, what is in stock and what is due — today, on your phone. Not at the end of the month, from a pile of paper.",
+    body: "What sold, what is in stock, what is due, on your phone.",
   },
 ];
 
@@ -82,7 +82,7 @@ const howPromises = [
   "Live in weeks, not months",
   "Fast on cheap phones and slow networks",
   "We watch it and fix it after launch",
-  "It is yours — code, data, everything",
+  "It is yours: code, data, everything",
 ];
 
 export function WhyBuild() {
@@ -150,7 +150,7 @@ export function SocialProof() {
     },
   ];
 
-  // Every breakpoint is restated because `twMerge` scopes overrides per variant —
+  // Every breakpoint is restated because `twMerge` scopes overrides per variant;
   // `py-32` on its own would leave the Section's base `sm:py-24` in place.
   return (
     <Section className="py-32 sm:py-32 md:py-48">
@@ -160,7 +160,7 @@ export function SocialProof() {
       >
         What nine years of delivery adds up to
       </MaskLines>
-      {/* Open grid over hairline rules — monumental figures, not a table.
+      {/* Open grid over hairline rules: monumental figures, not a table.
           The Counter SSRs the real value, so crawlers and no-JS visitors read
           the true figure; the count-up is a client-side embellishment only. */}
       <Rise className="mt-12 md:mt-20" childSelector="[data-stat]" stagger={0.1} y={28}>
@@ -189,7 +189,7 @@ const STACK_GAP = 20;
  * Three production systems with their measured results.
  *
  * Desktop (lg:+) runs a card stack: every card is `position: sticky` with a
- * per-card top offset, so each one pins while the next scrolls up over it —
+ * per-card top offset, so each one pins while the next scrolls up over it.
  * CSS does the pinning (cheap, robust, and native scroll means no fight with
  * Lenis), and a scrubbed GSAP tween adds the scale-down + dim on the covered
  * card (transform/opacity only). Mobile is a simple flow with Rise.
@@ -225,7 +225,7 @@ export function CaseStudies() {
             ease: "none",
             scrollTrigger: trigger,
           });
-          // Dim via an opaque ground-coloured veil, not card opacity — a
+          // Dim via an opaque ground-coloured veil, not card opacity: a
           // transparent card would let the deck underneath bleed through.
           if (veil) {
             gsap.to(veil, { opacity: 0.55, ease: "none", scrollTrigger: trigger });
@@ -241,7 +241,7 @@ export function CaseStudies() {
     <Section id="case-studies" className="py-32 sm:py-32 md:py-48">
       <SectionIntro
         title="Three systems in production, with the numbers attached."
-        intro="Before and after, measured on the metric the client actually cared about."
+        intro="Before and after, measured on the metric that mattered."
       />
       <div ref={ref} className="mt-10 flex flex-col gap-5 md:mt-12 md:gap-6">
         {caseStudies.map((study, i) => (
@@ -309,31 +309,19 @@ export function CaseStudies() {
 /**
  * Four stages, not eight. The original list broke delivery into Discovery,
  * Architecture, Design, Development, Testing, Deployment, Monitoring and
- * Improvement — accurate, but a spec sheet. Design/Development/Testing collapse
+ * Improvement: accurate, but a spec sheet. Design/Development/Testing collapse
  * into Build; Deployment/Monitoring/Improvement collapse into Operate.
  *
  * The numbered markers stay: this is a genuine sequence, the one place the
  * contract allows indices. An accent spine draws down the list as you scroll
- * (scrubbed scaleY on a 1px element — transform only, no layout work).
+ * (scrubbed scaleY on a 1px element: transform only, no layout work).
  */
 export function Process() {
   const steps: Array<[string, string]> = [
-    [
-      "Discovery",
-      "Process mapping, the cost of the current state, and the metrics the build gets judged on.",
-    ],
-    [
-      "Architecture",
-      "Data model, integrations, access control and the scaling plan — agreed before any code.",
-    ],
-    [
-      "Build",
-      "Two-week increments of working software, tested with the people who will run it daily.",
-    ],
-    [
-      "Operate",
-      "Zero-downtime cutover, alerting from day one, and a quarterly review against those metrics.",
-    ],
+    ["Discovery", "Map the process, cost the current state, agree the metrics."],
+    ["Architecture", "Data model, integrations and access control, agreed before any code."],
+    ["Build", "Working software every two weeks, tested with the people who run it."],
+    ["Operate", "Cutover without downtime, alerting from day one, quarterly reviews."],
   ];
 
   const listRef = useRef<HTMLDivElement>(null);
@@ -343,7 +331,7 @@ export function Process() {
     () => {
       if (!listRef.current || !lineRef.current || prefersReducedMotion()) return;
       // Without JS (or with reduced motion) the accent spine simply shows in
-      // full — fromTo sets the collapsed state only once the tween exists.
+      // full; fromTo sets the collapsed state only once the tween exists.
       gsap.fromTo(
         lineRef.current,
         { scaleY: 0 },
@@ -366,7 +354,7 @@ export function Process() {
     <Section id="process" className="py-32 sm:py-32 md:py-48">
       <SectionIntro
         title="A delivery process built for accountability."
-        intro="Four stages on every engagement, whether it is a single automation or a full ERP."
+        intro="Four stages, whether it is one automation or a full ERP."
       />
       <div ref={listRef} className="relative mt-12 md:mt-16">
         {/* The spine: a hairline track with an accent line drawing down it. */}
@@ -404,12 +392,12 @@ export function Process() {
 /**
  * Three engagement models. Prices are starting points, stated as such.
  *
- * The featured tier is marked "Recommended" — our own editorial stance, which we
+ * The featured tier is marked "Recommended", our own editorial stance, which we
  * are entitled to hold. It previously read "Most Chosen Model", which is a claim
  * about client behaviour we cannot evidence (contract §6.7).
  *
  * Hover physics per contract §3: cards lift by surface tint (card-lift), the
- * featured tier may also translate -4px — transform only, no shadows.
+ * featured tier may also translate -4px (transform only, no shadows).
  */
 export function Pricing() {
   const models = [
@@ -539,7 +527,7 @@ export function Pricing() {
 
 /**
  * Closing band for the interior pages (services/solutions). The home page uses
- * BookingCta instead. Surface tint + hairline, per contract §3 — the old glass
+ * BookingCta instead. Surface tint + hairline, per contract §3; the old glass
  * panel and gradient mesh are gone.
  */
 export function CtaBand() {
@@ -554,8 +542,7 @@ export function CtaBand() {
         </MaskLines>
         <Rise y={20} delay={0.1}>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-            A 30-minute strategy call. We will tell you what to automate first, what to rebuild, and
-            what to leave alone.
+            A 30-minute call: what to automate first, what to leave alone.
           </p>
           <Magnetic className="mt-8">
             <Link

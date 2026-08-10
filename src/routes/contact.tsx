@@ -13,9 +13,9 @@ import {
 } from "@/lib/seo";
 
 const path = "/contact";
-const title = "Contact — Book a Strategy Call | Foxquart";
+const title = "Contact: Book a Strategy Call | Foxquart";
 const description =
-  "Book a 30-minute strategy call with a Foxquart engineer. Tell us the process costing you the most hours and get a prioritised automation shortlist.";
+  "Book a 30-minute remote strategy call with a Foxquart engineer, from anywhere. Tell us the process costing you the most hours and get an automation shortlist.";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({

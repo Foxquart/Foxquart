@@ -12,7 +12,7 @@ import {
 
 /**
  * The form POSTs to /api/contact, which stores the enquiry and notifies the
- * team inbox — "sent" means the server accepted it. On failure the form stays
+ * team inbox; "sent" means the server accepted it. On failure the form stays
  * intact and a direct mailto link is offered as the escape hatch.
  */
 type Status = "idle" | "submitting" | "sent";
@@ -29,7 +29,7 @@ export function ContactSection() {
   const [timeline, setTimeline] = useState<string>(TIMELINES[0]);
   const [preferredTime, setPreferredTime] = useState<string>(PREFERRED_TIMES[0]);
   const [timezone, setTimezone] = useState("");
-  const [website, setWebsite] = useState(""); // honeypot — humans never see it
+  const [website, setWebsite] = useState(""); // honeypot: humans never see it
   const [errors, setErrors] = useState<Errors>({});
   const [notice, setNotice] = useState("");
   const [failed, setFailed] = useState(false);
@@ -157,12 +157,12 @@ export function ContactSection() {
           <SectionHeading
             eyebrow="Contact"
             title="Talk to the engineer who would build it, not a salesperson."
-            intro="Send the details and we reply from a real inbox, usually within one business day, with an agenda and an honest first opinion."
+            intro="We usually reply within one business day, with an honest first opinion."
           />
           <ul className="mt-8 space-y-3 text-sm text-muted-foreground">
             {[
               "30 minutes, no pitch deck",
-              "You leave with a prioritised shortlist of what to automate first",
+              "You leave with a shortlist of what to automate first",
               "NDA available before the call on request",
             ].map((l) => (
               <li key={l} className="flex items-start gap-2">
@@ -208,8 +208,7 @@ export function ContactSection() {
           {status !== "sent" ? (
             <form ref={formRef} className="grid gap-6" onSubmit={handleSubmit} noValidate>
               <p className="text-sm text-muted-foreground">
-                Fill in what you know and press send — it goes straight to our inbox and we reply to
-                the address you give us. Only the starred fields are required. See our{" "}
+                Fill in what you know. Only the starred fields are required. See our{" "}
                 <Link
                   to="/privacy"
                   className="text-foreground underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
@@ -382,14 +381,14 @@ export function ContactSection() {
               </span>
 
               {/* The form has unmounted, so focus is moved to this heading as well as
-                  announcing the region — a newly inserted live region alone is unreliable. */}
+                  announcing the region; a newly inserted live region alone is unreliable. */}
               <div role="status" aria-live="polite">
                 <h3
                   ref={statusHeadingRef}
                   tabIndex={-1}
                   className="font-display text-xl font-semibold text-balance text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                 >
-                  Message received — it is in our inbox.
+                  Message received. It is in our inbox.
                 </h3>
                 <p className="mt-2 text-sm text-muted-foreground">
                   Thanks{name.trim() ? `, ${name.trim()}` : ""}. An engineer reads it and replies
@@ -420,7 +419,7 @@ export function ContactSection() {
                   >
                     {PHONE_NUMBERS[0].formatted}
                   </a>{" "}
-                  — mention you already sent the form and we pull it up.
+                  and mention you already sent the form; we pull it up.
                 </p>
               </div>
             </div>

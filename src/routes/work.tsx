@@ -3,9 +3,9 @@ import { FeaturedWork } from "@/components/site/featured-work";
 import { canonicalLink, pageMeta } from "@/lib/seo";
 
 const path = "/work";
-const title = "Live Demo Systems — Open Every Build | Foxquart";
+const title = "Live Demo Systems: Open Every Build | Foxquart";
 const description =
-  "Every Foxquart reference build, running live: inventory control, school management, clinic booking, dining reservations and more. Open them and click around.";
+  "Foxquart demo systems, running live: inventory, school management, clinic booking, dining reservations and more. Open any of them.";
 
 export const Route = createFileRoute("/work")({
   head: () => ({

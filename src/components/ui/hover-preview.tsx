@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
  *
  * - Tokens only (the original hardcoded its own palette and fonts).
  * - Desktop sugar, not a dependency: the card exists only on pointer-fine
- *   devices. On touch, links are plain links — nothing important behind hover
+ *   devices. On touch, links are plain links: nothing important behind hover
  *   (contract §4).
  * - Position updates are rAF-throttled; transitions ride the motion tokens and
  *   collapse under prefers-reduced-motion via the global killswitch.
@@ -97,7 +97,7 @@ export function HoverPreviewGroup({
       const item = items[key];
       if (!item) return;
       setActive(item);
-      // Position synchronously on entry — the card must appear AT the cursor,
+      // Position synchronously on entry: the card must appear AT the cursor,
       // not glide in from wherever the previous hover left it.
       setPos(clamp(e.clientX, e.clientY));
       setVisible(true);
@@ -155,7 +155,7 @@ export function HoverPreviewGroup({
 }
 
 /**
- * An inline link that shows its preview card on hover. Always a real anchor —
+ * An inline link that shows its preview card on hover. Always a real anchor;
  * on touch devices it simply navigates.
  */
 export function HoverPreviewLink({

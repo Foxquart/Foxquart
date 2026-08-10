@@ -27,7 +27,7 @@ export function StickyCta({ closingCtaSelector = "#contact" }: StickyCtaProps = 
   const [pastHero, setPastHero] = useState(false);
   const [closingCtaInView, setClosingCtaInView] = useState(false);
 
-  // Scroll position, sampled at most once per frame via rAF — the listener itself
+  // Scroll position, sampled at most once per frame via rAF; the listener itself
   // only schedules, it never measures.
   useEffect(() => {
     let frame = 0;

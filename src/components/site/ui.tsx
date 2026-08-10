@@ -268,7 +268,7 @@ export function FoxquartLogo({
 
   return (
     <span ref={ref} className="flex items-center gap-2.5">
-      {/* The founder's artwork, verbatim — the vector FoxquartIcon is only for
+      {/* The founder's artwork, verbatim. The vector FoxquartIcon is only for
           decorative tinted uses (e.g. the hero's parallax mark), never the lockup. */}
       <span
         data-mark

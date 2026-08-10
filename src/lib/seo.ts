@@ -6,9 +6,11 @@
  *
  * `foxquart.com` 308-redirects to `www.foxquart.com`, so the `www` host is the
  * canonical origin. Never emit a relative or bare-domain URL in a canonical link,
- * `og:url`, a sitemap `<loc>` or a JSON-LD `url`/`@id` — answer engines and
+ * `og:url`, a sitemap `<loc>` or a JSON-LD `url`/`@id`: answer engines and
  * crawlers resolve those inconsistently, and a relative `og:url` is invalid.
  */
+
+import { SOCIAL_LINKS } from "@/lib/site-data";
 
 export const SITE_URL = "https://www.foxquart.com";
 export const SITE_NAME = "Foxquart";
@@ -17,8 +19,8 @@ export const SITE_NAME = "Foxquart";
 export const OG_IMAGE_URL = `${SITE_URL}/og.png`;
 export const OG_IMAGE_WIDTH = "1200";
 export const OG_IMAGE_HEIGHT = "630";
-export const OG_IMAGE_ALT = "Foxquart — product engineering studio";
-/* The founder's original raster artwork — Google prefers a raster for Organization
+export const OG_IMAGE_ALT = "Foxquart, product engineering studio";
+/* The founder's original raster artwork. Google prefers a raster for Organization
    logo, and this is the authoritative version of the mark. */
 export const LOGO_URL = `${SITE_URL}/foxquart.png`;
 
@@ -48,7 +50,7 @@ export function absoluteUrl(path: string): string {
   return `${SITE_URL}${normalised}`;
 }
 
-/** Canonical `<link>` descriptor. Only ever emit one per page — never from the root route. */
+/** Canonical `<link>` descriptor. Only ever emit one per page, never from the root route. */
 export function canonicalLink(path: string) {
   return { rel: "canonical", href: absoluteUrl(path) };
 }
@@ -139,10 +141,8 @@ export function jsonLdScript(nodes: JsonLd[]) {
  * repeating this, which is what lets knowledge graphs and LLMs merge the pages
  * into one entity rather than treating each page as a separate business.
  *
- * No `sameAs` is emitted: the only social URLs in the codebase are unresolved
- * placeholders (`https://www.linkedin.com`, `https://github.com`). Add the real
- * profile URLs here once they exist — a wrong `sameAs` merges the entity with
- * someone else's.
+ * `sameAs` carries the founder-confirmed profiles from SOCIAL_LINKS, which is
+ * what lets knowledge graphs tie the X and Instagram accounts to this entity.
  */
 export function organizationNode({
   email,
@@ -156,6 +156,7 @@ export function organizationNode({
     "@id": ORGANIZATION_ID,
     name: SITE_NAME,
     url: `${SITE_URL}/`,
+    sameAs: SOCIAL_LINKS.map((social) => social.url),
     logo: {
       "@type": "ImageObject",
       url: LOGO_URL,
@@ -163,7 +164,11 @@ export function organizationNode({
     },
     image: OG_IMAGE_URL,
     description:
-      "Foxquart is a product engineering studio that builds custom operational software, AI workflow automation, cloud infrastructure and mobile field applications for businesses.",
+      "Foxquart is a remote-first product engineering studio that builds custom operational software, AI workflow automation, cloud infrastructure and mobile field applications for businesses worldwide.",
+    slogan: "Software your business runs on. Built in weeks. Built to keep.",
+    /* Engagements are remote and not limited to any region, so the served area is
+       the schema.org-recognised literal "Worldwide" rather than a country list. */
+    areaServed: "Worldwide",
     email,
     telephone: telephones[0],
     contactPoint: [

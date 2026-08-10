@@ -6,7 +6,7 @@ import { services } from "@/lib/site-data";
 import { breadcrumbNode, canonicalLink, collectionNode, jsonLdScript, pageMeta } from "@/lib/seo";
 
 const path = "/services";
-const title = "Services — Software, AI Automation & Cloud | Foxquart";
+const title = "Services: Software, AI Automation & Cloud | Foxquart";
 const description =
   "Six engineering practices from Foxquart: custom software, AI workflow automation, cloud and DevOps, data intelligence, enterprise web and mobile apps.";
 

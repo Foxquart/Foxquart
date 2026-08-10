@@ -6,7 +6,7 @@ import { Rise } from "./motion";
 /*
  * Editorial teaser for the live demos: a short passage in large type where the
  * demo names are hover-preview links (desktop) / plain links to the live sites
- * (touch). A few builds only — the full gallery lives in the work section this
+ * (touch). A few builds only; the full gallery lives in the work section this
  * anchors to. Every named business below is one of our own reference builds.
  */
 
@@ -46,7 +46,7 @@ export function DemoTeaser() {
     <section id="live-previews" className="relative px-4 py-32 sm:px-5 md:px-8 md:py-48">
       <HoverPreviewGroup items={previews} className="mx-auto w-full max-w-5xl">
         <Rise>
-          <p className="eyebrow-type text-primary">Hover a name — it is the real system</p>
+          <p className="eyebrow-type text-primary">Hover a name: it is the real system</p>
         </Rise>
 
         <Rise delay={0.08} className="mt-8 space-y-8">
@@ -55,7 +55,7 @@ export function DemoTeaser() {
             <HoverPreviewLink k="spares" href="https://inventory.foxquart.com/">
               Spares Control Center
             </HoverPreviewLink>
-            . A school runs admissions, fees and four portals on{" "}
+            . A school runs admissions and fees on{" "}
             <HoverPreviewLink k="school" href="https://gilded-nougat-63e5af.netlify.app/">
               Vidya Bharati
             </HoverPreviewLink>
@@ -70,7 +70,7 @@ export function DemoTeaser() {
             <HoverPreviewLink k="dining" href="https://emberanoak.netlify.app/">
               Ember &amp; Oak
             </HoverPreviewLink>
-            . Every one is live — open it, click around, break nothing.
+            . Every one is live. Open it, click around.
           </p>
         </Rise>
 

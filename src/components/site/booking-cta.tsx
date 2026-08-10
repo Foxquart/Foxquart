@@ -9,24 +9,21 @@ const AGENDA = [
   {
     slot: "00–10",
     title: "You walk us through the process",
-    detail:
-      "The one held together by spreadsheets, WhatsApp threads and paper. Every handoff, every place the same number gets typed twice.",
+    detail: "The one held together by spreadsheets, chat threads and paper.",
   },
   {
     slot: "10–20",
     title: "We mark what software should own",
-    detail:
-      "Some steps are worth building. Some are cheaper left manual, and we will say so. You see where the data sits and where it breaks.",
+    detail: "What is worth building, and what is cheaper left manual.",
   },
   {
     slot: "20–30",
     title: "We size the first release",
-    detail:
-      "Scope, order of work and a week count for the version that goes live first — not a roadmap for everything you could eventually have.",
+    detail: "Scope and a week count for the version that goes live first.",
   },
 ];
 
-/** Terms of the call. Commitments we control — nothing claimed on anyone else's behalf. */
+/** Terms of the call. Commitments we control, nothing claimed on anyone else's behalf. */
 const TERMS = ["30 minutes", "No deck", "Straight to the engineer who would build it"];
 
 export function BookingCta() {
@@ -56,9 +53,7 @@ export function BookingCta() {
           <div className="mt-12 grid gap-10 md:mt-16 md:grid-cols-2 md:gap-16">
             <Rise>
               <p className="max-w-[54ch] text-base text-muted-foreground md:text-lg">
-                A build review is a working call, not a pitch. Bring the process your team runs by
-                hand — intake, scheduling, stock, rosters, billing — and we take it apart together
-                on the call.
+                A working call, not a pitch. Bring the process your team runs by hand.
               </p>
             </Rise>
 
@@ -86,9 +81,8 @@ export function BookingCta() {
               <div className="max-w-[52ch]">
                 <span className="eyebrow-type text-muted-foreground">You leave with</span>
                 <p className="mt-3 text-base text-foreground">
-                  A written scope note: the first release, the manual work it takes off your team,
-                  and a week count. It is yours whether or not you hire us — and if software is not
-                  the fix, we will tell you that on the call.
+                  A written scope note: the first release and a week count. It is yours whether or
+                  not you hire us. If software is not the fix, we say so.
                 </p>
               </div>
 

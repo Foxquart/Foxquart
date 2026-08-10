@@ -1,7 +1,14 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
-import { EMAIL_ADDRESS, MAILTO_URL, PHONE_NUMBERS, services, solutionPages } from "@/lib/site-data";
+import { ChevronDown, Instagram, Menu, X } from "lucide-react";
+import {
+  EMAIL_ADDRESS,
+  MAILTO_URL,
+  PHONE_NUMBERS,
+  SOCIAL_LINKS,
+  services,
+  solutionPages,
+} from "@/lib/site-data";
 import { gsap, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
 import { FoxquartLogo } from "./ui";
@@ -84,7 +91,7 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close on route change — covers back/forward and preloaded navigations, not just taps.
+  // Close on route change; covers back/forward and preloaded navigations, not just taps.
   useEffect(() => {
     setOpen(false);
   }, [href]);
@@ -143,7 +150,7 @@ export function SiteHeader() {
         ref={headerRef}
         className="fixed inset-x-0 top-0 z-50 md:pointer-events-none md:flex md:justify-center md:px-6 md:pt-4"
       >
-        {/* Mobile: slim full-width bar, transparent over the hero. md:+ — a floating
+        {/* Mobile: slim full-width bar, transparent over the hero. md:+ is a floating
             glass pill, centered and sized to its content, that tightens its padding
             slightly once the page is scrolled. The wrapper spans the viewport only to
             centre the pill, so it drops pointer events at md and the pill takes them
@@ -160,11 +167,11 @@ export function SiteHeader() {
         >
           <Link
             to="/"
-            aria-label="Foxquart — home"
+            aria-label="Foxquart home"
             data-nav-item
             className="press flex items-center"
             onClick={() => {
-              // Same-route clicks don't navigate, so the logo must scroll instead —
+              // Same-route clicks don't navigate, so the logo must scroll instead:
               // clicking the mark should always land the visitor back on the hero.
               if (window.location.pathname === "/") {
                 window.scrollTo({ top: 0, behavior: "smooth" });
@@ -190,7 +197,7 @@ export function SiteHeader() {
               Services
             </Link>
 
-            {/* Solutions stays a real link — the dropdown is an accelerator, never the
+            {/* Solutions stays a real link; the dropdown is an accelerator, never the
                 only route to the pages (contract §4: nothing important behind hover).
                 CSS-only disclosure: hover opens it, focus-within opens it for keyboard. */}
             <div className="group relative">
@@ -322,7 +329,7 @@ export function SiteHeader() {
             </div>
           </nav>
 
-          {/* Primary action in the lower third, clear of the home indicator — contract §4. */}
+          {/* Primary action in the lower third, clear of the home indicator (contract §4). */}
           <div className="border-t border-border bg-background px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
             <Link to="/contact" className={`${ctaCls} flex w-full`}>
               {CTA_LABEL}
@@ -342,14 +349,14 @@ export function SiteFooter() {
       <div className="mx-auto w-full max-w-7xl px-5 py-14 md:px-8 md:py-16">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.2fr)]">
           <div className="flex flex-col items-start gap-4">
-            <Link to="/" aria-label="Foxquart — home" className="press flex items-center">
+            <Link to="/" aria-label="Foxquart home" className="press flex items-center">
               <FoxquartLogo
                 iconClassName="size-7 text-primary"
                 textClassName="font-display text-xl font-semibold tracking-tight text-foreground"
               />
             </Link>
             <p className="max-w-xs text-sm text-muted-foreground">
-              Software your business runs on — built in weeks, built to keep.
+              Software your business runs on, built in weeks, built to keep.
             </p>
             <Link to="/contact" className={`${ctaCls} inline-flex`}>
               {CTA_LABEL}
@@ -422,6 +429,32 @@ export function SiteFooter() {
                     <li key={phone.raw}>
                       <a href={phone.tel} className={`${footerLinkCls} font-mono text-xs`}>
                         {phone.formatted}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <ul className="mt-5 flex gap-2.5">
+                  {SOCIAL_LINKS.map((social) => (
+                    <li key={social.name}>
+                      <a
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Foxquart on ${social.name}`}
+                        className="press grid size-11 place-items-center rounded-full border border-border bg-surface text-muted-foreground transition-colors duration-[var(--dur-micro)] hover:border-[var(--border-strong)] hover:text-foreground"
+                      >
+                        {social.name === "X" ? (
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="size-4"
+                            aria-hidden="true"
+                          >
+                            <path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.3 19.5h2.04L6.49 3.24H4.3l13.3 17.41Z" />
+                          </svg>
+                        ) : (
+                          <Instagram className="size-4" aria-hidden="true" />
+                        )}
                       </a>
                     </li>
                   ))}

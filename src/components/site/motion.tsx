@@ -11,7 +11,7 @@ import { gsap, SplitText, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap
 
 /**
  * Headline reveal: splits into lines, masks each line, slides them up with a
- * stagger. The text is fully present in SSR HTML — SplitText runs client-side
+ * stagger. The text is fully present in SSR HTML; SplitText runs client-side
  * only, so crawlers and no-JS visitors read normal markup.
  */
 export function MaskLines({
@@ -158,7 +158,7 @@ export function Rise({
 /**
  * Infinite marquee. Pure CSS animation (see .marquee-track in styles.css), so it
  * costs no JS per frame; halts under reduced motion via the global killswitch.
- * Children are rendered twice — the second copy is aria-hidden.
+ * Children are rendered twice; the second copy is aria-hidden.
  */
 export function Marquee({
   children,

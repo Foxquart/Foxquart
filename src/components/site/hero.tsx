@@ -6,7 +6,7 @@ import { Magnetic, Marquee, MaskLines, Parallax, Rise } from "./motion";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
 
 /*
- * Hero. The LCP element is the <h1> text — no image or canvas competes with it.
+ * Hero. The LCP element is the <h1> text. No image or canvas competes with it.
  * One decorative object: the fox mark, oversized, parallaxing off the right edge.
  * Display face is Instrument Serif (one weight; italics are the emphasis voice).
  */
@@ -29,7 +29,7 @@ export function Hero() {
    * The cartoon intro, built from sprites cut out of the founder's artwork:
    * the fox head appears whole (hole filled), the Q-ball bounces in from the
    * left in two hops, leaps onto the head and lands exactly where the counter
-   * belongs — at which point the true holed head swaps in and the mark punches
+   * belongs, at which point the true holed head swaps in and the mark punches
    * to rest. Afterwards a gentle idle rock repeats. Reduced motion shows the
    * finished mark immediately and nothing moves.
    */
@@ -55,7 +55,7 @@ export function Hero() {
       /*
        * One seamless cycle, repeated forever: the Q rolls in spinning, hops
        * twice with squash-and-stretch, crouches (anticipation), leaps onto the
-       * face — the real holed artwork swaps in on impact — the head recoils and
+       * face (the real holed artwork swaps in on impact), the head recoils and
        * settles, holds, then the Q pops back out and rolls away off-screen,
        * the head refills, and the cycle begins again from the exact start
        * state, so the loop has no visible seam.
@@ -116,7 +116,7 @@ export function Hero() {
 
   return (
     <section className="mesh-bg relative flex min-h-dvh flex-col overflow-hidden">
-      {/* The mark as object — decorative, scrubbed, never in the reading path.
+      {/* The mark as object, decorative, scrubbed, never in the reading path.
           Positioning lives on this wrapper; GSAP owns the transforms of the two
           nested layers (Parallax → translate, foxRef → rotation), so the layers
           never fight over one transform property. */}
@@ -127,7 +127,7 @@ export function Hero() {
             className="relative w-[72vw] opacity-[0.16] will-change-transform sm:w-[50vw] lg:w-[38vw] lg:opacity-[0.3]"
             style={{ aspectRatio: "900 / 1006" }}
           >
-            {/* Sprites cut from public/foxquart.png — the mark is the artwork, verbatim. */}
+            {/* Sprites cut from public/foxquart.png, the mark is the artwork, verbatim. */}
             <img
               data-head-full
               src="/images/fox-head-full.webp"
@@ -172,12 +172,11 @@ export function Hero() {
           </MaskLines>
 
           <Rise delay={0.35} className="mt-6 max-w-xl">
-            {/* Entity-first and self-contained on purpose — answer engines quote this
+            {/* Entity-first and self-contained on purpose, answer engines quote this
                 passage for "what is Foxquart". Keep the definition in the first clause. */}
             <p className="text-base leading-relaxed text-foreground/80 sm:text-lg">
-              Foxquart is a product engineering studio. We build the operations systems,
-              customer-facing products and automation a company runs on day to day — for teams still
-              working out of spreadsheets, WhatsApp threads and paper files.
+              Foxquart is a product engineering studio. We turn spreadsheets, WhatsApp threads and
+              paper files into one system your team runs on.
             </p>
           </Rise>
 
@@ -198,7 +197,7 @@ export function Hero() {
               to="/work"
               className="press inline-flex min-h-13 w-full items-center justify-center rounded-full border border-border bg-surface px-7 text-base font-medium text-foreground transition-colors duration-[var(--dur-micro)] hover:bg-surface-2 sm:w-auto"
             >
-              See live systems
+              See live demos
             </Link>
           </Rise>
 

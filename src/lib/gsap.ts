@@ -5,7 +5,7 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
 
-/* House easing — mirrors --ease-brand in styles.css. */
+/* House easing; mirrors --ease-brand in styles.css. */
 export const EASE = "expo.out";
 export const EASE_INOUT = "power4.inOut";
 

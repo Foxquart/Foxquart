@@ -19,7 +19,7 @@ function json(body: unknown, status = 200): Response {
 /**
  * The CSRF middleware in start.ts only covers server functions, not route
  * handlers, so cross-site browser POSTs are rejected here. Requests without
- * either header (curl, server-to-server) pass — CSRF is a browser problem.
+ * either header (curl, server-to-server) pass: CSRF is a browser problem.
  */
 function isCrossSite(request: Request): boolean {
   const secFetchSite = request.headers.get("sec-fetch-site");
@@ -36,9 +36,22 @@ function isCrossSite(request: Request): boolean {
   return false;
 }
 
+const methodNotAllowed = () =>
+  new Response(JSON.stringify({ ok: false, error: "Method not allowed." }), {
+    status: 405,
+    headers: { "Content-Type": "application/json; charset=utf-8", Allow: "POST" },
+  });
+
 export const Route = createFileRoute("/api/contact")({
   server: {
     handlers: {
+      // Submissions are write-only: there is deliberately no handler that reads
+      // rows back out, so nothing stored can be fetched through this endpoint.
+      GET: methodNotAllowed,
+      HEAD: methodNotAllowed,
+      PUT: methodNotAllowed,
+      PATCH: methodNotAllowed,
+      DELETE: methodNotAllowed,
       // Errors are handled here and returned as JSON: the global error
       // middleware renders an HTML 500 page, which the form client can't parse.
       POST: async ({ request }) => {
@@ -83,7 +96,7 @@ export const Route = createFileRoute("/api/contact")({
           });
 
           // The submission is already stored, so a notification failure is ours
-          // to chase — the visitor still gets a success.
+          // to chase; the visitor still gets a success.
           try {
             await sendNotification(parsed.data);
           } catch (err) {

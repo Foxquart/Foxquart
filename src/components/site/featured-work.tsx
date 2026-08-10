@@ -13,7 +13,7 @@ type Project = {
   /** The one thing this build does that a brochure page does not. */
   capability: string;
   features: string[];
-  /** Scope estimate for a build of this size — our own commitment, not a client's report. */
+  /** Scope estimate for a build of this size: our own commitment, not a client's report. */
   buildWindow: string;
   /** Poster raster. Shown on its own below `lg`, and under the embed while it loads. */
   image: string;
@@ -23,7 +23,7 @@ type Project = {
 };
 
 /**
- * Engineered systems lead. The storefronts are evidence of range, not the headline —
+ * Engineered systems lead. The storefronts are evidence of range, not the headline;
  * the order is the positioning (contract §5).
  *
  * Every entry is a Foxquart reference build on our own hosting. None of these are client
@@ -34,8 +34,7 @@ const projects: Project[] = [
     id: "spares-control",
     category: "Inventory System",
     businessName: "Six Mile Motor Works",
-    summary:
-      "A motor-works spares counter loses parts to guesswork: what is on the shelf, what is reserved, what needs reordering. This build runs the whole counter — catalogue, stock levels and movements — on our own domain.",
+    summary: "Runs a spares counter: catalogue, stock levels, movements.",
     capability: "Live parts catalogue with stock levels and movement history in one screen.",
     features: ["Parts Catalogue", "Stock Levels", "Movement Log", "Reorder Signals"],
     buildWindow: "5 weeks",
@@ -47,8 +46,7 @@ const projects: Project[] = [
     id: "school-management",
     category: "School Management System",
     businessName: "Vidya Bharati International School",
-    summary:
-      "Schools run on paper registers and parent WhatsApp groups, and the same child's data gets written down four times. This build puts four role-based portals over one student record.",
+    summary: "Runs a school: admissions, fees, attendance, four portals.",
     capability: "Admin, teacher, parent and student portals over a single student record.",
     features: [
       "Parent & Teacher Portals",
@@ -65,8 +63,7 @@ const projects: Project[] = [
     id: "doctor-clinic",
     category: "Clinic Booking System",
     businessName: "AuraCare Specialist Clinic",
-    summary:
-      "A clinic reception spends the morning on the phone repeating the same three questions. This build hands the roster to the patient: pick a doctor, pick a slot, get the reminder.",
+    summary: "Patients pick a doctor, pick a slot, get the reminder.",
     capability: "Self-serve appointment booking against live doctor rosters.",
     features: ["Doctor Rosters", "Patient Booking", "Appointment Reminders", "Doctor Profiles"],
     buildWindow: "4 weeks",
@@ -78,8 +75,7 @@ const projects: Project[] = [
     id: "ember-oak",
     category: "Fine Dining Restaurant",
     businessName: "Ember & Oak",
-    summary:
-      "A tasting menu sells an evening, and a PDF cannot carry it. This build pairs the menu and pairings with a reservation flow that holds the table.",
+    summary: "Pairs the tasting menu with reservations that hold the table.",
     capability: "Course-by-course menu with an online table reservation flow.",
     features: ["Tasting Menu", "Online Reservations", "Sommelier Pairings", "Private Dining"],
     buildWindow: "4 weeks",
@@ -91,8 +87,7 @@ const projects: Project[] = [
     id: "tattoo-shop",
     category: "Tattoo Studio",
     businessName: "Good Luck Tattoo Studio",
-    summary:
-      "Studios book through Instagram DMs, which is where the no-shows come from. This build moves booking onto per-artist calendars with a deposit taken before the slot is held.",
+    summary: "Books tattoo slots on artist calendars, deposit taken up front.",
     capability: "Per-artist calendars with a deposit step before a slot is held.",
     features: ["Artist Calendars", "Online Booking", "Deposit Payments", "Aftercare Guides"],
     buildWindow: "3 weeks",
@@ -104,8 +99,7 @@ const projects: Project[] = [
     id: "interior-design",
     category: "Interior Design Studio",
     businessName: "Halda Interior Architecture",
-    summary:
-      "Studios lose enquiries when the work sits in a PDF. This demo puts the portfolio, process and enquiry flow on one scroll.",
+    summary: "Puts the portfolio, process and enquiry flow on one scroll.",
     capability: "Scroll-driven project walkthrough with a built-in enquiry flow.",
     features: ["Project Walkthrough", "Case Study Pages", "Studio Story", "Enquiry Form"],
     buildWindow: "3 weeks",
@@ -121,9 +115,9 @@ const projects: Project[] = [
  * Each browser mockup embeds a complete third-party site, so five cards is five extra page
  * loads competing with our own. The section is therefore gated twice:
  *
- *   1. Viewport — embeds are only ever created from `lg` up. A phone gets the poster and a
+ *   1. Viewport: embeds are only ever created from `lg` up. A phone gets the poster and a
  *      tap-through, and never pays for the demo it cannot read at that size.
- *   2. Budget — at most two embeds exist at once, and slots follow the viewport. A card
+ *   2. Budget: at most two embeds exist at once, and slots follow the viewport. A card
  *      that scrolls away releases its slot to the next one, so every card can go live
  *      without the page ever holding more than two.
  * ---------------------------------------------------------------------------------- */
@@ -175,7 +169,7 @@ function getServerLiveEmbeds() {
 
 /**
  * True once the viewport is at least `lg`. Starts false so the server render and the first
- * client render agree — the embed is added in a later commit, never during hydration.
+ * client render agree; the embed is added in a later commit, never during hydration.
  */
 function useIsDesktop() {
   const [isDesktop, setIsDesktop] = useState(false);
@@ -194,7 +188,7 @@ function useIsDesktop() {
 /**
  * Claims one of the embed slots while the returned ref is on screen. `isEmbedded` stays
  * false on small viewports, before the card intersects, and while two other cards hold the
- * budget — in every one of those cases the poster is what renders.
+ * budget: in every one of those cases the poster is what renders.
  */
 function useLiveEmbed(id: string, enabled: boolean) {
   const frameRef = useRef<HTMLDivElement>(null);
@@ -258,7 +252,7 @@ function WorkCard({ project, index }: { project: Project; index: number }) {
         )}
       </div>
 
-      {/* 1. Browser mockup — the demo itself, embedded on desktop */}
+      {/* 1. Browser mockup: the demo itself, embedded on desktop */}
       <div className="relative overflow-hidden rounded-2xl border border-border bg-surface transition-colors duration-[var(--dur-base)] ease-[var(--ease-brand)] group-hover:border-[var(--border-strong)]">
         {/* Browser top bar */}
         <div className="flex items-center justify-between border-b border-border bg-surface-2 px-4 py-3">
@@ -317,7 +311,7 @@ function WorkCard({ project, index }: { project: Project; index: number }) {
         </div>
       </div>
 
-      {/* 2. Pasted-style detail card — what the build ships with. No card claims a review. */}
+      {/* 2. Pasted-style detail card: what the build ships with. No card claims a review. */}
       <div
         className={cn(
           "relative z-10 mx-3 -mt-12 rounded-xl border border-border bg-surface-2 p-4 shadow-[var(--shadow-panel)] transition-[translate,rotate] duration-[var(--dur-base)] ease-[var(--ease-brand)] sm:mx-6 sm:-mt-14 sm:p-5 lg:group-hover:-translate-y-1 lg:group-hover:rotate-0",
@@ -386,15 +380,10 @@ export function FeaturedWork() {
       <div className="relative mx-auto w-full max-w-7xl">
         <Reveal className="flex flex-col items-center gap-4 text-center">
           <h2 className="text-2xl leading-[1.08] font-semibold text-balance sm:text-3xl md:text-5xl">
-            Five builds you can open right now.
+            Six live demos. Open any of them.
           </h2>
           <p className="max-w-[56ch] text-base text-muted-foreground md:text-lg">
-            Reference builds, not screenshots. A school running four role-based portals, a clinic
-            booking against live rosters, and three storefronts — each one a working site you can
-            click through.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            On a wide screen these cards embed the running site. On a phone, tap one to open it.
+            Real running sites, not screenshots. Tap a card to try one.
           </p>
         </Reveal>
 

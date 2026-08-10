@@ -6,7 +6,7 @@ import { solutionPages } from "@/lib/site-data";
 import { breadcrumbNode, canonicalLink, collectionNode, jsonLdScript, pageMeta } from "@/lib/seo";
 
 const path = "/solutions";
-const title = "Solutions — Industry & Operational Software | Foxquart";
+const title = "Solutions: Industry & Operational Software | Foxquart";
 const description =
   "Seventeen solution pages covering inventory, ERP, CRM, n8n automation, cloud hosting, DevOps, scraping, restaurant, warehouse, healthcare and school software.";
 

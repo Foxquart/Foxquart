@@ -7,7 +7,7 @@ type Variant = { width: number; height: number; widths: number[] };
 /**
  * Intrinsic size and available responsive widths per source, keyed by public URL.
  *
- * Maintained by `scripts/optimize-images.py` — do not edit by hand. A source that is
+ * Maintained by `scripts/optimize-images.py`. Do not edit by hand. A source that is
  * absent here renders as a plain <img> against the original file, so adding an image
  * without running the script degrades gracefully instead of requesting a 404 variant.
  */
@@ -27,8 +27,8 @@ type PictureProps = {
   src: string;
   alt: string;
   /**
-   * Intrinsic size of the original. Optional for a known source — the generated map
-   * supplies it — so callers do not have to track dimensions alongside the path.
+   * Intrinsic size of the original. Optional for a known source (the generated map
+   * supplies it), so callers do not have to track dimensions alongside the path.
    */
   width?: number;
   height?: number;

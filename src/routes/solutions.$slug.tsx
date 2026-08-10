@@ -25,7 +25,7 @@ export const Route = createFileRoute("/solutions/$slug")({
     if (!loaderData) {
       return {
         meta: [
-          { title: `Solution unavailable — ${SITE_NAME}` },
+          { title: `Solution unavailable | ${SITE_NAME}` },
           { name: "robots", content: "noindex" },
         ],
       };
@@ -34,7 +34,7 @@ export const Route = createFileRoute("/solutions/$slug")({
     const path = `/solutions/${params.slug}`;
     // Every solution title stays under 60 characters once suffixed, so the title
     // is no longer blind-truncated mid-word at 68 characters as it was before.
-    const title = `${page.title} — ${SITE_NAME}`;
+    const title = `${page.title} | ${SITE_NAME}`;
     const description = composeDescription([
       page.description,
       ...page.outcomes.map((o) => `${o}.`),

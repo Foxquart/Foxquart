@@ -12,7 +12,7 @@ import { gsap, SplitText, useGSAP, prefersReducedMotion } from "@/lib/gsap";
  * The FMCG warehouse build is the strongest of the three records in
  * `caseStudies`: it is the largest operation (nine sites), it is the studio's
  * headline category (an operational system, not a website), and its three
- * results move three different dimensions — accuracy, labour and speed — so it
+ * results move three different dimensions (accuracy, labour and speed), so it
  * reads as a change to the whole operation rather than a single lucky metric.
  *
  * Every string rendered here comes from `src/lib/site-data.ts`. Nothing is
@@ -31,7 +31,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 /**
  * Scrubbed word reveal for the narrative copy. The paragraph is plain text in
- * SSR HTML — SplitText runs client-side only — then each word starts at
+ * SSR HTML (SplitText runs client-side only), then each word starts at
  * opacity 0.15 and scrubs to 1 sequentially as the block passes through the
  * viewport. Opacity only; reduced motion gets the plain paragraph.
  */
