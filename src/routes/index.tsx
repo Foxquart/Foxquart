@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Hero } from "@/components/site/hero";
+import { IntroLoader } from "@/components/site/intro-loader";
 import { WhatWeDo } from "@/components/site/what-we-do";
 import { BookingCta } from "@/components/site/booking-cta";
 import { CaseStudies, Process, WhyBuild } from "@/components/site/sections";
@@ -27,6 +28,9 @@ export const Route = createFileRoute("/")({
 function Home() {
   return (
     <main className="min-h-dvh">
+      {/* Cinematic intro, hard document loads of "/" only; SPA navs render null */}
+      <IntroLoader />
+
       {/* 1. The promise */}
       <Hero />
 
