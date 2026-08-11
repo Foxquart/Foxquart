@@ -37,9 +37,26 @@ export function introWillPlay(): boolean {
   return typeof window !== "undefined" && bootPath === "/" && !played && !prefersReducedMotion();
 }
 
+let prepareResolver: (() => void) | undefined;
+const prepared = new Promise<void>((resolve) => {
+  prepareResolver = resolve;
+});
+
+/**
+ * Fired by the loader during the intro's static hold, before the exit zoom.
+ * Entrances do their expensive setup here (SplitText DOM surgery, trigger
+ * measurement) while nothing on screen is moving, so the zoom itself never
+ * shares a frame with layout work. Idempotent.
+ */
+export function resolveIntroPrepare(): void {
+  prepareResolver?.();
+}
+
 /** Marks the intro finished (or skipped) and releases every gated entrance. Idempotent. */
 export function resolveIntro(): void {
   played = true;
+  // Failsafe ordering: consumers waiting on prepare must never outlive done.
+  prepareResolver?.();
   resolver?.();
 }
 
@@ -63,4 +80,14 @@ export function whenIntroDone(cb: () => void): void {
   }
   armFailsafe();
   void done.then(cb);
+}
+
+/** Runs cb immediately when no intro gates it, otherwise at the intro's prepare beat. */
+export function whenIntroPrepared(cb: () => void): void {
+  if (!introWillPlay()) {
+    cb();
+    return;
+  }
+  armFailsafe();
+  void prepared.then(cb);
 }

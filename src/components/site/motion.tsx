@@ -1,7 +1,7 @@
 import { useRef, type CSSProperties, type ElementType, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { gsap, SplitText, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
-import { whenIntroDone } from "@/lib/intro-gate";
+import { introWillPlay, whenIntroDone, whenIntroPrepared } from "@/lib/intro-gate";
 
 /*
  * Shared motion primitives for the landing page. Rules every consumer inherits:
@@ -34,31 +34,44 @@ export function MaskLines({
     (_, contextSafe) => {
       const el = ref.current;
       if (!el || prefersReducedMotion()) return;
-      // Deferred behind the home intro (immediate everywhere else): these
-      // ScrollTriggers fire the moment they're created at page top, so the
-      // reveal must not exist until the intro hands the page over.
       let split: SplitText | undefined;
-      const build = () => {
-        split = SplitText.create(el, {
+      const safe = (fn: () => void) => (contextSafe ? contextSafe(fn) : fn);
+      const makeSplit = () =>
+        SplitText.create(el, {
           type: "lines",
           linesClass: "mask-line",
           mask: "lines",
           autoSplit: true,
         });
+      const tweenVars = { yPercent: 110, duration: 0.9, ease: EASE, stagger: 0.09, delay };
+      const build = safe(() => {
+        split = makeSplit();
         gsap.from(split.lines, {
-          yPercent: 110,
-          duration: 0.9,
-          ease: EASE,
-          stagger: 0.09,
-          delay,
-          scrollTrigger: {
-            trigger: el,
-            start: "top 88%",
-            once,
-          },
+          ...tweenVars,
+          scrollTrigger: { trigger: el, start: "top 88%", once },
         });
-      };
-      whenIntroDone(contextSafe ? contextSafe(build) : build);
+      });
+      if (introWillPlay()) {
+        // Home intro: SplitText's DOM surgery is expensive, so it runs at the
+        // intro's static prepare beat, never in a zoom frame. In-viewport
+        // headlines pre-build a paused reveal (their trigger would fire
+        // instantly at page top anyway) and just play at the handoff;
+        // below-fold ones build normally, since scroll is locked their
+        // triggers cannot fire early.
+        whenIntroPrepared(
+          safe(() => {
+            if (el.getBoundingClientRect().top >= window.innerHeight) {
+              build();
+              return;
+            }
+            split = makeSplit();
+            const reveal = gsap.from(split.lines, { ...tweenVars, paused: true });
+            whenIntroDone(safe(() => void reveal.play()));
+          }),
+        );
+      } else {
+        build();
+      }
       return () => split?.revert();
     },
     { scope: ref },
@@ -142,20 +155,38 @@ export function Rise({
     (_, contextSafe) => {
       const el = ref.current;
       if (!el || prefersReducedMotion()) return;
-      // Same intro gating as MaskLines: create the trigger only once the page is revealed.
-      const build = () => {
-        const targets = childSelector ? el.querySelectorAll(childSelector) : el;
-        gsap.from(targets, {
-          y,
-          opacity: 0,
-          duration: 0.8,
-          ease: EASE,
-          delay,
-          stagger: stagger ?? 0,
+      const safe = (fn: () => void) => (contextSafe ? contextSafe(fn) : fn);
+      const tweenVars = () => ({
+        y,
+        opacity: 0,
+        duration: 0.8,
+        ease: EASE,
+        delay,
+        stagger: stagger ?? 0,
+      });
+      const targets = () => (childSelector ? el.querySelectorAll(childSelector) : el);
+      const build = safe(() => {
+        gsap.from(targets(), {
+          ...tweenVars(),
           scrollTrigger: { trigger: el, start: "top 86%", once: true },
         });
-      };
-      whenIntroDone(contextSafe ? contextSafe(build) : build);
+      });
+      if (introWillPlay()) {
+        // Same prepare/handoff split as MaskLines, so the intro's exit zoom
+        // never shares a frame with trigger measurement.
+        whenIntroPrepared(
+          safe(() => {
+            if (el.getBoundingClientRect().top >= window.innerHeight) {
+              build();
+              return;
+            }
+            const reveal = gsap.from(targets(), { ...tweenVars(), paused: true });
+            whenIntroDone(safe(() => void reveal.play()));
+          }),
+        );
+      } else {
+        build();
+      }
     },
     { scope: ref },
   );

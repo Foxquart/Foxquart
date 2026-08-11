@@ -2,7 +2,12 @@ import { useRef, useState } from "react";
 import { useLenis } from "lenis/react";
 import { animate, stagger, steps, type JSAnimation } from "animejs";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
-import { introOverlayMounts, introWillPlay, resolveIntro } from "@/lib/intro-gate";
+import {
+  introOverlayMounts,
+  introWillPlay,
+  resolveIntro,
+  resolveIntroPrepare,
+} from "@/lib/intro-gate";
 
 /*
  * Cinematic intro for hard loads of "/", in the register of a studio logo open:
@@ -173,7 +178,9 @@ export function IntroLoader() {
         resolveIntro();
         setShow(false);
         lenisRef.current?.start();
-        ScrollTrigger.refresh();
+        // Deferred: a synchronous refresh would share a frame with the
+        // overlay's unmount and hitch the handoff, visibly so on phones.
+        gsap.delayedCall(0.15, () => ScrollTrigger.refresh());
       };
 
       if (!root) return; // SPA remount: rendered null
@@ -292,6 +299,9 @@ export function IntroLoader() {
         1.72,
       );
       tl.call(startJitter, undefined, 1.85);
+      // The hold is the one static beat: entrances pay their layout costs now
+      // (SplitText surgery, trigger measurement) so the zoom stays jank-free.
+      tl.call(resolveIntroPrepare, undefined, 1.95);
       tl.call(stopJitter, undefined, 2.4);
       tl.addLabel("exit", 2.45);
       tl.set(base, { autoAlpha: 0 }, "exit");
@@ -328,6 +338,9 @@ export function IntroLoader() {
           return;
         if (cleanedRef.current || tl.time() >= 2.45) return;
         for (const a of animeInstances) a.pause();
+        // Seeking skips the timeline's prepare call; fire it by hand so gated
+        // entrances still pre-build before the zoom.
+        resolveIntroPrepare();
         prepareExit();
         started = true;
         tl.seek("exit");
