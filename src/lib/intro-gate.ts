@@ -22,9 +22,7 @@ const done = new Promise<void>((resolve) => {
 
 /** True while a hard "/" load should (still) show the intro. */
 export function introWillPlay(): boolean {
-  return (
-    typeof window !== "undefined" && bootPath === "/" && !played && !prefersReducedMotion()
-  );
+  return typeof window !== "undefined" && bootPath === "/" && !played && !prefersReducedMotion();
 }
 
 /** Marks the intro finished (or skipped) and releases every gated entrance. Idempotent. */

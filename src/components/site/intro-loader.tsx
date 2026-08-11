@@ -62,10 +62,17 @@ type Frag = {
 
 /*
  * Deterministic fragment layout (SSR and client must render identical markup).
- * Everything sits inside the wordmark's letterform mask (~x 330-1270,
- * y 505-645). Abstract brand shapes only: fox marks, wireframes, glyphs, grids.
+ * Everything sits inside the lockup mask: the head silhouette (~x 700-900,
+ * y 120-350) and the wordmark band (~x 330-1270, y 505-645). Abstract brand
+ * shapes only: fox marks, wireframes, rings, grids.
  */
 const FRAGMENTS: Frag[] = [
+  { kind: "ring", x: 800, y: 265, s: 1.1, tone: "primary" },
+  { kind: "rows", x: 800, y: 195, tone: "fg" },
+  { kind: "fox", x: 800, y: 250, s: 0.5, tone: "fg" },
+  { kind: "cross", x: 758, y: 175, tone: "fg" },
+  { kind: "arcs", x: 848, y: 240, s: 0.9, tone: "primary" },
+  { kind: "card", x: 800, y: 320, s: 0.7, rot: -6, tone: "primary" },
   { kind: "ring", x: 700, y: 620, s: 0.8, tone: "primary" },
   { kind: "rows", x: 500, y: 600, tone: "fg" },
   { kind: "arcs", x: 1240, y: 540, s: 0.8, tone: "primary" },
@@ -101,13 +108,7 @@ function FragShape({ kind, s = 1, tone = "fg" }: Frag) {
       );
     case "ring":
       return (
-        <circle
-          r={90 * s}
-          fill="none"
-          stroke={color}
-          strokeWidth={3}
-          strokeDasharray="12 16"
-        />
+        <circle r={90 * s} fill="none" stroke={color} strokeWidth={3} strokeDasharray="12 16" />
       );
     case "card":
       return (
@@ -145,9 +146,7 @@ function FragShape({ kind, s = 1, tone = "fg" }: Frag) {
 }
 
 export function IntroLoader() {
-  const [show, setShow] = useState(() =>
-    typeof window === "undefined" ? true : introWillPlay(),
-  );
+  const [show, setShow] = useState(() => (typeof window === "undefined" ? true : introWillPlay()));
   const rootRef = useRef<HTMLDivElement>(null);
   const lenis = useLenis();
   const lenisRef = useRef(lenis);
@@ -363,22 +362,35 @@ export function IntroLoader() {
 
       <div data-stage className="absolute inset-0 will-change-transform">
         <div data-jitter className="absolute inset-0">
-          <svg
-            className="h-full w-full"
-            viewBox="0 0 1600 900"
-            preserveAspectRatio="xMidYMid meet"
-          >
+          <svg className="h-full w-full" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet">
             <defs>
-              {/* Luminance mask: fragments exist only inside the wordmark's
-                  letterforms. The mark above stays the artwork, untouched. */}
-              <mask id="fq-intro-letters" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900">
-                <text
-                  {...WORDMARK}
-                  textAnchor="middle"
-                  fill="#fff"
-                >
+              {/* Turns the head sprite's alpha into a white silhouette so the
+                  luminance mask below can use the artwork's true shape. */}
+              <filter id="fq-intro-alpha">
+                <feFlood floodColor="#fff" result="f" />
+                <feComposite in="f" in2="SourceAlpha" operator="in" />
+              </filter>
+              {/* Luminance mask: fragments exist only inside the lockup, the
+                  wordmark's letterforms and the head's artwork silhouette. */}
+              <mask
+                id="fq-intro-letters"
+                maskUnits="userSpaceOnUse"
+                x="0"
+                y="0"
+                width="1600"
+                height="900"
+              >
+                <text {...WORDMARK} textAnchor="middle" fill="#fff">
                   FOXQUART
                 </text>
+                <image
+                  href="/images/fox-head-full.webp"
+                  x={ART_X}
+                  y={ART_Y}
+                  width={ART_W}
+                  height={ART_H}
+                  filter="url(#fq-intro-alpha)"
+                />
               </mask>
               {/* Cover mask: knocks the wordmark and the portal circle out of
                   the cover's dark rect, so the solid text beneath shows through
@@ -386,7 +398,14 @@ export function IntroLoader() {
                   overlay. The circle is a hair larger than the sprite's hole so
                   its rim never fringes; the artwork drawn above re-covers the
                   excess. */}
-              <mask id="fq-intro-flood" maskUnits="userSpaceOnUse" x="-4000" y="-4000" width="9600" height="8900">
+              <mask
+                id="fq-intro-flood"
+                maskUnits="userSpaceOnUse"
+                x="-4000"
+                y="-4000"
+                width="9600"
+                height="8900"
+              >
                 <rect x="-4000" y="-4000" width="9600" height="8900" fill="#fff" />
                 <text {...WORDMARK} textAnchor="middle" fill="#000">
                   FOXQUART
