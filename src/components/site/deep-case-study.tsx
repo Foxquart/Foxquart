@@ -42,7 +42,10 @@ function ScrubWords({ children, className }: { children: ReactNode; className?: 
     () => {
       const el = ref.current;
       if (!el || prefersReducedMotion()) return;
-      const split = SplitText.create(el, { type: "words" });
+      // aria: "none": SplitText's default "auto" writes aria-label onto the <p>,
+      // which ARIA prohibits on paragraphs (Lighthouse a11y failure). Word-level
+      // spans read fine to screen readers as-is.
+      const split = SplitText.create(el, { type: "words", aria: "none" });
       gsap.set(split.words, { opacity: 0.15 });
       gsap.to(split.words, {
         opacity: 1,

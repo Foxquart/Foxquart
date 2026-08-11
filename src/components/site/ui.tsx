@@ -277,11 +277,13 @@ export function FoxquartLogo({
           iconClassName,
         )}
       >
+        {/* Scaled webp of the artwork (the 192px favicon PNG was 44KiB for a
+            ~42px slot); 128px covers 3x DPR. Same pixels, just sized for the UI. */}
         <img
-          src="/android-chrome-192x192.png"
+          src="/images/logo-mark-128.webp"
           alt=""
-          width={192}
-          height={192}
+          width={128}
+          height={128}
           className="size-full"
         />
         <span
