@@ -20,6 +20,18 @@ const done = new Promise<void>((resolve) => {
   resolver = resolve;
 });
 
+/*
+ * Initial mount state for the overlay, and nothing else. Deliberately blind to
+ * reduced motion: that's a client-only signal, and using it during hydration
+ * would mismatch the SSR'd overlay and force React into a full client
+ * re-render. Hard loads of "/" hydrate the overlay (reduced-motion CSS hides
+ * it pre-paint; the layout effect then unmounts it), SPA remounts render null
+ * via the module flag.
+ */
+export function introOverlayMounts(): boolean {
+  return typeof window !== "undefined" && bootPath === "/" && !played;
+}
+
 /** True while a hard "/" load should (still) show the intro. */
 export function introWillPlay(): boolean {
   return typeof window !== "undefined" && bootPath === "/" && !played && !prefersReducedMotion();

@@ -18,6 +18,7 @@ import { SiteHeader, SiteFooter } from "@/components/site/chrome";
 import { SmoothScroll } from "@/components/site/smooth-scroll";
 import { LiftScrollbar } from "@/components/site/lift-scrollbar";
 import { EMAIL_ADDRESS, PHONE_NUMBERS } from "@/lib/site-data";
+import { themeInitScript } from "@/lib/theme";
 import {
   OG_IMAGE_ALT,
   OG_IMAGE_HEIGHT,
@@ -101,6 +102,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      // Light is the SSR default; themeInitScript below rewrites both values
+      // pre-paint when the visitor's saved or system preference is dark, so
+      // browser chrome (mobile address bar, PWA title bar) always matches the
+      // page ground and form controls never auto-darken against it.
+      { name: "theme-color", content: "#F1F0CC" },
+      { name: "color-scheme", content: "light" },
       { title: rootTitle },
       { name: "description", content: rootDescription },
       { name: "author", content: SITE_NAME },
@@ -124,6 +131,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     // instead of restating the business, so crawlers resolve one entity across
     // every URL rather than one business per page.
     scripts: [
+      // Theme gate, runs pre-paint during parse:
+      // applies .dark to <html> from the saved or system preference before first
+      // paint, so a dark-mode visitor never sees a cream flash.
+      { children: themeInitScript },
       jsonLdScript([
         organizationNode({
           email: EMAIL_ADDRESS,
@@ -137,13 +148,31 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      // Fonts are self-hosted (@font-face in styles.css, latin subsets in
+      // public/fonts) so no cross-origin stylesheet blocks first paint. Preload
+      // the faces that render above the fold: the display serif pair (h1 + its
+      // italic em) and the body sans. Font preloads require crossOrigin even
+      // same-origin, or the browser fetches them twice.
       {
-        // Three roles, matching --font-display/--font-sans/--font-mono in styles.css:
-        // Instrument Serif (display), Geist (body), JetBrains Mono (micro-labels).
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap",
+        rel: "preload",
+        href: "/fonts/instrument-serif-latin-400.woff2",
+        as: "font",
+        type: "font/woff2",
+        crossOrigin: "anonymous",
+      },
+      {
+        rel: "preload",
+        href: "/fonts/instrument-serif-latin-400-italic.woff2",
+        as: "font",
+        type: "font/woff2",
+        crossOrigin: "anonymous",
+      },
+      {
+        rel: "preload",
+        href: "/fonts/geist-latin-var.woff2",
+        as: "font",
+        type: "font/woff2",
+        crossOrigin: "anonymous",
       },
       // Favicon set supplied by the founder (generator output from the brand artwork).
       { rel: "icon", href: "/favicon.ico", sizes: "48x48" },
@@ -161,7 +190,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    // suppressHydrationWarning: themeInitScript adds .dark to <html> before
+    // hydration; React would otherwise warn about the attribute mismatch in dev.
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

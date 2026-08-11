@@ -1,6 +1,24 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Check, Loader2, Mail, Phone, Send } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  BarChart3,
+  Boxes,
+  Check,
+  Clock,
+  Cloud,
+  Globe,
+  Loader2,
+  Mail,
+  Pencil,
+  Phone,
+  Send,
+  Smartphone,
+  Sparkles,
+  User,
+  type LucideIcon,
+} from "lucide-react";
 import { Section, SectionHeading } from "./ui";
 import { EMAIL_ADDRESS, MAILTO_URL, PHONE_NUMBERS } from "@/lib/site-data";
 import {
@@ -9,15 +27,37 @@ import {
   TIMELINES,
   contactSubmissionSchema,
 } from "@/lib/contact-schema";
+import { gsap, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
 
 /**
- * The form POSTs to /api/contact, which stores the enquiry and notifies the
- * team inbox; "sent" means the server accepted it. On failure the form stays
- * intact and a direct mailto link is offered as the escape hatch.
+ * Three-step enquiry form. Step 1 is who they are, step 2 is what they need
+ * (typed cards, not a wall of identical pills), step 3 is an optional note plus
+ * a recap. The form POSTs to /api/contact, which stores the enquiry and
+ * notifies the team inbox; "sent" means the server accepted it. On failure the
+ * form stays intact and a direct mailto link is offered as the escape hatch.
  */
 type Status = "idle" | "submitting" | "sent";
-type FieldName = "name" | "email" | "message";
+type FieldName = "name" | "email" | "company" | "phone" | "message";
 type Errors = Partial<Record<FieldName, string>>;
+
+const STEPS = [
+  { id: "about", label: "About you" },
+  { id: "project", label: "Your project" },
+  { id: "note", label: "Message" },
+] as const;
+
+/* One icon and one plain-language line per area, so the cards read at a glance. */
+const TYPE_META: Record<(typeof PROJECT_TYPES)[number], { icon: LucideIcon; blurb: string }> = {
+  "Custom software / ERP": {
+    icon: Boxes,
+    blurb: "Inventory, billing and operations in one system",
+  },
+  "AI & workflow automation": { icon: Sparkles, blurb: "Hand the repetitive work to software" },
+  "Cloud & DevOps": { icon: Cloud, blurb: "Ship, scale and monitor safely" },
+  "Data intelligence": { icon: BarChart3, blurb: "Dashboards and reports you can trust" },
+  "Website / landing page": { icon: Globe, blurb: "Fast, findable and built to convert" },
+  "Mobile application": { icon: Smartphone, blurb: "iOS and Android from one codebase" },
+};
 
 export function ContactSection() {
   const [name, setName] = useState("");
@@ -34,10 +74,17 @@ export function ContactSection() {
   const [notice, setNotice] = useState("");
   const [failed, setFailed] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
+  const [step, setStep] = useState(0);
+  // Highest step the visitor has reached; earlier chips stay clickable.
+  const [reached, setReached] = useState(0);
 
   const formRef = useRef<HTMLFormElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const stepHeadingRef = useRef<HTMLHeadingElement>(null);
   const statusHeadingRef = useRef<HTMLHeadingElement>(null);
   const hasSent = useRef(false);
+  const hasNavigated = useRef(false);
+  const direction = useRef(1);
 
   // Resolved after mount so the server-rendered HTML and the first client render match.
   useEffect(() => {
@@ -59,6 +106,34 @@ export function ContactSection() {
     }
   }, [status]);
 
+  // Announce and anchor each step for keyboard and screen reader users. Skipped
+  // on first render so page load doesn't yank focus into the form.
+  useEffect(() => {
+    if (hasNavigated.current) stepHeadingRef.current?.focus();
+  }, [step]);
+
+  // Slide the incoming panel from the direction of travel. transform/opacity
+  // only, and not under reduced motion.
+  useGSAP(
+    () => {
+      if (!hasNavigated.current || !panelRef.current || prefersReducedMotion()) return;
+      gsap.fromTo(
+        panelRef.current,
+        { x: 22 * direction.current, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.35, ease: EASE, clearProps: "transform,opacity" },
+      );
+    },
+    { dependencies: [step], scope: panelRef },
+  );
+
+  const goTo = (next: number) => {
+    if (next === step) return;
+    hasNavigated.current = true;
+    direction.current = next > step ? 1 : -1;
+    setReached((r) => Math.max(r, next));
+    setStep(next);
+  };
+
   const payload = {
     name,
     email,
@@ -72,26 +147,54 @@ export function ContactSection() {
     website,
   };
 
+  /** Validates only the fields the visitor can currently see. */
+  const validateStep = (which: number): boolean => {
+    const fields =
+      which === 0 ? (["name", "email", "company", "phone"] as const) : (["message"] as const);
+    const parsed = contactSubmissionSchema
+      .pick({ name: true, email: true, company: true, phone: true, message: true })
+      .safeParse(payload);
+    const found: Errors = {};
+    if (!parsed.success) {
+      for (const issue of parsed.error.issues) {
+        const field = issue.path[0] as FieldName;
+        if ((fields as readonly string[]).includes(field) && !found[field]) {
+          found[field] = issue.message;
+        }
+      }
+    }
+    setErrors(found);
+    const firstInvalid = fields.find((f) => found[f]);
+    if (firstInvalid) {
+      setNotice("Check the highlighted fields.");
+      formRef.current?.querySelector<HTMLElement>(`#${firstInvalid}`)?.focus();
+      return false;
+    }
+    setNotice("");
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (status === "submitting") return;
+
+    // Enter (or the Continue button) advances until the last step.
+    if (step < STEPS.length - 1) {
+      if (validateStep(step)) goTo(step + 1);
+      return;
+    }
 
     const parsed = contactSubmissionSchema.safeParse(payload);
     if (!parsed.success) {
       const found: Errors = {};
       for (const issue of parsed.error.issues) {
-        const field = issue.path[0];
-        if ((field === "name" || field === "email" || field === "message") && !found[field]) {
-          found[field] = issue.message;
-        }
+        const field = issue.path[0] as FieldName;
+        if (!found[field]) found[field] = issue.message;
       }
       setErrors(found);
       setFailed(false);
-      setNotice("Nothing was sent. Check the highlighted fields below.");
-      const firstInvalid = (["name", "email", "message"] as FieldName[]).find((f) => found[f]);
-      if (firstInvalid) {
-        formRef.current?.querySelector<HTMLElement>(`#${firstInvalid}`)?.focus();
-      }
+      setNotice("Nothing was sent. Check the highlighted fields.");
+      if (found.name || found.email || found.company || found.phone) goTo(0);
       return;
     }
 
@@ -120,11 +223,12 @@ export function ContactSection() {
       setStatus("idle");
       if (res.status === 400 && body?.fieldErrors) {
         const found: Errors = {};
-        for (const f of ["name", "email", "message"] as FieldName[]) {
+        for (const f of ["name", "email", "company", "phone", "message"] as FieldName[]) {
           if (body.fieldErrors[f]) found[f] = body.fieldErrors[f];
         }
         setErrors(found);
-        setNotice(body.error ?? "Nothing was sent. Check the highlighted fields below.");
+        setNotice(body.error ?? "Nothing was sent. Check the highlighted fields.");
+        if (found.name || found.email || found.company || found.phone) goTo(0);
         return;
       }
       setFailed(true);
@@ -143,11 +247,13 @@ export function ContactSection() {
     setMessage("");
     setPreferredTime(PREFERRED_TIMES[0]);
     setType(PROJECT_TYPES[0]);
-    setTimeline(TIMELINES[3]);
+    setTimeline(TIMELINES[0]);
     setErrors({});
     setNotice("");
     setFailed(false);
     setStatus("idle");
+    setStep(0);
+    setReached(0);
   };
 
   return (
@@ -207,128 +313,223 @@ export function ContactSection() {
         <div className="rounded-xl border border-border bg-surface p-5 sm:p-7">
           {status !== "sent" ? (
             <form ref={formRef} className="grid gap-6" onSubmit={handleSubmit} noValidate>
-              <p className="text-sm text-muted-foreground">
-                Fill in what you know. Only the starred fields are required. See our{" "}
-                <Link
-                  to="/privacy"
-                  className="text-foreground underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                >
-                  privacy policy
-                </Link>
-                .
-              </p>
+              <Stepper step={step} reached={reached} onSelect={goTo} />
 
-              <div className="grid gap-5 sm:grid-cols-2">
-                <Field label="Your name" id="name" error={errors.name} required>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    autoComplete="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    aria-required="true"
-                    aria-invalid={errors.name ? true : undefined}
-                    aria-describedby={errors.name ? "name-error" : undefined}
-                    className={inputCls}
-                  />
-                </Field>
-                <Field label="Email for the reply" id="email" error={errors.email} required>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    inputMode="email"
-                    autoComplete="email"
-                    spellCheck={false}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    aria-required="true"
-                    aria-invalid={errors.email ? true : undefined}
-                    aria-describedby={errors.email ? "email-error" : undefined}
-                    className={inputCls}
-                  />
-                </Field>
-                <Field label="Company" id="company" hint="Optional">
-                  <input
-                    id="company"
-                    name="company"
-                    type="text"
-                    autoComplete="organization"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    aria-describedby="company-hint"
-                    className={inputCls}
-                  />
-                </Field>
-                <Field label="Phone" id="phone" hint="Optional. Include your country code.">
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    inputMode="tel"
-                    autoComplete="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    aria-describedby="phone-hint"
-                    className={inputCls}
-                  />
-                </Field>
+              <div ref={panelRef} className="grid gap-6">
+                {step === 0 ? (
+                  <>
+                    <StepIntro
+                      headingRef={stepHeadingRef}
+                      title="First, who are we replying to?"
+                      hint={
+                        <>
+                          Only the starred fields are required. See our{" "}
+                          <Link
+                            to="/privacy"
+                            className="text-foreground underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                          >
+                            privacy policy
+                          </Link>
+                          .
+                        </>
+                      }
+                    />
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <Field label="Your name" id="name" error={errors.name} required>
+                        <input
+                          id="name"
+                          name="name"
+                          type="text"
+                          autoComplete="name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          aria-required="true"
+                          aria-invalid={errors.name ? true : undefined}
+                          aria-describedby={errors.name ? "name-error" : undefined}
+                          className={inputCls}
+                        />
+                      </Field>
+                      <Field label="Email for the reply" id="email" error={errors.email} required>
+                        <input
+                          id="email"
+                          name="email"
+                          type="email"
+                          inputMode="email"
+                          autoComplete="email"
+                          spellCheck={false}
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          aria-required="true"
+                          aria-invalid={errors.email ? true : undefined}
+                          aria-describedby={errors.email ? "email-error" : undefined}
+                          className={inputCls}
+                        />
+                      </Field>
+                      <Field label="Company" id="company" hint="Optional" error={errors.company}>
+                        <input
+                          id="company"
+                          name="company"
+                          type="text"
+                          autoComplete="organization"
+                          value={company}
+                          onChange={(e) => setCompany(e.target.value)}
+                          aria-describedby="company-hint"
+                          className={inputCls}
+                        />
+                      </Field>
+                      <Field
+                        label="Phone"
+                        id="phone"
+                        hint="Optional. Include your country code."
+                        error={errors.phone}
+                      >
+                        <input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          inputMode="tel"
+                          autoComplete="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          aria-describedby="phone-hint"
+                          className={inputCls}
+                        />
+                      </Field>
+                    </div>
+                  </>
+                ) : null}
+
+                {step === 1 ? (
+                  <>
+                    <StepIntro
+                      headingRef={stepHeadingRef}
+                      title="What do you need?"
+                      hint="Pick the closest one; the call refines it."
+                    />
+                    <fieldset className="grid gap-2.5 sm:grid-cols-2">
+                      <legend className="sr-only">Project area</legend>
+                      {PROJECT_TYPES.map((o) => {
+                        const meta = TYPE_META[o];
+                        const selected = type === o;
+                        return (
+                          <label key={o} className="cursor-pointer">
+                            <input
+                              type="radio"
+                              name="project-type"
+                              value={o}
+                              checked={selected}
+                              onChange={() => setType(o)}
+                              className="peer sr-only"
+                            />
+                            <span
+                              className={`flex min-h-[4.25rem] items-center gap-3.5 rounded-xl border p-3.5 transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary ${
+                                selected
+                                  ? "border-primary bg-primary/10"
+                                  : "border-border bg-surface-2 hover:border-primary/40"
+                              }`}
+                            >
+                              <span
+                                className={`grid size-10 shrink-0 place-items-center rounded-lg border ${
+                                  selected
+                                    ? "border-primary/40 bg-primary/15 text-primary"
+                                    : "border-border bg-surface text-muted-foreground"
+                                }`}
+                              >
+                                <meta.icon className="size-5" aria-hidden="true" />
+                              </span>
+                              <span className="min-w-0">
+                                <span
+                                  className={`block text-sm font-medium ${selected ? "text-foreground" : "text-foreground/90"}`}
+                                >
+                                  {o}
+                                </span>
+                                <span className="mt-0.5 block text-xs text-muted-foreground">
+                                  {meta.blurb}
+                                </span>
+                              </span>
+                              <Check
+                                className={`ml-auto size-4 shrink-0 text-primary transition-opacity ${selected ? "opacity-100" : "opacity-0"}`}
+                                aria-hidden="true"
+                              />
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </fieldset>
+
+                    <Choice
+                      label="When do you want it live?"
+                      name="timeline"
+                      options={TIMELINES}
+                      value={timeline}
+                      onChange={setTimeline}
+                    />
+                    <Choice
+                      label="Best time for a call?"
+                      name="preferred-time"
+                      options={PREFERRED_TIMES}
+                      value={preferredTime}
+                      onChange={setPreferredTime}
+                      hint={
+                        timezone
+                          ? `Times read in your timezone (${timezone}). We confirm by email before anything is booked.`
+                          : "We confirm the exact time by email before anything is booked."
+                      }
+                    />
+                  </>
+                ) : null}
+
+                {step === 2 ? (
+                  <>
+                    <StepIntro
+                      headingRef={stepHeadingRef}
+                      title="Anything else we should know?"
+                      hint="Optional. A sentence about the process that hurts most helps us prepare."
+                    />
+                    <Field label="Your note" id="message" error={errors.message}>
+                      <textarea
+                        id="message"
+                        name="message"
+                        rows={5}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        aria-invalid={errors.message ? true : undefined}
+                        aria-describedby={errors.message ? "message-error" : undefined}
+                        placeholder="We reconcile 400 supplier invoices a month by hand…"
+                        className={`${inputCls} min-h-32 resize-y`}
+                      />
+                    </Field>
+
+                    {/* Recap: what will be sent, with a jump back to edit. */}
+                    <dl className="grid gap-2 rounded-xl border border-border bg-surface-2 p-4 text-sm">
+                      <RecapRow
+                        icon={User}
+                        label="From"
+                        value={`${name.trim() || "?"} · ${email.trim() || "?"}`}
+                        onEdit={() => goTo(0)}
+                      />
+                      <RecapRow
+                        icon={TYPE_META[type as (typeof PROJECT_TYPES)[number]]?.icon ?? Boxes}
+                        label="Project"
+                        value={type}
+                        onEdit={() => goTo(1)}
+                      />
+                      <RecapRow
+                        icon={Clock}
+                        label="Timing"
+                        value={`${timeline} · ${preferredTime}`}
+                        onEdit={() => goTo(1)}
+                      />
+                    </dl>
+                  </>
+                ) : null}
               </div>
-
-              <Choice
-                label="What is this about?"
-                name="project-type"
-                options={PROJECT_TYPES}
-                value={type}
-                onChange={setType}
-              />
-              <Choice
-                label="When do you want this live?"
-                name="timeline"
-                options={TIMELINES}
-                value={timeline}
-                onChange={setTimeline}
-              />
-
-              <Choice
-                label="Best time for a call?"
-                name="preferred-time"
-                options={PREFERRED_TIMES}
-                value={preferredTime}
-                onChange={setPreferredTime}
-                hint={
-                  timezone
-                    ? `Times read in your timezone (${timezone}). We confirm by email before anything is booked.`
-                    : "We confirm the exact time by email before anything is booked."
-                }
-              />
-
-              <Field
-                label="What process is costing you the most?"
-                id="message"
-                error={errors.message}
-                required
-              >
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={5}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  aria-required="true"
-                  aria-invalid={errors.message ? true : undefined}
-                  aria-describedby={errors.message ? "message-error" : undefined}
-                  placeholder="We reconcile 400 supplier invoices a month by hand…"
-                  className={`${inputCls} min-h-32 resize-y`}
-                />
-              </Field>
 
               {/* Honeypot: off-screen rather than display:none so naive bots still fill it,
                   and hidden from the accessibility tree so real users never meet it. */}
               <div
                 aria-hidden="true"
-                className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden"
+                className="absolute top-auto -left-[9999px] h-px w-px overflow-hidden"
               >
                 <label htmlFor="website">Leave this field empty</label>
                 <input
@@ -361,17 +562,37 @@ export function ContactSection() {
                     </>
                   ) : null}
                 </p>
-                <button type="submit" disabled={status === "submitting"} className={primaryBtnCls}>
-                  {status === "submitting" ? (
-                    <>
-                      Sending… <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                    </>
-                  ) : (
-                    <>
-                      Send message <Send className="size-4" aria-hidden="true" />
-                    </>
-                  )}
-                </button>
+
+                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center">
+                  {step > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => goTo(step - 1)}
+                      className={secondaryBtnCls}
+                    >
+                      <ArrowLeft className="size-4 text-primary" aria-hidden="true" /> Back
+                    </button>
+                  ) : null}
+                  <button
+                    type="submit"
+                    disabled={status === "submitting"}
+                    className={primaryBtnCls}
+                  >
+                    {step < STEPS.length - 1 ? (
+                      <>
+                        Continue <ArrowRight className="size-4" aria-hidden="true" />
+                      </>
+                    ) : status === "submitting" ? (
+                      <>
+                        Sending… <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                      </>
+                    ) : (
+                      <>
+                        Send message <Send className="size-4" aria-hidden="true" />
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </form>
           ) : (
@@ -430,11 +651,126 @@ export function ContactSection() {
   );
 }
 
+/**
+ * The step rail. Completed steps stay clickable (they are the visitor's own
+ * data); upcoming steps are reached through Continue so validation runs.
+ */
+function Stepper({
+  step,
+  reached,
+  onSelect,
+}: {
+  step: number;
+  reached: number;
+  onSelect: (n: number) => void;
+}) {
+  return (
+    <nav aria-label="Form steps">
+      <ol className="flex items-center gap-2">
+        {STEPS.map((s, i) => {
+          const isCurrent = i === step;
+          const isDone = i < step;
+          const clickable = i <= reached && !isCurrent;
+          return (
+            <li key={s.id} className={`flex items-center gap-2 ${i > 0 ? "flex-1" : ""}`}>
+              {i > 0 ? (
+                <span
+                  aria-hidden="true"
+                  className={`h-px flex-1 ${isDone || isCurrent ? "bg-primary/60" : "bg-border"}`}
+                />
+              ) : null}
+              <button
+                type="button"
+                disabled={!clickable}
+                onClick={() => clickable && onSelect(i)}
+                aria-current={isCurrent ? "step" : undefined}
+                className={`inline-flex min-h-9 items-center gap-2 rounded-full border py-1 pr-3 pl-1 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                  isCurrent
+                    ? "border-primary/60 bg-primary/10 text-foreground"
+                    : isDone
+                      ? "border-border bg-surface-2 text-foreground hover:border-primary/40"
+                      : "border-border bg-surface text-muted-foreground"
+                } ${clickable ? "cursor-pointer" : ""}`}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`grid size-6 place-items-center rounded-full text-[11px] font-medium ${
+                    isDone
+                      ? "bg-primary text-primary-foreground"
+                      : isCurrent
+                        ? "border border-primary/60 text-primary"
+                        : "border border-border text-muted-foreground"
+                  }`}
+                >
+                  {isDone ? <Check className="size-3.5" /> : i + 1}
+                </span>
+                <span className={isCurrent ? "" : "hidden sm:inline"}>{s.label}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}
+
+function StepIntro({
+  title,
+  hint,
+  headingRef,
+}: {
+  title: string;
+  hint?: ReactNode;
+  headingRef: React.RefObject<HTMLHeadingElement | null>;
+}) {
+  return (
+    <div>
+      <h3
+        ref={headingRef}
+        tabIndex={-1}
+        className="font-display text-lg text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+      >
+        {title}
+      </h3>
+      {hint ? <p className="mt-1 text-sm text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
+function RecapRow({
+  icon: Icon,
+  label,
+  value,
+  onEdit,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  onEdit: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <Icon className="size-4 shrink-0 text-primary" aria-hidden="true" />
+      <dt className="w-16 shrink-0 text-xs tracking-wide text-muted-foreground uppercase">
+        {label}
+      </dt>
+      <dd className="min-w-0 flex-1 truncate text-foreground">{value}</dd>
+      <button
+        type="button"
+        onClick={onEdit}
+        className="inline-flex min-h-8 items-center gap-1.5 rounded-full px-2 text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      >
+        <Pencil className="size-3" aria-hidden="true" /> Edit
+      </button>
+    </div>
+  );
+}
+
 const inputCls =
   "min-h-11 w-full rounded-xl border border-border bg-surface-2 px-4 py-2.5 text-base text-foreground outline-none placeholder:text-muted-foreground/70 focus-visible:border-primary/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary aria-[invalid=true]:border-destructive";
 
 const primaryBtnCls =
-  "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto sm:justify-self-start";
+  "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto";
 
 const secondaryBtnCls =
   "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-border bg-surface-2 px-4 text-center text-sm text-foreground transition-colors hover:border-primary/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";

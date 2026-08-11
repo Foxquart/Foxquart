@@ -195,13 +195,13 @@ export function LiftScrollbar() {
           <div className="absolute inset-0 bg-gradient-to-b from-primary/25 via-primary/10 to-transparent" />
           <div
             data-door
-            className="absolute inset-y-0 left-0 w-1/2 border-r border-background/70 bg-gradient-to-b from-surface-2 via-surface to-surface-2 will-change-transform"
+            className="absolute inset-y-0 left-0 w-1/2 border-r border-foreground/20 bg-gradient-to-b from-surface-2 via-surface to-surface-2 will-change-transform"
           >
             <div className="absolute inset-y-2 right-1 w-px bg-foreground/10" />
           </div>
           <div
             data-door
-            className="absolute inset-y-0 right-0 w-1/2 border-l border-background/70 bg-gradient-to-b from-surface-2 via-surface to-surface-2 will-change-transform"
+            className="absolute inset-y-0 right-0 w-1/2 border-l border-foreground/20 bg-gradient-to-b from-surface-2 via-surface to-surface-2 will-change-transform"
           >
             <div className="absolute inset-y-2 left-1 w-px bg-foreground/10" />
           </div>

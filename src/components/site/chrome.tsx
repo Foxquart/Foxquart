@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Instagram, Menu, X } from "lucide-react";
+import { useEffect, useRef, useState, type ComponentProps } from "react";
+import { ChevronDown, Instagram, Menu, Moon, Sun, X } from "lucide-react";
 import {
   EMAIL_ADDRESS,
   MAILTO_URL,
@@ -11,6 +11,7 @@ import {
 } from "@/lib/site-data";
 import { gsap, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
 import { introWillPlay, whenIntroDone } from "@/lib/intro-gate";
+import { toggleTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { FoxquartLogo } from "./ui";
 
@@ -76,6 +77,31 @@ const sheetSubRowCls =
   "flex min-h-11 items-center rounded-lg px-3 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground active:bg-surface-2";
 
 const footerLinkCls = "text-muted-foreground transition-colors hover:text-foreground";
+
+/*
+ * Light/dark switch. The whole theme lives in CSS variables, so this only flips
+ * .dark on <html> (via lib/theme) and lets the tokens do the rest. Both icons are
+ * always in the markup and CSS picks one from the html class, so the SSR'd button
+ * never mismatches a dark-preference visitor during hydration. The label states
+ * the action, not the state, so it reads correctly in both modes.
+ */
+function ThemeToggle({ className, ...props }: ComponentProps<"button">) {
+  return (
+    <button
+      type="button"
+      aria-label="Switch between light and dark mode"
+      onClick={() => toggleTheme()}
+      className={cn(
+        "press grid place-items-center rounded-full text-muted-foreground transition-colors hover:bg-surface hover:text-foreground",
+        className,
+      )}
+      {...props}
+    >
+      <Sun className="size-5 dark:hidden" aria-hidden="true" />
+      <Moon className="hidden size-5 dark:block" aria-hidden="true" />
+    </button>
+  );
+}
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -261,6 +287,10 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <ThemeToggle
+              data-nav-item
+              className="size-11 border border-border bg-surface text-foreground md:size-10 md:border-0 md:bg-transparent md:text-muted-foreground max-md:rounded-xl"
+            />
             <Link to="/contact" data-nav-item className={`${ctaCls} hidden md:inline-flex`}>
               <span className="whitespace-nowrap">{CTA_LABEL}</span>
             </Link>

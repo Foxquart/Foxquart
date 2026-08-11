@@ -2,20 +2,22 @@ import { useRef, useState } from "react";
 import { useLenis } from "lenis/react";
 import { animate, stagger, steps, type JSAnimation } from "animejs";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
-import { introWillPlay, resolveIntro } from "@/lib/intro-gate";
+import { introOverlayMounts, introWillPlay, resolveIntro } from "@/lib/intro-gate";
 
 /*
  * Cinematic intro for hard loads of "/", in the register of a studio logo open:
  * abstract brand fragments flicker inside the wordmark's letterforms while the
  * camera pushes in, the lockup settles to the artwork verbatim, the Q counter
  * punches through the head (the brand's signature beat, mirrored from the hero
- * cartoon), and the exit zooms through that hole into the page. Dark and
- * brand-true throughout: no color floods, the artwork keeps its own colors.
+ * cartoon), and the exit zooms through that hole into the page. Light and
+ * brand-true throughout: the Vanilla Veil ground with Velvet Merlot type and
+ * Crimson Royale accents, all via tokens; the artwork keeps its own colors.
  *
  * Anime.js owns the flicker montage; GSAP owns the master timeline and exit.
  * The overlay is SSR'd (the server only renders this route for hard loads of
  * "/"), so the hold state paints with the first CSS paint and hydration always
- * matches. SPA remounts render null via introWillPlay().
+ * matches. SPA remounts render null via introOverlayMounts(). The intro plays
+ * on every hard load of "/", by design.
  */
 
 /*
@@ -146,7 +148,13 @@ function FragShape({ kind, s = 1, tone = "fg" }: Frag) {
 }
 
 export function IntroLoader() {
-  const [show, setShow] = useState(() => (typeof window === "undefined" ? true : introWillPlay()));
+  // Hydration must match the SSR'd overlay exactly, so the initial state never
+  // consults client-only signals (reduced motion); the reduced-motion CSS below
+  // hides the overlay pre-paint when it won't play, and the effect unmounts it
+  // before the browser ever composits it.
+  const [show, setShow] = useState(() =>
+    typeof window === "undefined" ? true : introOverlayMounts(),
+  );
   const rootRef = useRef<HTMLDivElement>(null);
   const lenis = useLenis();
   const lenisRef = useRef(lenis);
@@ -292,8 +300,8 @@ export function IntroLoader() {
       // Release the header cascade and hero reveals while the zoom finishes.
       tl.call(resolveIntro, undefined, 3.0);
 
-      // Hold on a plain dark screen until the display face is ready, capped so a
-      // slow font never stalls the intro.
+      // Hold on the plain brand ground until the display face is ready, capped
+      // so a slow font never stalls the intro.
       let started = false;
       const begin = () => {
         if (started || cleanedRef.current) return;
@@ -356,8 +364,8 @@ export function IntroLoader() {
         @media (prefers-reduced-motion: reduce) { [data-intro-overlay] { display: none !important; } }
       `}</style>
 
-      {/* Dark base, separate from the root so the flood's knockouts can reveal
-          the live page once the base is cut away. */}
+      {/* Brand-ground base, separate from the root so the flood's knockouts can
+          reveal the live page once the base is cut away. */}
       <div data-base className="absolute inset-0 bg-background" />
 
       <div data-stage className="absolute inset-0 will-change-transform">
@@ -393,7 +401,7 @@ export function IntroLoader() {
                 />
               </mask>
               {/* Cover mask: knocks the wordmark and the portal circle out of
-                  the cover's dark rect, so the solid text beneath shows through
+                  the cover's ground rect, so the solid text beneath shows through
                   the letters and the hole opens onto whatever sits behind the
                   overlay. The circle is a hair larger than the sprite's hole so
                   its rim never fringes; the artwork drawn above re-covers the
@@ -430,7 +438,7 @@ export function IntroLoader() {
 
             {/* Solid lockup, crossfaded in at the settle: the founder's artwork
                 verbatim over the wordmark. The FULL head (counter not yet
-                punched) so no detached Q floats on the dark field; the punch
+                punched) so no detached Q floats on the open field; the punch
                 beat opens it. Held at 0.02 rather than 0 so the SSR hold state
                 paints an LCP candidate. */}
             <g data-wordmark opacity="0.02">
@@ -447,9 +455,9 @@ export function IntroLoader() {
               </text>
             </g>
 
-            {/* Phase B/C cover: same dark field, but the HOLED head verbatim,
+            {/* Phase B/C cover: same brand field, but the HOLED head verbatim,
                 so cutting to it reads as the counter punching through. The
-                mask's portal knock opens the hole through the dark rect too;
+                mask's portal knock opens the hole through the ground rect too;
                 the artwork's own tail diamond overlaps the window's edge, so
                 the opening reads as the Q counter, not a bare circle. */}
             <g data-flood opacity="0">
