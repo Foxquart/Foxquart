@@ -28,6 +28,19 @@ export default defineConfig({
   nitro: {
     preset: "vercel",
     routeRules: {
+      // Baseline security headers on every server-rendered response (Lighthouse
+      // Best Practices: HSTS, clickjacking, MIME sniffing, origin isolation).
+      // No CSP: the app legitimately inlines scripts (theme gate, JSON-LD), so
+      // a policy strict enough to score would break them.
+      "/**": {
+        headers: {
+          "strict-transport-security": "max-age=31536000; includeSubDomains",
+          "x-frame-options": "SAMEORIGIN",
+          "x-content-type-options": "nosniff",
+          "cross-origin-opener-policy": "same-origin",
+          "referrer-policy": "strict-origin-when-cross-origin",
+        },
+      },
       "/": { isr: true },
       // "/x/**" does not match "/x" itself, so the index pages get their own rule.
       "/services": { isr: true },
