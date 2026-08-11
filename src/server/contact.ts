@@ -81,7 +81,7 @@ export async function sendNotification(data: ContactSubmission): Promise<void> {
     }`,
     ``,
     `Message:`,
-    data.message,
+    data.message || "(none)",
   ];
 
   const resend = new Resend(apiKey);

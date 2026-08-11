@@ -46,11 +46,13 @@ export const contactSubmissionSchema = z.object({
     .max(320, "That email address is too long."),
   company: z.string().trim().max(200, "Keep the company name under 200 characters.").default(""),
   phone: z.string().trim().max(50, "Keep the phone number under 50 characters.").default(""),
+  // Optional by design: the stepper already captures who they are and what
+  // they need, so the note at the end is a bonus, not a gate.
   message: z
     .string()
     .trim()
-    .min(10, "A sentence or two is enough. What should we look at?")
-    .max(5000, "Please keep the message under 5,000 characters."),
+    .max(5000, "Please keep the message under 5,000 characters.")
+    .default(""),
   projectType: z.enum(PROJECT_TYPES),
   timeline: z.enum(TIMELINES),
   preferredTime: z.enum(PREFERRED_TIMES).default("Anytime"),

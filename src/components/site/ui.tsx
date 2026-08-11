@@ -287,7 +287,7 @@ export function FoxquartLogo({
         <span
           data-shine
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-0 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-foreground/45 to-transparent"
+          className="pointer-events-none absolute inset-y-0 left-0 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/45 to-transparent"
         />
       </span>
       <span className={textClassName}>Foxquart</span>

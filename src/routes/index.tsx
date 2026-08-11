@@ -20,7 +20,15 @@ export const Route = createFileRoute("/")({
   // route only overrides the per-page tags so the entity is never duplicated.
   head: () => ({
     meta: pageMeta({ title, description, path }),
-    links: [canonicalLink(path)],
+    links: [
+      canonicalLink(path),
+      // The intro's lockup and the hero cartoon are built from these three
+      // sprites; preloading keeps the intro from holding on a dark screen
+      // while they arrive. ~112KB total, all above the fold.
+      { rel: "preload", as: "image", href: "/images/fox-head-full.webp" },
+      { rel: "preload", as: "image", href: "/images/fox-head-holed.webp" },
+      { rel: "preload", as: "image", href: "/images/fox-ball.webp" },
+    ],
   }),
   component: Home,
 });

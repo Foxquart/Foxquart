@@ -2,20 +2,22 @@ import { useRef, useState } from "react";
 import { useLenis } from "lenis/react";
 import { animate, stagger, steps, type JSAnimation } from "animejs";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
-import { introWillPlay, resolveIntro } from "@/lib/intro-gate";
+import { introOverlayMounts, introWillPlay, resolveIntro } from "@/lib/intro-gate";
 
 /*
  * Cinematic intro for hard loads of "/", in the register of a studio logo open:
  * abstract brand fragments flicker inside the wordmark's letterforms while the
  * camera pushes in, the lockup settles to the artwork verbatim, the Q counter
  * punches through the head (the brand's signature beat, mirrored from the hero
- * cartoon), and the exit zooms through that hole into the page. Dark and
- * brand-true throughout: no color floods, the artwork keeps its own colors.
+ * cartoon), and the exit zooms through that hole into the page. Light and
+ * brand-true throughout: the Vanilla Veil ground with Velvet Merlot type and
+ * Crimson Royale accents, all via tokens; the artwork keeps its own colors.
  *
  * Anime.js owns the flicker montage; GSAP owns the master timeline and exit.
  * The overlay is SSR'd (the server only renders this route for hard loads of
  * "/"), so the hold state paints with the first CSS paint and hydration always
- * matches. SPA remounts render null via introWillPlay().
+ * matches. SPA remounts render null via introOverlayMounts(). The intro plays
+ * on every hard load of "/", by design.
  */
 
 /*
@@ -62,10 +64,17 @@ type Frag = {
 
 /*
  * Deterministic fragment layout (SSR and client must render identical markup).
- * Everything sits inside the wordmark's letterform mask (~x 330-1270,
- * y 505-645). Abstract brand shapes only: fox marks, wireframes, glyphs, grids.
+ * Everything sits inside the lockup mask: the head silhouette (~x 700-900,
+ * y 120-350) and the wordmark band (~x 330-1270, y 505-645). Abstract brand
+ * shapes only: fox marks, wireframes, rings, grids.
  */
 const FRAGMENTS: Frag[] = [
+  { kind: "ring", x: 800, y: 265, s: 1.1, tone: "primary" },
+  { kind: "rows", x: 800, y: 195, tone: "fg" },
+  { kind: "fox", x: 800, y: 250, s: 0.5, tone: "fg" },
+  { kind: "cross", x: 758, y: 175, tone: "fg" },
+  { kind: "arcs", x: 848, y: 240, s: 0.9, tone: "primary" },
+  { kind: "card", x: 800, y: 320, s: 0.7, rot: -6, tone: "primary" },
   { kind: "ring", x: 700, y: 620, s: 0.8, tone: "primary" },
   { kind: "rows", x: 500, y: 600, tone: "fg" },
   { kind: "arcs", x: 1240, y: 540, s: 0.8, tone: "primary" },
@@ -101,13 +110,7 @@ function FragShape({ kind, s = 1, tone = "fg" }: Frag) {
       );
     case "ring":
       return (
-        <circle
-          r={90 * s}
-          fill="none"
-          stroke={color}
-          strokeWidth={3}
-          strokeDasharray="12 16"
-        />
+        <circle r={90 * s} fill="none" stroke={color} strokeWidth={3} strokeDasharray="12 16" />
       );
     case "card":
       return (
@@ -145,8 +148,12 @@ function FragShape({ kind, s = 1, tone = "fg" }: Frag) {
 }
 
 export function IntroLoader() {
+  // Hydration must match the SSR'd overlay exactly, so the initial state never
+  // consults client-only signals (reduced motion); the reduced-motion CSS below
+  // hides the overlay pre-paint when it won't play, and the effect unmounts it
+  // before the browser ever composits it.
   const [show, setShow] = useState(() =>
-    typeof window === "undefined" ? true : introWillPlay(),
+    typeof window === "undefined" ? true : introOverlayMounts(),
   );
   const rootRef = useRef<HTMLDivElement>(null);
   const lenis = useLenis();
@@ -293,8 +300,8 @@ export function IntroLoader() {
       // Release the header cascade and hero reveals while the zoom finishes.
       tl.call(resolveIntro, undefined, 3.0);
 
-      // Hold on a plain dark screen until the display face is ready, capped so a
-      // slow font never stalls the intro.
+      // Hold on the plain brand ground until the display face is ready, capped
+      // so a slow font never stalls the intro.
       let started = false;
       const begin = () => {
         if (started || cleanedRef.current) return;
@@ -357,36 +364,56 @@ export function IntroLoader() {
         @media (prefers-reduced-motion: reduce) { [data-intro-overlay] { display: none !important; } }
       `}</style>
 
-      {/* Dark base, separate from the root so the flood's knockouts can reveal
-          the live page once the base is cut away. */}
+      {/* Brand-ground base, separate from the root so the flood's knockouts can
+          reveal the live page once the base is cut away. */}
       <div data-base className="absolute inset-0 bg-background" />
 
       <div data-stage className="absolute inset-0 will-change-transform">
         <div data-jitter className="absolute inset-0">
-          <svg
-            className="h-full w-full"
-            viewBox="0 0 1600 900"
-            preserveAspectRatio="xMidYMid meet"
-          >
+          <svg className="h-full w-full" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet">
             <defs>
-              {/* Luminance mask: fragments exist only inside the wordmark's
-                  letterforms. The mark above stays the artwork, untouched. */}
-              <mask id="fq-intro-letters" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900">
-                <text
-                  {...WORDMARK}
-                  textAnchor="middle"
-                  fill="#fff"
-                >
+              {/* Turns the head sprite's alpha into a white silhouette so the
+                  luminance mask below can use the artwork's true shape. */}
+              <filter id="fq-intro-alpha">
+                <feFlood floodColor="#fff" result="f" />
+                <feComposite in="f" in2="SourceAlpha" operator="in" />
+              </filter>
+              {/* Luminance mask: fragments exist only inside the lockup, the
+                  wordmark's letterforms and the head's artwork silhouette. */}
+              <mask
+                id="fq-intro-letters"
+                maskUnits="userSpaceOnUse"
+                x="0"
+                y="0"
+                width="1600"
+                height="900"
+              >
+                <text {...WORDMARK} textAnchor="middle" fill="#fff">
                   FOXQUART
                 </text>
+                <image
+                  href="/images/fox-head-full.webp"
+                  x={ART_X}
+                  y={ART_Y}
+                  width={ART_W}
+                  height={ART_H}
+                  filter="url(#fq-intro-alpha)"
+                />
               </mask>
               {/* Cover mask: knocks the wordmark and the portal circle out of
-                  the cover's dark rect, so the solid text beneath shows through
+                  the cover's ground rect, so the solid text beneath shows through
                   the letters and the hole opens onto whatever sits behind the
                   overlay. The circle is a hair larger than the sprite's hole so
                   its rim never fringes; the artwork drawn above re-covers the
                   excess. */}
-              <mask id="fq-intro-flood" maskUnits="userSpaceOnUse" x="-4000" y="-4000" width="9600" height="8900">
+              <mask
+                id="fq-intro-flood"
+                maskUnits="userSpaceOnUse"
+                x="-4000"
+                y="-4000"
+                width="9600"
+                height="8900"
+              >
                 <rect x="-4000" y="-4000" width="9600" height="8900" fill="#fff" />
                 <text {...WORDMARK} textAnchor="middle" fill="#000">
                   FOXQUART
@@ -411,7 +438,7 @@ export function IntroLoader() {
 
             {/* Solid lockup, crossfaded in at the settle: the founder's artwork
                 verbatim over the wordmark. The FULL head (counter not yet
-                punched) so no detached Q floats on the dark field; the punch
+                punched) so no detached Q floats on the open field; the punch
                 beat opens it. Held at 0.02 rather than 0 so the SSR hold state
                 paints an LCP candidate. */}
             <g data-wordmark opacity="0.02">
@@ -428,9 +455,9 @@ export function IntroLoader() {
               </text>
             </g>
 
-            {/* Phase B/C cover: same dark field, but the HOLED head verbatim,
+            {/* Phase B/C cover: same brand field, but the HOLED head verbatim,
                 so cutting to it reads as the counter punching through. The
-                mask's portal knock opens the hole through the dark rect too;
+                mask's portal knock opens the hole through the ground rect too;
                 the artwork's own tail diamond overlaps the window's edge, so
                 the opening reads as the Q counter, not a bare circle. */}
             <g data-flood opacity="0">

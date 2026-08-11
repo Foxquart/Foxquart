@@ -2,10 +2,57 @@
 @source "../src";
 @import "tw-animate-css";
 
+/*
+ * Self-hosted fonts (latin subsets, served same-origin from /public/fonts).
+ * Replaces the render-blocking fonts.googleapis.com stylesheet: no cross-origin
+ * CSS fetch before first paint, and the woff2 files ride the site's own CDN.
+ * Geist and JetBrains Mono are variable fonts; one file covers every weight.
+ */
+@font-face {
+  font-family: "Instrument Serif";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/instrument-serif-latin-400.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Instrument Serif";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/instrument-serif-latin-400-italic.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Geist";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/geist-latin-var.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono-latin-var.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 /*
- * foxquart design system: dark, engineering-grade, AI-native.
+ * foxquart design system: warm light, editorial, AI-native.
  * All color values are oklch tokens. Never hardcode colors in components.
  */
 
@@ -63,64 +110,68 @@
 }
 
 /*
- * Palette derived from the fox mark: one saturated orange on a near-black ground.
- * Dark is the only mode; there is no light theme. Hex equivalents are noted so the
- * values stay checkable against the brand contract in docs/redesign-contract.md.
+ * Brand 2026 palette: Vanilla Veil ground, Velvet Merlot ink, Crimson Royale accent,
+ * Sandstone Glow as the warm secondary. Light is the default; the .dark block below
+ * overrides the same variables, so both modes are controlled entirely by these tokens.
+ * Hex equivalents are noted so the values stay checkable against the palette card.
+ * Contrast receipts: merlot on vanilla 14.2:1, crimson on vanilla 6.3:1,
+ * vanilla on crimson 6.3:1, merlot on sandstone 9.1:1. Crimson on sandstone is
+ * 4.06:1, so crimson type on sandstone surfaces is large-text only.
  */
 :root {
   --radius: 0.75rem;
 
-  --background: oklch(0.155 0.007 271); /* #0B0C0F */
-  --foreground: oklch(0.946 0.003 264); /* #ECEDEF, never pure white */
-  --surface: oklch(0.2 0.01 268); /* #14161B */
-  --surface-2: oklch(0.235 0.012 264); /* #1B1E24 */
-  --card: oklch(0.2 0.01 268);
-  --card-foreground: oklch(0.946 0.003 264);
-  --popover: oklch(0.235 0.012 264);
-  --popover-foreground: oklch(0.946 0.003 264);
+  --background: oklch(0.947 0.047 106); /* #F1F0CC Vanilla Veil */
+  --foreground: oklch(0.25 0.077 19.2); /* #3F0D12 Velvet Merlot, never pure black */
+  --surface: oklch(0.966 0.03 102.9); /* #F7F5DE, cards lift toward light */
+  --surface-2: oklch(0.911 0.05 99.9); /* #E9E3BD, deeper cream wash */
+  --card: oklch(0.966 0.03 102.9);
+  --card-foreground: oklch(0.25 0.077 19.2);
+  --popover: oklch(0.977 0.02 100.6); /* #FAF8E9 */
+  --popover-foreground: oklch(0.25 0.077 19.2);
 
-  /* The accent. Its foreground is near-black: white on this orange is 3.4:1 and fails. */
-  --primary: oklch(0.663 0.218 37.6); /* #FB4F02, sampled from public/foxquart.png */
-  --primary-foreground: oklch(0.155 0.007 271); /* #0B0C0F */
-  --primary-hover: oklch(0.694 0.203 40.4); /* #FF6420 */
+  /* The accent. Vanilla on this crimson is 6.3:1, so light type is safe on it. */
+  --primary: oklch(0.475 0.171 20); /* #A71D31 Crimson Royale */
+  --primary-foreground: oklch(0.947 0.047 106); /* #F1F0CC */
+  --primary-hover: oklch(0.421 0.152 20.1); /* #8E1728, hover deepens on light */
 
-  --secondary: oklch(0.235 0.012 264);
-  --secondary-foreground: oklch(0.946 0.003 264);
-  --muted: oklch(0.235 0.012 264);
-  --muted-foreground: oklch(0.642 0.016 261); /* #878D97, 4.6:1 on ground */
-  --subtle: oklch(0.8 0.013 260); /* #B9BEC6, secondary body text */
-  --accent: oklch(0.284 0.016 264);
-  --accent-foreground: oklch(0.946 0.003 264);
+  --secondary: oklch(0.81 0.078 89.3); /* #D5BF86 Sandstone Glow */
+  --secondary-foreground: oklch(0.25 0.077 19.2);
+  --muted: oklch(0.911 0.05 99.9);
+  --muted-foreground: oklch(0.448 0.052 31.1); /* #6F4A43, 6.6:1 on ground */
+  --subtle: oklch(0.348 0.071 14.9); /* #59292E, secondary body text */
+  --accent: oklch(0.885 0.06 95); /* sandstone-tinted hover wash */
+  --accent-foreground: oklch(0.25 0.077 19.2);
 
-  --signal: oklch(0.731 0.146 163);
-  --warn: oklch(0.782 0.158 72);
-  --destructive: oklch(0.637 0.21 28);
-  --destructive-foreground: oklch(0.155 0.007 271);
+  --signal: oklch(0.487 0.101 131.7); /* #4A6B2A olive green, 5.3:1 */
+  --warn: oklch(0.529 0.102 80.4); /* #8A6414 amber, 4.6:1 */
+  --destructive: oklch(0.385 0.141 21.1); /* #7E1220, distinct from primary */
+  --destructive-foreground: oklch(0.947 0.047 106);
 
-  --border: oklch(0.284 0.016 264); /* #262A32, solid hairline, not an alpha wash */
-  --border-strong: oklch(0.352 0.019 264); /* #363B45 */
-  --input: oklch(0.284 0.016 264);
-  --ring: oklch(0.663 0.218 37.6 / 55%);
+  --border: oklch(0.819 0.074 95.5); /* #D2C48D, solid hairline, not an alpha wash */
+  --border-strong: oklch(0.719 0.085 92.2); /* #B7A365 */
+  --input: oklch(0.819 0.074 95.5);
+  --ring: oklch(0.475 0.171 20 / 55%);
 
-  --chart-1: oklch(0.663 0.218 37.6);
-  --chart-2: oklch(0.731 0.146 163);
-  --chart-3: oklch(0.782 0.158 72);
-  --chart-4: oklch(0.8 0.013 260);
-  --chart-5: oklch(0.637 0.21 28);
+  --chart-1: oklch(0.475 0.171 20); /* crimson */
+  --chart-2: oklch(0.487 0.101 131.7); /* olive */
+  --chart-3: oklch(0.529 0.102 80.4); /* amber */
+  --chart-4: oklch(0.719 0.085 92.2); /* sandstone deep */
+  --chart-5: oklch(0.25 0.077 19.2); /* merlot */
 
-  --sidebar: oklch(0.2 0.01 268);
-  --sidebar-foreground: oklch(0.946 0.003 264);
-  --sidebar-primary: oklch(0.663 0.218 37.6);
-  --sidebar-primary-foreground: oklch(0.155 0.007 271);
-  --sidebar-accent: oklch(0.235 0.012 264);
-  --sidebar-accent-foreground: oklch(0.946 0.003 264);
-  --sidebar-border: oklch(0.284 0.016 264);
-  --sidebar-ring: oklch(0.663 0.218 37.6 / 55%);
+  --sidebar: oklch(0.966 0.03 102.9);
+  --sidebar-foreground: oklch(0.25 0.077 19.2);
+  --sidebar-primary: oklch(0.475 0.171 20);
+  --sidebar-primary-foreground: oklch(0.947 0.047 106);
+  --sidebar-accent: oklch(0.911 0.05 99.9);
+  --sidebar-accent-foreground: oklch(0.25 0.077 19.2);
+  --sidebar-border: oklch(0.819 0.074 95.5);
+  --sidebar-ring: oklch(0.475 0.171 20 / 55%);
 
-  /* One accent means one light source: a single warm wash from the top left. */
+  /* One accent means one light source: a single warm crimson wash from the top left. */
   --gradient-hero: radial-gradient(
     110% 80% at 8% 0%,
-    color-mix(in oklab, var(--primary) 10%, transparent) 0%,
+    color-mix(in oklab, var(--primary) 8%, transparent) 0%,
     transparent 60%
   );
   --gradient-line: linear-gradient(
@@ -129,14 +180,84 @@
     color-mix(in oklab, var(--primary) 55%, transparent),
     transparent
   );
-  --shadow-elevated: 0 24px 60px -32px oklch(0 0 0 / 85%);
-  --shadow-panel: 0 18px 40px -24px oklch(0 0 0 / 70%);
+  /* Shadows on cream are merlot-tinted and soft; black at high alpha reads as soot. */
+  --shadow-elevated: 0 24px 60px -32px oklch(0.25 0.077 19.2 / 35%);
+  --shadow-panel: 0 18px 40px -24px oklch(0.25 0.077 19.2 / 25%);
+
+  /* Grain is theme-dependent: multiply reads as paper tooth on cream,
+     soft-light reads as film grain on the dark ground. */
+  --grain-opacity: 0.04;
+  --grain-blend: multiply;
 
   /* Motion tokens, see contract §3. Everything collapses to 0ms under reduced motion. */
   --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-micro: 140ms;
   --dur-base: 240ms;
   --dur-exit: 160ms;
+}
+
+/*
+ * Dark counterpart of the same brand family, applied by putting .dark on <html>.
+ * Every themed surface in the app reads these variables, so the class flip is the
+ * entire mode switch. Merlot-black ground, vanilla ink, crimson lifted two steps
+ * so it holds 5:1 as text on the dark ground (raw #A71D31 is 2.5:1 there and only
+ * survives as a fill behind vanilla type).
+ */
+.dark {
+  color-scheme: dark;
+
+  --background: oklch(0.168 0.021 8.7); /* #170B0D merlot-black */
+  --foreground: oklch(0.947 0.047 106); /* #F1F0CC Vanilla Veil as ink */
+  --surface: oklch(0.203 0.029 8.5); /* #221114 */
+  --surface-2: oklch(0.235 0.034 7.7); /* #2C171B */
+  --card: oklch(0.203 0.029 8.5);
+  --card-foreground: oklch(0.947 0.047 106);
+  --popover: oklch(0.235 0.034 7.7);
+  --popover-foreground: oklch(0.947 0.047 106);
+
+  --primary: oklch(0.627 0.166 13.7); /* #D9556A lifted crimson, 5.0:1 on ground */
+  --primary-foreground: oklch(0.168 0.021 8.7); /* dark ink on the lifted accent */
+  --primary-hover: oklch(0.683 0.143 13.5); /* #E3707F, hover lightens on dark */
+
+  --secondary: oklch(0.81 0.078 89.3); /* Sandstone holds 10.7:1 on the dark ground */
+  --secondary-foreground: oklch(0.168 0.021 8.7);
+  --muted: oklch(0.235 0.034 7.7);
+  --muted-foreground: oklch(0.73 0.053 31.9); /* #C79C93, 7.9:1 on ground */
+  --subtle: oklch(0.854 0.034 48.3); /* #E3C9BC secondary body text */
+  --accent: oklch(0.28 0.04 9); /* warm hover wash */
+  --accent-foreground: oklch(0.947 0.047 106);
+
+  --signal: oklch(0.767 0.122 127.9);
+  --warn: oklch(0.781 0.114 85.2);
+  --destructive: oklch(0.662 0.154 12.7);
+  --destructive-foreground: oklch(0.168 0.021 8.7);
+
+  --border: oklch(0.311 0.047 9.8); /* #45262B */
+  --border-strong: oklch(0.376 0.058 12.2); /* #5C3439 */
+  --input: oklch(0.311 0.047 9.8);
+  --ring: oklch(0.627 0.166 13.7 / 55%);
+
+  --chart-1: oklch(0.627 0.166 13.7);
+  --chart-2: oklch(0.767 0.122 127.9);
+  --chart-3: oklch(0.781 0.114 85.2);
+  --chart-4: oklch(0.81 0.078 89.3);
+  --chart-5: oklch(0.854 0.034 48.3);
+
+  --sidebar: oklch(0.203 0.029 8.5);
+  --sidebar-foreground: oklch(0.947 0.047 106);
+  --sidebar-primary: oklch(0.627 0.166 13.7);
+  --sidebar-primary-foreground: oklch(0.168 0.021 8.7);
+  --sidebar-accent: oklch(0.235 0.034 7.7);
+  --sidebar-accent-foreground: oklch(0.947 0.047 106);
+  --sidebar-border: oklch(0.311 0.047 9.8);
+  --sidebar-ring: oklch(0.627 0.166 13.7 / 55%);
+
+  /* Depth on dark comes back from black shadows; merlot-tinted ones vanish. */
+  --shadow-elevated: 0 24px 60px -32px oklch(0 0 0 / 85%);
+  --shadow-panel: 0 18px 40px -24px oklch(0 0 0 / 70%);
+
+  --grain-opacity: 0.05;
+  --grain-blend: soft-light;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -152,9 +273,11 @@
     border-color: var(--color-border);
   }
 
+  /* Default color-scheme is light; the .dark token block flips it alongside
+     every color variable, so the class on <html> is the entire mode switch. */
   html {
     scroll-behavior: smooth;
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
@@ -213,7 +336,7 @@
   }
 }
 
-/* On a dark ground, surfaces separate by tint and hairline, not by blur.
+/* On the cream ground, surfaces separate by tint and hairline, not by blur.
    Both utilities keep their names so existing markup doesn't break, but the
    heavy backdrop-filters are gone: they cost real frames on low-end Android. */
 @utility glass {
@@ -238,10 +361,10 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    /* Much lighter than the light-theme value: on near-black, 0.22 overlay reads as fog.
-       This is here to kill gradient banding, not to be seen. */
-    opacity: 0.05;
-    mix-blend-mode: soft-light;
+    /* Theme-driven: paper tooth on cream, film grain on the dark ground.
+       Kept faint so it kills gradient banding without being seen. */
+    opacity: var(--grain-opacity);
+    mix-blend-mode: var(--grain-blend);
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.5'/></svg>");
   }
 }
