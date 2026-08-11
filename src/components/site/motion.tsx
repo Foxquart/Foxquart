@@ -1,6 +1,7 @@
 import { useRef, type CSSProperties, type ElementType, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { gsap, SplitText, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
+import { whenIntroDone } from "@/lib/intro-gate";
 
 /*
  * Shared motion primitives for the landing page. Rules every consumer inherits:
@@ -30,28 +31,35 @@ export function MaskLines({
   const ref = useRef<HTMLElement>(null);
 
   useGSAP(
-    () => {
+    (_, contextSafe) => {
       const el = ref.current;
       if (!el || prefersReducedMotion()) return;
-      const split = SplitText.create(el, {
-        type: "lines",
-        linesClass: "mask-line",
-        mask: "lines",
-        autoSplit: true,
-      });
-      gsap.from(split.lines, {
-        yPercent: 110,
-        duration: 0.9,
-        ease: EASE,
-        stagger: 0.09,
-        delay,
-        scrollTrigger: {
-          trigger: el,
-          start: "top 88%",
-          once,
-        },
-      });
-      return () => split.revert();
+      // Deferred behind the home intro (immediate everywhere else): these
+      // ScrollTriggers fire the moment they're created at page top, so the
+      // reveal must not exist until the intro hands the page over.
+      let split: SplitText | undefined;
+      const build = () => {
+        split = SplitText.create(el, {
+          type: "lines",
+          linesClass: "mask-line",
+          mask: "lines",
+          autoSplit: true,
+        });
+        gsap.from(split.lines, {
+          yPercent: 110,
+          duration: 0.9,
+          ease: EASE,
+          stagger: 0.09,
+          delay,
+          scrollTrigger: {
+            trigger: el,
+            start: "top 88%",
+            once,
+          },
+        });
+      };
+      whenIntroDone(contextSafe ? contextSafe(build) : build);
+      return () => split?.revert();
     },
     { scope: ref },
   );
@@ -131,19 +139,23 @@ export function Rise({
   const ref = useRef<HTMLDivElement>(null);
 
   useGSAP(
-    () => {
+    (_, contextSafe) => {
       const el = ref.current;
       if (!el || prefersReducedMotion()) return;
-      const targets = childSelector ? el.querySelectorAll(childSelector) : el;
-      gsap.from(targets, {
-        y,
-        opacity: 0,
-        duration: 0.8,
-        ease: EASE,
-        delay,
-        stagger: stagger ?? 0,
-        scrollTrigger: { trigger: el, start: "top 86%", once: true },
-      });
+      // Same intro gating as MaskLines: create the trigger only once the page is revealed.
+      const build = () => {
+        const targets = childSelector ? el.querySelectorAll(childSelector) : el;
+        gsap.from(targets, {
+          y,
+          opacity: 0,
+          duration: 0.8,
+          ease: EASE,
+          delay,
+          stagger: stagger ?? 0,
+          scrollTrigger: { trigger: el, start: "top 86%", once: true },
+        });
+      };
+      whenIntroDone(contextSafe ? contextSafe(build) : build);
     },
     { scope: ref },
   );

@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { FoxquartIcon } from "./ui";
 import { Magnetic, Marquee, MaskLines, Parallax, Rise } from "./motion";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
+import { introWillPlay, whenIntroDone } from "@/lib/intro-gate";
 
 /*
  * Hero. The LCP element is the <h1> text. No image or canvas competes with it.
@@ -110,6 +111,13 @@ export function Hero() {
         .to(ball, { yPercent: START.yPercent, duration: 0.5, ease: "power2.in" }, "<+=0.2")
         .to(fox, { rotation: -3, duration: 0.25, ease: "power2.inOut" }, "<")
         .to(fox, { rotation: 0, duration: 0.4, ease: "elastic.out(1, 0.5)" });
+
+      // Home intro: hold the cartoon so its first cycle plays on the revealed
+      // page instead of burning behind the loader overlay.
+      if (introWillPlay()) {
+        tl.pause();
+        whenIntroDone(() => tl.play());
+      }
     },
     { scope: foxRef },
   );

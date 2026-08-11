@@ -10,6 +10,7 @@ import {
   solutionPages,
 } from "@/lib/site-data";
 import { gsap, useGSAP, EASE, prefersReducedMotion } from "@/lib/gsap";
+import { introWillPlay, whenIntroDone } from "@/lib/intro-gate";
 import { cn } from "@/lib/utils";
 import { FoxquartLogo } from "./ui";
 
@@ -140,6 +141,12 @@ export function SiteHeader() {
       tl.from(shell, { y: -12, opacity: 0, duration: 0.5 });
       tl.from(items, { y: -8, opacity: 0, duration: 0.35, stagger: 0.04 }, 0.12);
       tl.set([shell, ...items], { clearProps: "transform,opacity" });
+      // Home intro: hold the cascade (from() has already hidden the header) and
+      // play it as the intro's exit zoom reveals the page.
+      if (introWillPlay()) {
+        tl.pause();
+        whenIntroDone(() => tl.play());
+      }
     },
     { scope: headerRef },
   );
