@@ -174,7 +174,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         type: "font/woff2",
         crossOrigin: "anonymous",
       },
-      // Favicon set supplied by the founder (generator output from the brand artwork).
+      /*
+       * Favicon set from the founder's brand artwork.
+       * Google resizes the SERP favicon down from whatever it fetches and prefers a
+       * square whose side is a multiple of 48, so the 48 and 96 PNGs exist purely to
+       * give it a high-resolution candidate: the .ico tops out at a 48px frame, which
+       * is the bare minimum it will accept. Largest first, since some crawlers take
+       * the first declaration rather than the best-matching one.
+       */
+      { rel: "icon", href: "/favicon-96x96.png", type: "image/png", sizes: "96x96" },
+      { rel: "icon", href: "/favicon-48x48.png", type: "image/png", sizes: "48x48" },
       { rel: "icon", href: "/favicon.ico", sizes: "48x48" },
       { rel: "icon", href: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
       { rel: "icon", href: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },

@@ -11,9 +11,9 @@ import { StickyCta } from "@/components/site/sticky-cta";
 import { canonicalLink, pageMeta } from "@/lib/seo";
 
 const path = "/";
-const title = "Custom Software, ERP & AI Automation | Foxquart";
+const title = "Custom Business Software, ERP & AI Automation | Foxquart";
 const description =
-  "Foxquart builds the systems a business runs on: clinic, school, warehouse, ERP and AI automation. Live in weeks, not quarters.";
+  "Foxquart builds custom business software, ERP platforms and AI automation for companies outgrowing spreadsheets. Live in weeks, not quarters. Talk to us.";
 
 export const Route = createFileRoute("/")({
   // Organization and WebSite JSON-LD are emitted once from __root.tsx; the home

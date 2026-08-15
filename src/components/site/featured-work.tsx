@@ -20,16 +20,61 @@ type Project = {
   liveLink: string;
   /** Name shown in the browser mockup's address bar. Falls back to `category`. */
   demoLabel?: string;
+  /**
+   * Opt out of the live embed and show the poster instead. For demos whose entrance
+   * animations never fire inside a frame, so the iframe would paint an empty page over
+   * a poster that reads correctly.
+   */
+  embed?: false;
 };
 
 /**
- * Engineered systems lead. The storefronts are evidence of range, not the headline;
- * the order is the positioning (contract §5).
+ * Newest builds lead: interior, gym and clinic are the freshest work, so they carry the
+ * top of the gallery. The engineered systems follow as depth behind them.
  *
  * Every entry is a Foxquart reference build on our own hosting. None of these are client
  * deployments, so none of them carry a review, a rating or a platform badge.
  */
 const projects: Project[] = [
+  {
+    id: "interior-design",
+    category: "Interior Design Studio",
+    businessName: "Halda Interior Architecture",
+    summary: "Puts the portfolio, process and enquiry flow on one scroll.",
+    capability: "Scroll-driven project walkthrough with a built-in enquiry flow.",
+    features: ["Project Walkthrough", "Case Study Pages", "Studio Story", "Enquiry Form"],
+    buildWindow: "3 weeks",
+    image: "/images/interior_studio.png",
+    liveLink: "https://interior-design-demo.foxquart.com/",
+    demoLabel: "Interior Studio",
+  },
+  {
+    id: "gym-club",
+    category: "Gym & Studio Platform",
+    businessName: "Ember Athletic Club",
+    summary: "Sells the memberships, then runs them: member app and owner console.",
+    capability: "Public site, member dashboard and owner admin on one membership record.",
+    features: ["Class Timetable", "Member Dashboard", "Owner Admin", "Membership Checkout"],
+    buildWindow: "4 weeks",
+    image: "/images/gym_club.png",
+    liveLink: "https://gym-demo.foxquart.com/",
+    demoLabel: "Ember Athletic Club",
+    // The club's reveal animations stay at opacity 0 until the page is scrolled, and a
+    // framed copy never scrolls, so an embed here renders an empty page.
+    embed: false,
+  },
+  {
+    id: "doctor-clinic",
+    category: "Clinic Booking System",
+    businessName: "AuraCare Specialist Clinic",
+    summary: "Patients pick a doctor, pick a slot, get the reminder.",
+    capability: "Self-serve appointment booking against live doctor rosters.",
+    features: ["Doctor Rosters", "Patient Booking", "Appointment Reminders", "Doctor Profiles"],
+    buildWindow: "4 weeks",
+    image: "/images/clinic_portfolio.png",
+    liveLink: "https://clinic-demo.foxquart.com/",
+    demoLabel: "AuraCare Clinic",
+  },
   {
     id: "spares-control",
     category: "Inventory System",
@@ -60,18 +105,6 @@ const projects: Project[] = [
     demoLabel: "Vidya Bharati SMS",
   },
   {
-    id: "doctor-clinic",
-    category: "Clinic Booking System",
-    businessName: "AuraCare Specialist Clinic",
-    summary: "Patients pick a doctor, pick a slot, get the reminder.",
-    capability: "Self-serve appointment booking against live doctor rosters.",
-    features: ["Doctor Rosters", "Patient Booking", "Appointment Reminders", "Doctor Profiles"],
-    buildWindow: "4 weeks",
-    image: "/images/clinic_portfolio.png",
-    liveLink: "https://clinic-portfolio-template.vercel.app/",
-    demoLabel: "AuraCare Clinic",
-  },
-  {
     id: "ember-oak",
     category: "Fine Dining Restaurant",
     businessName: "Ember & Oak",
@@ -94,18 +127,6 @@ const projects: Project[] = [
     image: "/images/tattoo_studio.png",
     liveLink: "https://goodlucktattooshop.netlify.app/",
     demoLabel: "Good Luck Tattoo",
-  },
-  {
-    id: "interior-design",
-    category: "Interior Design Studio",
-    businessName: "Halda Interior Architecture",
-    summary: "Puts the portfolio, process and enquiry flow on one scroll.",
-    capability: "Scroll-driven project walkthrough with a built-in enquiry flow.",
-    features: ["Project Walkthrough", "Case Study Pages", "Studio Story", "Enquiry Form"],
-    buildWindow: "3 weeks",
-    image: "/images/interior_studio.png",
-    liveLink: "https://interior-design-demo-three.vercel.app/",
-    demoLabel: "Interior Studio",
   },
 ];
 
@@ -222,7 +243,8 @@ function displayLabel(project: Project) {
 function WorkCard({ project, index }: { project: Project; index: number }) {
   const isDesktop = useIsDesktop();
   const hasDemo = project.liveLink !== "#";
-  const { frameRef, isEmbedded } = useLiveEmbed(project.id, isDesktop && hasDemo);
+  const canEmbed = hasDemo && project.embed !== false;
+  const { frameRef, isEmbedded } = useLiveEmbed(project.id, isDesktop && canEmbed);
 
   // Pasted-card tilt, straightened on hover. Desktop only: on a phone the cards sit square.
   const tilt = index % 2 === 0 ? "lg:rotate-1" : "lg:-rotate-1";
@@ -237,15 +259,9 @@ function WorkCard({ project, index }: { project: Project; index: number }) {
       {/* Card label row */}
       <div className="flex items-center justify-between gap-3 px-1">
         <span className="eyebrow-type text-muted-foreground">{project.category}</span>
-        {hasDemo ? (
-          <span className="hidden items-center gap-1.5 rounded-full bg-signal/10 px-2.5 py-1 text-[10px] font-semibold text-signal lg:inline-flex">
-            <span className="relative flex size-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-60" />
-              <span className="relative inline-flex size-1.5 rounded-full bg-signal" />
-            </span>
-            Live demo
-          </span>
-        ) : (
+        {/* Live builds say so once, on the artwork. Only a card without a demo is
+            labelled here. */}
+        {hasDemo ? null : (
           <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[10px] font-semibold text-muted-foreground">
             Concept
           </span>
@@ -296,14 +312,18 @@ function WorkCard({ project, index }: { project: Project; index: number }) {
             />
           ) : null}
 
-          {/* Below `lg` there is no embed, so the poster carries the affordance instead.
-              Centred, not bottom-anchored: the detail card overlaps the lower edge. */}
+          {/* The open affordance, carried on the artwork at every width: over the poster
+              below `lg`, over the running embed above it. Centred, not bottom-anchored:
+              the detail card overlaps the lower edge. */}
           {hasDemo ? (
-            <span className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-center px-3 lg:hidden">
+            <span className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-center px-3">
               <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-2 text-xs font-medium text-foreground shadow-[var(--shadow-panel)]">
                 <span className="size-1.5 rounded-full bg-signal" />
                 Live demo
-                <span className="text-muted-foreground">Tap to open</span>
+                <span className="text-muted-foreground">
+                  <span className="lg:hidden">Tap to open</span>
+                  <span className="hidden lg:inline">Click to open</span>
+                </span>
                 <ArrowUpRight className="size-3 shrink-0 text-primary" />
               </span>
             </span>
@@ -349,13 +369,8 @@ function WorkCard({ project, index }: { project: Project; index: number }) {
             <span className="text-[10px] font-semibold text-foreground">{project.capability}</span>
           </div>
 
-          <div className="tnum flex items-center gap-2 text-[9px] font-semibold text-muted-foreground">
-            <span>Build window: {project.buildWindow}</span>
-            {hasDemo ? (
-              <span className="flex items-center gap-0.5 text-primary group-hover:underline">
-                Open demo <ArrowUpRight className="size-2.5" />
-              </span>
-            ) : null}
+          <div className="tnum text-[9px] font-semibold text-muted-foreground">
+            Build window: {project.buildWindow}
           </div>
         </div>
       </div>
@@ -371,16 +386,10 @@ export function FeaturedWork() {
       id="work"
       className="relative overflow-hidden bg-background px-4 py-16 sm:px-5 sm:py-24 md:px-8 md:py-32"
     >
-      {/* Decorative grid, drawn in the hairline token so it never becomes a second colour. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:14px_24px] opacity-30"
-      />
-
       <div className="relative mx-auto w-full max-w-7xl">
         <Reveal className="flex flex-col items-center gap-4 text-center">
           <h2 className="text-2xl leading-[1.08] font-semibold text-balance sm:text-3xl md:text-5xl">
-            Six live demos. Open any of them.
+            Seven live demos. Open any of them.
           </h2>
           <p className="max-w-[56ch] text-base text-muted-foreground md:text-lg">
             Real running sites, not screenshots. Tap a card to try one.

@@ -1,5 +1,14 @@
 import { Link } from "@tanstack/react-router";
-import { Activity, ArrowRight, Boxes, Store, Workflow, type LucideIcon } from "lucide-react";
+import {
+  Activity,
+  ArrowRight,
+  Boxes,
+  Database,
+  Smartphone,
+  Store,
+  Workflow,
+  type LucideIcon,
+} from "lucide-react";
 import { Reveal, Section, SectionHeading } from "./ui";
 
 type Capability = {
@@ -65,8 +74,31 @@ const capabilities: Capability[] = [
     title: "Run & operate",
     outcome: "We see outages before your customers do, and keep shipping after launch.",
     systems: ["Managed hosting", "Monitoring & alerting", "Tested restores", "Ongoing releases"],
-    slug: "cloud-devops",
+    slug: "cloud-infrastructure",
     linkLabel: "Cloud infrastructure & DevOps",
+  },
+  {
+    index: "05",
+    icon: Database,
+    title: "Data & integration",
+    outcome: "Prices, listings and system records arrive on a schedule, checked before use.",
+    systems: ["Web scraping", "Price & competitor monitoring", "Custom data APIs", "BI dashboards"],
+    slug: "data-engineering",
+    linkLabel: "Data intelligence & scraping",
+  },
+  {
+    index: "06",
+    icon: Smartphone,
+    title: "Field & mobile apps",
+    outcome: "Field staff record the job on their phone, and it still works without signal.",
+    systems: [
+      "Field service apps",
+      "Delivery & logistics",
+      "Inventory scanning",
+      "Offline-first sync",
+    ],
+    slug: "mobile-applications",
+    linkLabel: "Mobile & field applications",
   },
 ];
 
@@ -85,6 +117,8 @@ const systemIndex: { label: string; slug: string }[] = [
   { label: "School ERP", slug: "school-erp" },
   { label: "Restaurant POS", slug: "restaurant-software" },
   { label: "Business process automation", slug: "business-process-automation" },
+  { label: "Web scraping", slug: "web-scraping" },
+  { label: "Landing pages", slug: "landing-page-development" },
 ];
 
 export function WhatWeDo() {

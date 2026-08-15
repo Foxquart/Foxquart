@@ -6,9 +6,9 @@ import { services } from "@/lib/site-data";
 import { breadcrumbNode, canonicalLink, collectionNode, jsonLdScript, pageMeta } from "@/lib/seo";
 
 const path = "/services";
-const title = "Services: Software, AI Automation & Cloud | Foxquart";
+const title = "Software Development Services: AI, Cloud & Web | Foxquart";
 const description =
-  "Six engineering practices from Foxquart: custom software, AI workflow automation, cloud and DevOps, data intelligence, enterprise web and mobile apps.";
+  "Six software development services in one studio: AI automation, custom operational systems, cloud engineering, data pipelines, websites and mobile apps.";
 
 export const Route = createFileRoute("/services/")({
   head: () => ({
@@ -39,6 +39,7 @@ function ServicesIndex() {
     <main>
       <Section className="pt-28 pb-8 md:pt-36 md:pb-8">
         <SectionHeading
+          as="h1"
           eyebrow="Services"
           title="Engineering practices that replace manual operations."
           intro="Pick the practice closest to your problem. Most engagements combine two or three."

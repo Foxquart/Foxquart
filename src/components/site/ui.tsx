@@ -39,11 +39,19 @@ export function SectionHeading({
   title,
   intro,
   align = "left",
+  as: Heading = "h2",
 }: {
   eyebrow?: string;
   title: string;
   intro?: string;
   align?: "left" | "center";
+  /**
+   * Heading level. Defaults to `h2` because most uses are section headings
+   * inside a page that already has an `h1`. The `/services` and `/solutions`
+   * index pages pass `h1`: this is their only heading, so leaving it at `h2`
+   * left both hub pages with no primary heading at all.
+   */
+  as?: "h1" | "h2";
 }) {
   return (
     <Reveal
@@ -53,9 +61,9 @@ export function SectionHeading({
       )}
     >
       {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-      <h2 className="text-2xl leading-[1.08] font-semibold text-balance sm:text-3xl md:text-5xl">
+      <Heading className="text-2xl leading-[1.08] font-semibold text-balance sm:text-3xl md:text-5xl">
         {title}
-      </h2>
+      </Heading>
       {intro ? <p className="text-base text-muted-foreground md:text-lg">{intro}</p> : null}
     </Reveal>
   );

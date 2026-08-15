@@ -330,22 +330,36 @@ export function IntroLoader() {
       void fontsReady.then(begin, begin);
 
       // Skip: any pointer press or key jumps straight to the exit zoom.
+      let skipScheduled = false;
       const skip = (event: Event) => {
         if (
           event instanceof KeyboardEvent &&
           ["Shift", "Control", "Alt", "Meta"].includes(event.key)
         )
           return;
-        if (cleanedRef.current || tl.time() >= 2.45) return;
-        for (const a of animeInstances) a.pause();
-        // Seeking skips the timeline's prepare call; fire it by hand so gated
-        // entrances still pre-build before the zoom.
-        resolveIntroPrepare();
-        prepareExit();
+        if (skipScheduled || cleanedRef.current || tl.time() >= 2.45) return;
+        skipScheduled = true;
+        // The input frame stays cheap (INP is the site's weakest field metric,
+        // and taps land mid-intro on busy phones): just freeze the montage now.
+        // resolveIntroPrepare's SplitText surgery, the exit measurement and the
+        // seek all run after this frame presents; rAF alone fires before the
+        // pending paint, rAF + timeout lands after it. One frame of extra hold
+        // (~16ms) before the zoom reacts is imperceptible.
         started = true;
-        tl.seek("exit");
-        tl.timeScale(1.3);
-        tl.play();
+        for (const a of animeInstances) a.pause();
+        tl.pause();
+        requestAnimationFrame(() => {
+          window.setTimeout(() => {
+            if (cleanedRef.current) return;
+            // Seeking skips the timeline's prepare call; fire it by hand so
+            // gated entrances still pre-build before the zoom.
+            resolveIntroPrepare();
+            prepareExit();
+            tl.seek("exit");
+            tl.timeScale(1.3);
+            tl.play();
+          }, 0);
+        });
       };
       root.addEventListener("pointerdown", skip);
       window.addEventListener("keydown", skip);

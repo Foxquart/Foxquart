@@ -6,9 +6,9 @@ import { solutionPages } from "@/lib/site-data";
 import { breadcrumbNode, canonicalLink, collectionNode, jsonLdScript, pageMeta } from "@/lib/seo";
 
 const path = "/solutions";
-const title = "Solutions: Industry & Operational Software | Foxquart";
+const title = "Business Software Solutions by Industry | Foxquart";
 const description =
-  "Seventeen solution pages covering inventory, ERP, CRM, n8n automation, cloud hosting, DevOps, scraping, restaurant, warehouse, healthcare and school software.";
+  "Business software solutions for inventory, ERP, CRM, warehouse, restaurant, clinic and school operations, plus automation. Find the system your team needs.";
 
 export const Route = createFileRoute("/solutions/")({
   head: () => ({
@@ -39,6 +39,7 @@ function SolutionsIndex() {
     <main>
       <Section className="pt-28 pb-8 md:pt-36 md:pb-8">
         <SectionHeading
+          as="h1"
           eyebrow="Solutions"
           title="Seventeen problems we solve, in detail."
           intro="Each page covers the failure modes, the system we build and what changes afterwards."
