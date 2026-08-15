@@ -2,7 +2,8 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRight, Check } from "lucide-react";
 import { GlassPanel, Reveal, Section, SectionHeading, Eyebrow } from "@/components/site/ui";
 import { CtaBand } from "@/components/site/sections";
-import { services, type Service } from "@/lib/site-data";
+import { services, solutionPages, type Service, type LandingPage } from "@/lib/site-data";
+import { pageBodies } from "@/lib/page-bodies";
 import {
   SITE_NAME,
   breadcrumbNode,
@@ -15,10 +16,13 @@ import {
 } from "@/lib/seo";
 
 export const Route = createFileRoute("/services/$slug")({
-  loader: ({ params }): { service: Service } => {
+  loader: ({ params }): { service: Service; children: LandingPage[] } => {
     const service = services.find((s) => s.slug === params.slug);
     if (!service) throw notFound();
-    return { service };
+    // The solution pages under this service. The JSON-LD already asserts this
+    // relation from the child side, so the crawlable link has to exist here too.
+    const children = solutionPages.filter((p) => p.parent === service.slug);
+    return { service, children };
   },
   head: ({ params, loaderData }) => {
     if (!loaderData) {
@@ -31,16 +35,19 @@ export const Route = createFileRoute("/services/$slug")({
     }
     const service = loaderData.service;
     const path = `/services/${params.slug}`;
-    const title = `${service.name} | ${SITE_NAME}`;
-    // The tagline alone is ~60 characters, which search and answer engines pad
-    // with page text. Adding the measured outcome keeps the description inside
-    // the 140–160 window and makes it a self-contained, quotable claim.
-    const description = composeDescription([
-      service.tagline,
-      service.impact,
-      `Typical return: ${service.roi}.`,
-      `Built by ${SITE_NAME}.`,
-    ]);
+    // `metaTitle` carries the keyword-shaped heading; `service.name` stays the
+    // plain offering name so the JSON-LD entity is not distorted by SEO copy.
+    const title = `${service.metaTitle ?? service.name} | ${SITE_NAME}`;
+    // Hand-authored where present. The composer below is the fallback: it fits
+    // fragments greedily and skips overflowing ones, so it can end mid-clause.
+    const description =
+      service.metaDescription ??
+      composeDescription([
+        service.tagline,
+        service.impact,
+        `Typical return: ${service.roi}.`,
+        `Built by ${SITE_NAME}.`,
+      ]);
 
     return {
       meta: pageMeta({ title, description, path }),
@@ -69,7 +76,10 @@ export const Route = createFileRoute("/services/$slug")({
 });
 
 function ServicePage() {
-  const { service } = Route.useLoaderData() as { service: Service };
+  const { service, children } = Route.useLoaderData() as {
+    service: Service;
+    children: LandingPage[];
+  };
 
   return (
     <main>
@@ -138,6 +148,56 @@ function ServicePage() {
           ))}
         </div>
       </Section>
+
+      {/* Anchor text is `child.title` verbatim, because that is the exact head
+          term each solution URL is meant to own. `mobile-applications` has no
+          children yet, so the block has to be conditional. */}
+      {children.length > 0 ? (
+        <Section className="py-10">
+          <SectionHeading eyebrow="Solutions" title={`${service.name} solutions`} />
+          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {children.map((child) => (
+              <Reveal key={child.slug}>
+                <Link
+                  to="/solutions/$slug"
+                  params={{ slug: child.slug }}
+                  className="card-lift press flex h-full flex-col rounded-xl border border-border bg-surface/50 p-5 transition-colors hover:border-primary/50"
+                >
+                  <h3 className="font-display text-base font-semibold text-balance">
+                    {child.title}
+                  </h3>
+                  <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
+                    {child.description}
+                  </p>
+                  <span className="mt-auto flex items-center gap-2 pt-5 text-sm font-medium text-primary">
+                    Read more
+                    <ArrowRight className="size-4 shrink-0" aria-hidden="true" />
+                  </span>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </Section>
+      ) : null}
+
+      {/* Page-specific prose. The panels above are scannable but thin; this is the
+          block answer engines can quote, so each section stands alone at 40-60 words. */}
+      {pageBodies[service.slug]?.length ? (
+        <Section className="py-10">
+          <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+            {pageBodies[service.slug].map((section) => (
+              <Reveal key={section.heading} className="lg:col-span-6">
+                <h2 className="font-display text-xl font-semibold text-balance md:text-2xl">
+                  {section.heading}
+                </h2>
+                <p className="mt-3 max-w-[65ch] text-base leading-relaxed text-muted-foreground">
+                  {section.text}
+                </p>
+              </Reveal>
+            ))}
+          </div>
+        </Section>
+      ) : null}
 
       <Section className="py-10">
         <SectionHeading eyebrow="FAQ" title="Questions we get asked first" />

@@ -15,8 +15,13 @@ import { SOCIAL_LINKS } from "@/lib/site-data";
 export const SITE_URL = "https://www.foxquart.com";
 export const SITE_NAME = "Foxquart";
 
-/** Social card. Generated separately and served from the public root at /og.png. */
-export const OG_IMAGE_URL = `${SITE_URL}/og.png`;
+/**
+ * Social card. Generated separately and served from the public root.
+ * Named og-card.png (not og.png): X cached a failed fetch of /og.png from an
+ * early deploy and reuses that per-URL verdict across every page, so the image
+ * had to move to a URL its crawler has never seen.
+ */
+export const OG_IMAGE_URL = `${SITE_URL}/og-card.png`;
 export const OG_IMAGE_WIDTH = "1200";
 export const OG_IMAGE_HEIGHT = "630";
 export const OG_IMAGE_ALT = "Foxquart, product engineering studio";
@@ -31,6 +36,23 @@ export const LOGO_URL = `${SITE_URL}/foxquart.png`;
  * every crawl, and search engines discount `lastmod` values they cannot trust.
  */
 export const CONTENT_LAST_MODIFIED = "2026-08-10";
+
+/**
+ * Real revision dates of the two legal pages, mirrored here for the sitemap.
+ *
+ * src/routes/privacy.tsx and src/routes/terms.tsx each declare their own
+ * module-private `LAST_UPDATED_ISO`, render it as visible `<time>` text and emit
+ * it as JSON-LD `dateModified`. Neither is exported, so the sitemap cannot import
+ * them and has to restate the values.
+ *
+ * MUST be kept in step with the `LAST_UPDATED_ISO` constant in each of those
+ * route files. A `<lastmod>` that disagrees with the `dateModified` on the same
+ * page is exactly the kind of mismatch that makes Google stop trusting
+ * `<lastmod>` sitewide. The two dates are held separately rather than as one
+ * shared legal date because the pages were revised on different days.
+ */
+export const PRIVACY_LAST_MODIFIED = "2026-08-11";
+export const TERMS_LAST_MODIFIED = "2026-08-10";
 
 /** Stable JSON-LD node identifiers so page-level nodes can reference the entity. */
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;

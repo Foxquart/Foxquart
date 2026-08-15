@@ -63,7 +63,7 @@ export function DemoTeaser() {
           </p>
           <p className="text-2xl leading-[1.55] font-normal tracking-tight text-muted-foreground sm:text-3xl md:text-4xl md:leading-[1.5]">
             A clinic fills its rosters through{" "}
-            <HoverPreviewLink k="clinic" href="https://clinic-portfolio-template.vercel.app/">
+            <HoverPreviewLink k="clinic" href="https://clinic-demo.foxquart.com/">
               patient self-booking
             </HoverPreviewLink>
             , and a dining room seats itself through{" "}

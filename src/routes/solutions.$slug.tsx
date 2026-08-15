@@ -4,6 +4,7 @@ import { GlassPanel, Reveal, Section, SectionHeading, Eyebrow } from "@/componen
 import { CtaBand } from "@/components/site/sections";
 import { SolutionDemo } from "@/components/site/solution-demo";
 import { solutionPages, services, type LandingPage } from "@/lib/site-data";
+import { pageBodies } from "@/lib/page-bodies";
 import {
   SITE_NAME,
   breadcrumbNode,
@@ -34,12 +35,16 @@ export const Route = createFileRoute("/solutions/$slug")({
     const path = `/solutions/${params.slug}`;
     // Every solution title stays under 60 characters once suffixed, so the title
     // is no longer blind-truncated mid-word at 68 characters as it was before.
-    const title = `${page.title} | ${SITE_NAME}`;
-    const description = composeDescription([
-      page.description,
-      ...page.outcomes.map((o) => `${o}.`),
-      `Built by ${SITE_NAME}.`,
-    ]);
+    // `metaTitle` overrides only the <title>; `page.title` still feeds the
+    // breadcrumb and the Service node name.
+    const title = `${page.metaTitle ?? page.title} | ${SITE_NAME}`;
+    const description =
+      page.metaDescription ??
+      composeDescription([
+        page.description,
+        ...page.outcomes.map((o) => `${o}.`),
+        `Built by ${SITE_NAME}.`,
+      ]);
     const parent = services.find((s) => s.slug === page.parent);
 
     return {
@@ -73,6 +78,12 @@ export const Route = createFileRoute("/solutions/$slug")({
 function SolutionPage() {
   const { page } = Route.useLoaderData() as { page: LandingPage };
   const parent = services.find((s) => s.slug === page.parent);
+  // Siblings are picked cyclically from this page's own group, so every page in
+  // a group gets four outbound and four inbound links. A flat slice of the list
+  // gave the first few declared pages every link and the last ones none.
+  const group = solutionPages.filter((p) => p.parent === page.parent);
+  const here = group.findIndex((p) => p.slug === page.slug);
+  const siblings = [...group.slice(here + 1), ...group.slice(0, here)].slice(0, 4);
 
   return (
     <main>
@@ -137,25 +148,46 @@ function SolutionPage() {
         <SolutionDemo slug={page.slug} />
       </Section>
 
+      {/* Page-specific prose. See services.$slug.tsx for the same block. */}
+      {pageBodies[page.slug]?.length ? (
+        <Section className="py-10">
+          <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
+            {pageBodies[page.slug].map((section) => (
+              <Reveal key={section.heading} className="lg:col-span-6">
+                <h2 className="font-display text-xl font-semibold text-balance md:text-2xl">
+                  {section.heading}
+                </h2>
+                <p className="mt-3 max-w-[65ch] text-base leading-relaxed text-muted-foreground">
+                  {section.text}
+                </p>
+              </Reveal>
+            ))}
+          </div>
+        </Section>
+      ) : null}
+
       <Section className="py-10">
         <SectionHeading eyebrow="FAQ" title="Before you ask" />
         <div className="mt-10 grid gap-4 md:grid-cols-2">
           {page.faqs.map((f) => (
             <GlassPanel key={f.q} lift={false} className="p-6">
-              <h2 className="font-display text-base font-semibold">{f.q}</h2>
+              {/* h3, not h2: these sit under the SectionHeading h2 above. */}
+              <h3 className="font-display text-base font-semibold">{f.q}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
             </GlassPanel>
           ))}
         </div>
       </Section>
 
-      <Section className="py-10">
-        <SectionHeading eyebrow="Related" title="Other solutions" />
-        <div className="mt-8 flex flex-wrap gap-2">
-          {solutionPages
-            .filter((p) => p.slug !== page.slug)
-            .slice(0, 10)
-            .map((p) => (
+      {/* `landing-page-development` is an only child, so this can be empty. */}
+      {siblings.length > 0 ? (
+        <Section className="py-10">
+          <SectionHeading
+            eyebrow="Related"
+            title={parent ? `More ${parent.name} solutions` : "Related solutions"}
+          />
+          <div className="mt-8 flex flex-wrap gap-2">
+            {siblings.map((p) => (
               <Link
                 key={p.slug}
                 to="/solutions/$slug"
@@ -165,8 +197,9 @@ function SolutionPage() {
                 {p.title}
               </Link>
             ))}
-        </div>
-      </Section>
+          </div>
+        </Section>
+      ) : null}
 
       <CtaBand />
     </main>

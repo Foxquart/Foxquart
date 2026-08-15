@@ -36,7 +36,7 @@ const DEMOS = {
   clinic: {
     name: "Clinic Portfolio",
     business: "AuraCare Specialist Clinic",
-    url: "https://clinic-portfolio-template.vercel.app/",
+    url: "https://clinic-demo.foxquart.com/",
     image: "/images/clinic_portfolio.png",
     blurb: "Doctor rosters and patient self-booking, so the front desk stops being the queue.",
   },
@@ -58,7 +58,6 @@ const SLUG_TO_DEMO: Record<string, keyof typeof DEMOS> = {
   "school-erp": "school",
   "healthcare-software": "clinic",
   "restaurant-software": "dining",
-  "custom-software-development-services": "school",
 };
 
 export function SolutionDemo({ slug }: { slug: string }) {

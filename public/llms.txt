@@ -35,8 +35,8 @@ Six engineering practices. Most engagements combine two or three.
 
 - [AI Workflow Automation](https://www.foxquart.com/services/ai-automation): Replace repetitive human steps with reliable, auditable automation. Teams re-key data between tools, chase approvals over email, and lose leads because nobody responded within the hour.
 - [Custom Software Development](https://www.foxquart.com/services/custom-software-development): Operational systems built around how your business actually runs. Off-the-shelf software forces your process into someone else's template, and the gaps get filled with spreadsheets.
-- [Cloud Infrastructure & DevOps](https://www.foxquart.com/services/cloud-devops): Infrastructure that scales quietly and recovers automatically. Deploys are manual and risky, downtime is discovered by customers, and nobody is certain the backups restore.
-- [Data Intelligence & Scraping](https://www.foxquart.com/services/data-intelligence): Turn public and internal data into a live decision feed. Pricing, competitor and market data is collected by hand, weeks late, and it never reaches the people deciding.
+- [Cloud Infrastructure & DevOps](https://www.foxquart.com/services/cloud-infrastructure): Infrastructure that scales quietly and recovers automatically. Deploys are manual and risky, downtime is discovered by customers, and nobody is certain the backups restore.
+- [Data Intelligence & Scraping](https://www.foxquart.com/services/data-engineering): Turn public and internal data into a live decision feed. Pricing, competitor and market data is collected by hand, weeks late, and it never reaches the people deciding.
 - [Enterprise Websites & Landing Pages](https://www.foxquart.com/services/enterprise-websites): Fast, indexable, conversion-engineered web presence. Marketing sites load slowly, rank poorly and force a developer ticket for every content change.
 - [Mobile & Field Applications](https://www.foxquart.com/services/mobile-applications): Apps for the people doing the work, not just the office. Field teams report on paper or WhatsApp, so the office finds out what happened a day late.
 
@@ -60,7 +60,7 @@ Stack: n8n, OpenAI, Anthropic, LangChain, Postgres, Redis.
 - Internal tools and admin dashboards
 Stack: TypeScript, React, Node.js, Go, PostgreSQL, Docker.
 
-**Cloud Infrastructure & DevOps** (https://www.foxquart.com/services/cloud-devops)
+**Cloud Infrastructure & DevOps** (https://www.foxquart.com/services/cloud-infrastructure)
 - Docker & Kubernetes deployment
 - CI/CD pipelines
 - Load balancing & autoscaling
@@ -69,7 +69,7 @@ Stack: TypeScript, React, Node.js, Go, PostgreSQL, Docker.
 - Managed hosting with 24/7 cover
 Stack: AWS, Azure, GCP, Docker, Kubernetes, Terraform, Cloudflare.
 
-**Data Intelligence & Scraping** (https://www.foxquart.com/services/data-intelligence)
+**Data Intelligence & Scraping** (https://www.foxquart.com/services/data-engineering)
 - Web scraping at scale
 - Browser automation
 - Competitor & price monitoring
@@ -105,7 +105,7 @@ system Foxquart builds, and what changes afterwards. Each maps to a parent servi
 - [ERP Development Services](https://www.foxquart.com/solutions/erp-development): Modular ERP development covering finance, inventory, procurement, production and reporting, modelled on your real process. Parent service: Custom Software Development.
 - [Custom CRM Development](https://www.foxquart.com/solutions/crm-development): Custom CRM development with pipeline automation, AI lead scoring, quoting and revenue reporting. Parent service: Custom Software Development.
 - [n8n Automation Services](https://www.foxquart.com/solutions/n8n-automation-services): Production-grade n8n automation: self-hosted workflows, error handling, monitoring and AI-powered decision steps. Parent service: AI Workflow Automation.
-- [AI Automation Services For Business](https://www.foxquart.com/solutions/ai-automation-services): AI agents, document processing, OCR and knowledge assistants integrated into your existing business systems. Parent service: AI Workflow Automation.
+- [AI Automation Services For Business](https://www.foxquart.com/solutions/ai-agent-development): AI agents, document processing, OCR and knowledge assistants integrated into your existing business systems. Parent service: AI Workflow Automation.
 - [Business Process Automation](https://www.foxquart.com/solutions/business-process-automation): Process mapping, automation engineering and change rollout that removes repetitive work across departments. Parent service: AI Workflow Automation.
 - [Managed Cloud Hosting](https://www.foxquart.com/solutions/cloud-hosting): Managed cloud hosting with monitoring, backups, scaling and 24/7 incident response on AWS, Azure and GCP. Parent service: Cloud Infrastructure & DevOps.
 - [Managed DevOps Services](https://www.foxquart.com/solutions/managed-devops): CI/CD pipelines, Kubernetes, infrastructure as code and observability delivered as a managed service. Parent service: Cloud Infrastructure & DevOps.
@@ -116,7 +116,6 @@ system Foxquart builds, and what changes afterwards. Each maps to a parent servi
 - [Manufacturing ERP Development](https://www.foxquart.com/solutions/manufacturing-erp): Manufacturing ERP covering BOM, production planning, machine downtime, quality control and costing. Parent service: Custom Software Development.
 - [Healthcare & Hospital Software](https://www.foxquart.com/solutions/healthcare-software): Hospital and clinic systems: patient records, appointments, pharmacy, billing and compliance-ready audit trails. Parent service: Custom Software Development.
 - [School ERP Development](https://www.foxquart.com/solutions/school-erp): School management system with admissions, attendance, timetables, fees, exams and parent communication. Parent service: Custom Software Development.
-- [Custom Software Development Company](https://www.foxquart.com/solutions/custom-software-development-services): Custom software development covering discovery, architecture, delivery and long-term maintenance. Parent service: Custom Software Development.
 - [API Development Services](https://www.foxquart.com/solutions/api-development): REST, GraphQL and event-driven API development with versioning, documentation and rate limiting. Parent service: Data Intelligence & Scraping.
 
 ## Live demo systems
@@ -127,10 +126,11 @@ so anyone can open them and click around before a first call.
 
 - **Six Mile Motor Works, Spares Control Center** (flagship, on Foxquart's own domain): https://inventory.foxquart.com/. A motor-works spares counter run end to end: live parts catalogue, stock levels, movement log and reorder signals in one screen. Build window: 5 weeks.
 - **Vidya Bharati International School, school management system**: https://gilded-nougat-63e5af.netlify.app/. Admin, teacher, parent and student portals over a single student record, with attendance tracking, a fee receipt engine and student analytics. Build window: 4 weeks.
-- **AuraCare Specialist Clinic, clinic booking system**: https://clinic-portfolio-template.vercel.app/. Self-serve appointment booking against live doctor rosters, with reminders and doctor profiles. Build window: 4 weeks.
+- **AuraCare Specialist Clinic, clinic booking system**: https://clinic-demo.foxquart.com/. Self-serve appointment booking against live doctor rosters, with reminders and doctor profiles. Build window: 4 weeks.
 - **Ember & Oak, fine dining restaurant**: https://emberanoak.netlify.app/. Course-by-course tasting menu with sommelier pairings, private dining and an online table reservation flow. Build window: 4 weeks.
 - **Good Luck Tattoo Studio, tattoo studio booking**: https://goodlucktattooshop.netlify.app/. Per-artist calendars with online booking, a deposit step before a slot is held, and aftercare guides. Build window: 3 weeks.
-- **Halda Interior Architecture, interior design studio**: https://interior-design-demo-three.vercel.app/. Scroll-driven project walkthrough with case study pages and a built-in enquiry flow. Build window: 3 weeks.
+- **Ember Athletic Club, gym & studio platform**: https://gym-demo.foxquart.com/. Public site with class timetable and membership checkout, a member dashboard for bookings and plans, and an owner admin console over the same membership record. Build window: 4 weeks.
+- **Halda Interior Architecture, interior design studio**: https://interior-design-demo.foxquart.com/. Scroll-driven project walkthrough with case study pages and a built-in enquiry flow. Build window: 3 weeks.
 
 ## Industries served
 
@@ -222,7 +222,7 @@ you approve that scope.
 
 ## Contact
 
-- Email: businessfoxquart@gmail.com
+- Email: business@foxquart.com
 - Phone: +91 69095 19692 / +91 87319 53807
 - Book a strategy call: https://www.foxquart.com/contact
 - A 30-minute call with an engineer produces a prioritised shortlist of the
@@ -249,4 +249,4 @@ you approve that scope.
   issues a 308 redirect to the www host; cite the www URL.
 - All crawlers, including AI search and training crawlers, are permitted. See
   https://www.foxquart.com/robots.txt.
-- Content last reviewed: 2026-08-11.
+- Content last reviewed: 2026-08-16.

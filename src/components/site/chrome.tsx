@@ -36,9 +36,8 @@ const SOLUTION_NAV_LABELS: Record<string, string> = {
   "manufacturing-erp": "Manufacturing ERP",
   "healthcare-software": "Healthcare Software",
   "school-erp": "School ERP",
-  "custom-software-development-services": "Custom Software Development",
   "n8n-automation-services": "n8n Automation",
-  "ai-automation-services": "AI Automation",
+  "ai-agent-development": "AI Automation",
   "business-process-automation": "Business Process Automation",
   "cloud-hosting": "Managed Cloud Hosting",
   "managed-devops": "Managed DevOps",
@@ -59,7 +58,7 @@ const solutionGroups = services
   }))
   .filter((group) => group.pages.length > 0);
 
-const CTA_LABEL = "Book a build review";
+const CTA_LABEL = "Book a call";
 
 const deskLinkCls =
   "inline-flex h-10 items-center rounded-full px-4 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground";
@@ -77,6 +76,14 @@ const sheetSubRowCls =
   "flex min-h-11 items-center rounded-lg px-3 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground active:bg-surface-2";
 
 const footerLinkCls = "text-muted-foreground transition-colors hover:text-foreground";
+
+/* Service group heading in the desktop dropdown and the mobile sheet. The footer keeps
+   its own larger label styling but links to the same place. These used to be plain <p>
+   elements, which left the six service pages with no anchor text anywhere in the chrome;
+   as links, the exact service name now points at /services/<slug> from every page.
+   `block` keeps the box the <p> had, since an <a> is inline by default. */
+const groupHeadingCls =
+  "eyebrow-type block text-muted-foreground transition-colors hover:text-foreground";
 
 /*
  * Light/dark switch. The whole theme lives in CSS variables, so this only flips
@@ -256,7 +263,13 @@ export function SiteHeader() {
                   <div className="columns-2 gap-x-6">
                     {solutionGroups.map((group) => (
                       <div key={group.slug} className="mb-5 break-inside-avoid last:mb-0">
-                        <p className="eyebrow-type text-muted-foreground">{group.name}</p>
+                        <Link
+                          to="/services/$slug"
+                          params={{ slug: group.slug }}
+                          className={groupHeadingCls}
+                        >
+                          {group.name}
+                        </Link>
                         <ul className="mt-2">
                           {group.pages.map((page) => (
                             <li key={page.slug}>
@@ -337,7 +350,13 @@ export function SiteHeader() {
             <div className="mt-8 space-y-6 border-t border-border pt-6">
               {solutionGroups.map((group) => (
                 <div key={group.slug}>
-                  <p className="eyebrow-type px-3 text-muted-foreground">{group.name}</p>
+                  <Link
+                    to="/services/$slug"
+                    params={{ slug: group.slug }}
+                    className={`${groupHeadingCls} px-3`}
+                  >
+                    {group.name}
+                  </Link>
                   <div className="mt-2 flex flex-col gap-2">
                     {group.pages.map((page) => (
                       <Link
@@ -401,14 +420,24 @@ export function SiteFooter() {
           </div>
 
           <div className="grid gap-10 sm:grid-cols-3">
-            <div className="sm:col-span-2">
-              <h2 className="eyebrow-type text-muted-foreground">Solutions</h2>
+            {/* Column labels are <p>, not <h2>. As headings they landed in the outline of
+                all 30 pages and buried each page's own structure under three footer
+                entries; the label is styled as an 11px eyebrow, so it was never a real
+                heading. The nav's aria-label carries the same name for assistive tech. */}
+            <nav aria-label="Solutions" className="sm:col-span-2">
+              <p className="eyebrow-type text-muted-foreground">Solutions</p>
               {/* Multi-column flow, not a grid: grid rows align to the tallest group and
                   leave a dead gap under the short ones. Columns just pack. */}
               <div className="mt-4 gap-x-6 sm:columns-2">
                 {solutionGroups.map((group) => (
                   <div key={group.slug} className="mb-6 break-inside-avoid last:mb-0">
-                    <p className="text-sm font-medium text-foreground">{group.name}</p>
+                    <Link
+                      to="/services/$slug"
+                      params={{ slug: group.slug }}
+                      className="block text-sm font-medium text-foreground transition-colors hover:text-primary"
+                    >
+                      {group.name}
+                    </Link>
                     <ul className="mt-2 space-y-2 text-sm">
                       {group.pages.map((page) => (
                         <li key={page.slug}>
@@ -425,11 +454,11 @@ export function SiteFooter() {
                   </div>
                 ))}
               </div>
-            </div>
+            </nav>
 
             <div className="flex flex-col gap-10">
-              <div>
-                <h2 className="eyebrow-type text-muted-foreground">Company</h2>
+              <nav aria-label="Company">
+                <p className="eyebrow-type text-muted-foreground">Company</p>
                 <ul className="mt-4 space-y-2.5 text-sm">
                   <li>
                     <Link to="/work" className={footerLinkCls}>
@@ -452,10 +481,10 @@ export function SiteFooter() {
                     </Link>
                   </li>
                 </ul>
-              </div>
+              </nav>
 
-              <div>
-                <h2 className="eyebrow-type text-muted-foreground">Talk to us</h2>
+              <nav aria-label="Talk to us">
+                <p className="eyebrow-type text-muted-foreground">Talk to us</p>
                 <ul className="mt-4 space-y-2.5 text-sm">
                   <li>
                     <a href={MAILTO_URL} className={`${footerLinkCls} font-mono text-xs`}>
@@ -496,7 +525,7 @@ export function SiteFooter() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </nav>
             </div>
           </div>
         </div>

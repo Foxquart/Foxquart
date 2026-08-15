@@ -51,6 +51,37 @@ export default defineConfig({
       "/contact": { isr: true },
       "/privacy": { isr: true },
       "/terms": { isr: true },
+
+      // Permanent redirects for retired and renamed URLs.
+      //
+      // Each source page targeted the same intent as its destination and the two
+      // split the same rankings between them (classic keyword cannibalisation).
+      // The distinctive content of every source page was merged into its
+      // destination first, so these are consolidations, not deletions: the 301
+      // passes the accumulated link equity forward and tells engines which single
+      // URL now owns the topic.
+      //
+      // 301, not the nitro default of 307: 307 is a temporary redirect and does
+      // not consolidate ranking signals.
+      //
+      // Precedence over the "/services/**" and "/solutions/**" ISR rules above is
+      // not a matter of key order. Nitro matches route rules by pattern
+      // specificity, and the Vercel preset sorts rules by segment count when it
+      // writes config.json, emitting every redirect route ahead of every ISR
+      // route. A literal two-segment path therefore outranks its wildcard, and
+      // the redirect terminates the request before the ISR function is reached.
+      "/solutions/custom-software-development-services": {
+        redirect: { to: "/services/custom-software-development", status: 301 },
+      },
+      "/solutions/ai-automation-services": {
+        redirect: { to: "/solutions/ai-agent-development", status: 301 },
+      },
+      "/services/data-intelligence": {
+        redirect: { to: "/services/data-engineering", status: 301 },
+      },
+      "/services/cloud-devops": {
+        redirect: { to: "/services/cloud-infrastructure", status: 301 },
+      },
     },
   } as { preset: string },
 });

@@ -13,7 +13,7 @@ import {
 } from "@/lib/seo";
 
 const path = "/contact";
-const title = "Contact: Book a Strategy Call | Foxquart";
+const title = "Book a Software Consultation Call | Foxquart";
 const description =
   "Book a 30-minute remote strategy call with a Foxquart engineer, from anywhere. Tell us the process costing you the most hours and get an automation shortlist.";
 
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/contact")({
 function ContactPage() {
   return (
     <main className="pt-24">
-      <h1 className="sr-only">Contact foxquart</h1>
+      <h1 className="sr-only">Contact Foxquart</h1>
       <ContactSection />
     </main>
   );
