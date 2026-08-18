@@ -125,11 +125,12 @@ Foxquart's own demonstration systems on Foxquart hosting, not client deployments
 so anyone can open them and click around before a first call.
 
 - **Six Mile Motor Works, Spares Control Center** (flagship, on Foxquart's own domain): https://inventory.foxquart.com/. A motor-works spares counter run end to end: live parts catalogue, stock levels, movement log and reorder signals in one screen. Build window: 5 weeks.
-- **Vidya Bharati International School, school management system**: https://gilded-nougat-63e5af.netlify.app/. Admin, teacher, parent and student portals over a single student record, with attendance tracking, a fee receipt engine and student analytics. Build window: 4 weeks.
+- **Vidya Bharati International School, school management system**: https://school-demo.foxquart.com/. Admin, teacher, parent and student portals over a single student record, with attendance tracking, a fee receipt engine and student analytics. Build window: 4 weeks.
 - **AuraCare Specialist Clinic, clinic booking system**: https://clinic-demo.foxquart.com/. Self-serve appointment booking against live doctor rosters, with reminders and doctor profiles. Build window: 4 weeks.
-- **Ember & Oak, fine dining restaurant**: https://emberanoak.netlify.app/. Course-by-course tasting menu with sommelier pairings, private dining and an online table reservation flow. Build window: 4 weeks.
-- **Good Luck Tattoo Studio, tattoo studio booking**: https://goodlucktattooshop.netlify.app/. Per-artist calendars with online booking, a deposit step before a slot is held, and aftercare guides. Build window: 3 weeks.
+- **Ember & Oak, fine dining restaurant**: https://cafe-demo.foxquart.com/. Course-by-course tasting menu with sommelier pairings, private dining and an online table reservation flow. Build window: 4 weeks.
+- **Good Luck Tattoo Studio, tattoo studio booking**: https://tattoostudio-demo.foxquart.com/. Per-artist calendars with online booking, a deposit step before a slot is held, and aftercare guides. Build window: 3 weeks.
 - **Ember Athletic Club, gym & studio platform**: https://gym-demo.foxquart.com/. Public site with class timetable and membership checkout, a member dashboard for bookings and plans, and an owner admin console over the same membership record. Build window: 4 weeks.
+- **Meridian Pharmacy, neighbourhood pharmacy site**: https://pharmacy-demo.foxquart.com/. Live open/closed state against the counter's hours, what the shop stocks, directions to the door and a staff login. Build window: 2 weeks.
 - **Halda Interior Architecture, interior design studio**: https://interior-design-demo.foxquart.com/. Scroll-driven project walkthrough with case study pages and a built-in enquiry flow. Build window: 3 weeks.
 
 ## Industries served

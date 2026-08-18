@@ -76,6 +76,19 @@ const projects: Project[] = [
     demoLabel: "AuraCare Clinic",
   },
   {
+    id: "pharmacy-counter",
+    category: "Pharmacy Site",
+    businessName: "Meridian Pharmacy",
+    summary: "Says what is in stock, when the counter is open, how to reach it.",
+    capability: "Live open/closed state above the fold, with the stock list beneath it.",
+    features: ["Opening Hours", "Stock Categories", "Staff Login", "Find The Shop"],
+    buildWindow: "2 weeks",
+    image: "/images/pharmacy_counter.png",
+    liveLink: "https://pharmacy-demo.foxquart.com/",
+    demoLabel: "Meridian Pharmacy",
+    embed: false,
+  },
+  {
     id: "spares-control",
     category: "Inventory System",
     businessName: "Six Mile Motor Works",
@@ -86,6 +99,9 @@ const projects: Project[] = [
     image: "/images/spares_control.png",
     liveLink: "https://inventory.foxquart.com/",
     demoLabel: "Spares Control Center",
+    // Renders blank inside a frame: its content only becomes visible once the page is
+    // scrolled, and a framed copy never scrolls.
+    embed: false,
   },
   {
     id: "school-management",
@@ -101,8 +117,11 @@ const projects: Project[] = [
     ],
     buildWindow: "4 weeks",
     image: "/images/school_management.png",
-    liveLink: "https://gilded-nougat-63e5af.netlify.app/",
+    liveLink: "https://school-demo.foxquart.com/",
     demoLabel: "Vidya Bharati SMS",
+    // Renders blank inside a frame: its content only becomes visible once the page is
+    // scrolled, and a framed copy never scrolls.
+    embed: false,
   },
   {
     id: "ember-oak",
@@ -113,8 +132,11 @@ const projects: Project[] = [
     features: ["Tasting Menu", "Online Reservations", "Sommelier Pairings", "Private Dining"],
     buildWindow: "4 weeks",
     image: "/images/ember_oak.png",
-    liveLink: "https://emberanoak.netlify.app/",
+    liveLink: "https://cafe-demo.foxquart.com/",
     demoLabel: "Ember & Oak",
+    // Renders blank inside a frame: its content only becomes visible once the page is
+    // scrolled, and a framed copy never scrolls.
+    embed: false,
   },
   {
     id: "tattoo-shop",
@@ -125,7 +147,7 @@ const projects: Project[] = [
     features: ["Artist Calendars", "Online Booking", "Deposit Payments", "Aftercare Guides"],
     buildWindow: "3 weeks",
     image: "/images/tattoo_studio.png",
-    liveLink: "https://goodlucktattooshop.netlify.app/",
+    liveLink: "https://tattoostudio-demo.foxquart.com/",
     demoLabel: "Good Luck Tattoo",
   },
 ];
@@ -389,7 +411,7 @@ export function FeaturedWork() {
       <div className="relative mx-auto w-full max-w-7xl">
         <Reveal className="flex flex-col items-center gap-4 text-center">
           <h2 className="text-2xl leading-[1.08] font-semibold text-balance sm:text-3xl md:text-5xl">
-            Seven live demos. Open any of them.
+            Eight live demos. Open any of them.
           </h2>
           <p className="max-w-[56ch] text-base text-muted-foreground md:text-lg">
             Real running sites, not screenshots. Tap a card to try one.

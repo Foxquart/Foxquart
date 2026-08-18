@@ -56,7 +56,7 @@ export function DemoTeaser() {
               Spares Control Center
             </HoverPreviewLink>
             . A school runs admissions and fees on{" "}
-            <HoverPreviewLink k="school" href="https://gilded-nougat-63e5af.netlify.app/">
+            <HoverPreviewLink k="school" href="https://school-demo.foxquart.com/">
               Vidya Bharati
             </HoverPreviewLink>
             .
@@ -67,7 +67,7 @@ export function DemoTeaser() {
               patient self-booking
             </HoverPreviewLink>
             , and a dining room seats itself through{" "}
-            <HoverPreviewLink k="dining" href="https://emberanoak.netlify.app/">
+            <HoverPreviewLink k="dining" href="https://cafe-demo.foxquart.com/">
               Ember &amp; Oak
             </HoverPreviewLink>
             . Every one is live. Open it, click around.
