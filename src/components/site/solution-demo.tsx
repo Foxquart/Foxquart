@@ -29,7 +29,7 @@ const DEMOS = {
   school: {
     name: "Vidya Bharati SMS",
     business: "Vidya Bharati International School",
-    url: "https://gilded-nougat-63e5af.netlify.app/",
+    url: "https://school-demo.foxquart.com/",
     image: "/images/school_management.png",
     blurb: "Admissions, fees, attendance and four role-based portals over one student record.",
   },
@@ -43,7 +43,7 @@ const DEMOS = {
   dining: {
     name: "Ember & Oak",
     business: "Ember & Oak Fine Dining",
-    url: "https://emberanoak.netlify.app/",
+    url: "https://cafe-demo.foxquart.com/",
     image: "/images/ember_oak.png",
     blurb: "Reservations, tasting menu and table management for a fine-dining room.",
   },

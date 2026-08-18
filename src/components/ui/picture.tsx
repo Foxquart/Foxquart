@@ -17,6 +17,7 @@ const VARIANTS: Record<string, Variant> = {
   "/images/ember_oak.png": { width: 1440, height: 900, widths: [640, 1024, 1440] },
   "/images/gym_club.png": { width: 1920, height: 894, widths: [640, 1024, 1600] },
   "/images/interior_studio.png": { width: 1920, height: 894, widths: [640, 1024, 1600] },
+  "/images/pharmacy_counter.png": { width: 1920, height: 894, widths: [640, 1024, 1600] },
   "/images/school_management.png": { width: 1440, height: 900, widths: [640, 1024, 1440] },
   "/images/spares_control.png": { width: 1920, height: 894, widths: [640, 1024, 1600] },
   "/images/tattoo_studio.png": { width: 1920, height: 894, widths: [640, 1024, 1600] },
