@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Check } from "lucide-react";
+import { Picture } from "@/components/ui/picture";
 import { Counter, Section } from "./ui";
 import { MaskLines, Magnetic, Rise } from "./motion";
 import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
@@ -62,18 +63,26 @@ const whyReasons = [
   {
     title: "Be open after you close",
     body: "A booking page takes the order while your shop is shut.",
+    image: "/images/go.webp",
+    focus: "50% 48%",
   },
   {
     title: "Stop writing the same thing twice",
     body: "One record, so nobody copies numbers between notebooks and chats.",
+    image: "/images/go2.webp",
+    focus: "50% 50%",
   },
   {
     title: "Look as good as you are",
     body: "People judge your business by its website before they ever call.",
+    image: "/images/go3.webp",
+    focus: "48% 68%",
   },
   {
     title: "Know your numbers today",
     body: "What sold, what is in stock, what is due, on your phone.",
+    image: "/images/go4.webp",
+    focus: "55% 55%",
   },
 ];
 
@@ -93,20 +102,47 @@ export function WhyBuild() {
         className="max-w-4xl font-display text-4xl leading-[1.08] text-foreground sm:text-5xl md:text-6xl"
       >
         Your customers are already online.{" "}
-        <em className="text-primary italic">Your business should be too.</em>
+        <em className="text-black dark:text-foreground bg-cover bg-[position:75%_35%] bg-clip-text italic text-transparent saturate-150 brightness-[2.4] contrast-125">
+          Your business should be too.
+        </em>
       </MaskLines>
 
-      <Rise className="mt-14 grid gap-4 sm:grid-cols-2" childSelector="[data-why]" stagger={0.07}>
+      <Rise
+        className="mt-10 grid grid-cols-2 gap-4 sm:mt-14 lg:grid-cols-4"
+        childSelector="[data-why]"
+        stagger={0.07}
+      >
         {whyReasons.map((r) => (
           <div
             key={r.title}
             data-why
-            className="card-lift rounded-xl border border-border bg-surface p-6 md:p-8"
+            className="dark card-lift group relative aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-surface"
           >
-            <h3 className="font-display text-xl text-foreground md:text-2xl">{r.title}</h3>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
-              {r.body}
-            </p>
+            {/* Full height below lg; on desktop the photo only fills the top
+                70% so the card reads as a photo panel over a solid footer,
+                not an edge-to-edge print. */}
+            <Picture
+              src={r.image}
+              alt=""
+              className="absolute inset-x-0 top-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 lg:h-[70%]"
+              style={{ objectPosition: r.focus }}
+              sizes="(min-width: 1024px) 24vw, 46vw"
+            />
+            {/* Vignette anchored to the photo's own box (matches its height
+                exactly), dark at its bottom edge and easing out upward --
+                that's where the title now sits below lg, over the photo
+                itself; on lg it mostly falls on the solid footer and does
+                nothing, which is fine. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 top-0 h-full bg-gradient-to-t from-black/75 via-black/15 to-transparent lg:h-[70%]"
+            />
+            <div className="relative z-10 flex h-full flex-col justify-end p-4 sm:p-5">
+              <h3 className="font-display text-xl leading-[1.1] text-foreground sm:text-2xl">
+                {r.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-foreground/80">{r.body}</p>
+            </div>
           </div>
         ))}
       </Rise>
@@ -415,6 +451,7 @@ export function Pricing() {
       support: "Business hours",
       commitment: "6–16 weeks",
       featured: false,
+      icon: "◫",
     },
     {
       name: "Dedicated Squad",
@@ -430,6 +467,7 @@ export function Pricing() {
       support: "Extended hours",
       commitment: "3 months minimum",
       featured: true,
+      icon: "✦",
     },
     {
       name: "Managed Partnership",
@@ -445,6 +483,7 @@ export function Pricing() {
       support: "24/7 on-call SLA",
       commitment: "Rolling monthly",
       featured: false,
+      icon: "◎",
     },
   ];
 
@@ -455,6 +494,7 @@ export function Pricing() {
         title="Three ways to work with us. Starting prices, not final ones."
         intro="Scope and the exact figure are fixed after a 30-minute call, once the requirements are on the table."
       />
+
       <Rise
         className="mt-12 grid gap-4 md:mt-16 lg:grid-cols-3"
         childSelector="[data-tier]"
@@ -464,96 +504,199 @@ export function Pricing() {
           <div
             key={model.name}
             data-tier
-            className={`flex h-full flex-col rounded-xl border p-6 md:p-7 ${
+            className={`group relative flex h-full overflow-hidden rounded-2xl border p-6 transition-all duration-500 md:p-7 ${
               model.featured
-                ? "border-primary bg-surface-2 transition-transform duration-[var(--dur-base)] ease-[var(--ease-brand)] hover:-translate-y-1"
+                ? "border-primary/60 bg-surface-2 hover:-translate-y-1"
                 : "card-lift border-border bg-surface"
             }`}
           >
+            {/* Decorative background circle */}
+            <div
+              aria-hidden="true"
+              className={`pointer-events-none absolute -right-16 -top-16 size-44 rounded-full border transition-all duration-700 group-hover:scale-125 ${
+                model.featured
+                  ? "border-primary/20"
+                  : "border-border/70"
+              }`}
+            />
+
+            {/* Inner decorative circle */}
+            <div
+              aria-hidden="true"
+              className={`pointer-events-none absolute -right-8 -top-8 size-28 rounded-full border transition-all duration-700 group-hover:rotate-45 ${
+                model.featured
+                  ? "border-primary/20"
+                  : "border-border/50"
+              }`}
+            />
+
+            {/* Accent glow */}
+            <div
+              aria-hidden="true"
+              className={`pointer-events-none absolute right-8 top-8 size-2 rounded-full transition-all duration-500 group-hover:scale-150 ${
+                model.featured
+                  ? "bg-primary"
+                  : "bg-primary/40"
+              }`}
+            />
+
+            {/* Small decorative grid */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute right-8 top-16 grid grid-cols-3 gap-1 opacity-30"
+            >
+              <span className="size-1 rounded-full bg-primary" />
+              <span className="size-1 rounded-full bg-primary" />
+              <span className="size-1 rounded-full bg-primary" />
+
+              <span className="size-1 rounded-full bg-primary" />
+              <span className="size-1 rounded-full bg-primary" />
+              <span className="size-1 rounded-full bg-primary" />
+
+              <span className="size-1 rounded-full bg-primary" />
+              <span className="size-1 rounded-full bg-primary" />
+              <span className="size-1 rounded-full bg-primary" />
+            </div>
+
+            {/* Featured top accent */}
             {model.featured ? (
-              <span className="eyebrow-type mb-4 w-fit rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-primary">
-                Recommended
-              </span>
+              <div
+                aria-hidden="true"
+                className="absolute inset-x-0 top-0 h-px bg-primary"
+              />
             ) : null}
-            <h3 className="font-display text-lg font-semibold text-foreground">{model.name}</h3>
 
-            <p className="eyebrow-type mt-6 text-muted-foreground">From</p>
-            <p className="tnum mt-2 font-display text-5xl font-semibold tracking-tight text-foreground md:text-6xl">
-              {model.price}
-            </p>
-            <p className="mt-2 text-sm text-muted-foreground">{model.cadence}</p>
+            {/* Card content */}
+            <div className="relative z-10 flex w-full flex-col">
+              {/* Icon */}
+              <div className="mb-6 flex items-center justify-between">
+                <div
+                  className={`flex size-11 items-center justify-center rounded-xl border text-lg transition-all duration-500 group-hover:scale-105 ${
+                    model.featured
+                      ? "border-primary/30 bg-primary/10 text-primary"
+                      : "border-border bg-surface-2 text-muted-foreground group-hover:border-primary/30 group-hover:text-primary"
+                  }`}
+                >
+                  {model.icon}
+                </div>
 
-            <p className="mt-5 text-sm leading-relaxed text-foreground/85">{model.for}</p>
-
-            <ul className="mt-6 flex-1 space-y-3">
-              {model.includes.map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm text-foreground/85">
-                  <Check className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden="true" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-
-            <dl className="mt-6 space-y-2 border-t border-border pt-5 text-xs">
-              <div className="flex items-baseline justify-between gap-3">
-                <dt className="text-muted-foreground">Support</dt>
-                <dd className="font-medium text-foreground">{model.support}</dd>
+                {model.featured ? (
+                  <span className="eyebrow-type rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-primary">
+                    Recommended
+                  </span>
+                ) : null}
               </div>
-              <div className="flex items-baseline justify-between gap-3">
-                <dt className="text-muted-foreground">Commitment</dt>
-                <dd className="font-medium text-foreground">{model.commitment}</dd>
-              </div>
-            </dl>
 
-            <Magnetic className="mt-6 w-full">
-              <Link
-                to="/contact"
-                className={`press inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition-colors ${
-                  model.featured
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                    : "border border-border text-foreground hover:border-primary/50 hover:text-primary"
-                }`}
-              >
-                Discuss {model.name}
-                <ArrowRight className="size-3.5" aria-hidden="true" />
-              </Link>
-            </Magnetic>
+              {/* Plan name */}
+              <h3 className="font-display text-lg font-semibold text-foreground md:text-xl">
+                {model.name}
+              </h3>
+
+              {/* Price */}
+              <div className="mt-6">
+                <p className="eyebrow-type text-muted-foreground">
+                  From
+                </p>
+
+                <p
+                  className={`tnum mt-2 font-display text-5xl font-semibold tracking-tight md:text-6xl ${
+                    model.featured
+                      ? "text-primary"
+                      : "text-foreground"
+                  }`}
+                >
+                  {model.price}
+                </p>
+
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {model.cadence}
+                </p>
+              </div>
+
+              {/* Description */}
+              <p className="mt-5 min-h-[72px] text-sm leading-relaxed text-foreground/85">
+                {model.for}
+              </p>
+
+              {/* Divider */}
+              <div className="my-6 h-px bg-border" />
+
+              {/* Includes */}
+              <div className="flex-1">
+                <p className="eyebrow-type text-muted-foreground">
+                  Includes
+                </p>
+
+                <ul className="mt-4 space-y-3">
+                  {model.includes.map((item) => (
+                    <li
+                      key={item}
+                      className="group/item flex items-start gap-2.5 text-sm text-foreground/85"
+                    >
+                      <span
+                        className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full transition-colors ${
+                          model.featured
+                            ? "bg-primary/15 text-primary"
+                            : "bg-surface-2 text-primary"
+                        }`}
+                      >
+                        <Check
+                          className="size-2.5"
+                          aria-hidden="true"
+                        />
+                      </span>
+
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Bottom information */}
+              <dl className="mt-7 space-y-3 border-t border-border pt-5 text-xs">
+                <div className="flex items-baseline justify-between gap-3">
+                  <dt className="text-muted-foreground">
+                    Support
+                  </dt>
+
+                  <dd className="font-medium text-foreground">
+                    {model.support}
+                  </dd>
+                </div>
+
+                <div className="flex items-baseline justify-between gap-3">
+                  <dt className="text-muted-foreground">
+                    Commitment
+                  </dt>
+
+                  <dd className="font-medium text-foreground">
+                    {model.commitment}
+                  </dd>
+                </div>
+              </dl>
+
+              {/* CTA */}
+              <Magnetic className="mt-6 w-full">
+                <Link
+                  to="/contact"
+                  className={`press inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all duration-300 ${
+                    model.featured
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:gap-3"
+                      : "border border-border text-foreground hover:border-primary/50 hover:text-primary hover:gap-3"
+                  }`}
+                >
+                  Discuss {model.name}
+
+                  <ArrowRight
+                    className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  />
+                </Link>
+              </Magnetic>
+            </div>
           </div>
         ))}
       </Rise>
-    </Section>
-  );
-}
-
-/**
- * Closing band for the interior pages (services/solutions). The home page uses
- * BookingCta instead. Surface tint + hairline, per contract §3; the old glass
- * panel and gradient mesh are gone.
- */
-export function CtaBand() {
-  return (
-    <Section className="pb-8">
-      <div className="relative overflow-hidden rounded-2xl border border-border bg-surface px-5 py-12 text-center sm:px-7 sm:py-16 md:px-16">
-        <MaskLines
-          as="h2"
-          className="mx-auto max-w-2xl text-3xl font-semibold text-balance md:text-4xl"
-        >
-          Tell us the process that is costing you the most hours.
-        </MaskLines>
-        <Rise y={20} delay={0.1}>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-            A 30-minute call: what to automate first, what to leave alone.
-          </p>
-          <Magnetic className="mt-8">
-            <Link
-              to="/contact"
-              className="press inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              Schedule a strategy call <ArrowRight className="size-4" aria-hidden="true" />
-            </Link>
-          </Magnetic>
-        </Rise>
-      </div>
     </Section>
   );
 }

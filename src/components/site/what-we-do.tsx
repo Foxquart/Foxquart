@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Activity, ArrowRight, Boxes, Store, Workflow, type LucideIcon } from "lucide-react";
+import { Picture } from "@/components/ui/picture";
 import { Reveal, Section, SectionHeading } from "./ui";
 
 type Capability = {
@@ -13,6 +14,8 @@ type Capability = {
   /** Closest existing practice page. Slug is a `services` entry in site-data. */
   slug: string;
   linkLabel: string;
+  /** Public path of the card's background illustration. Purely decorative. */
+  image: string;
 };
 
 const capabilities: Capability[] = [
@@ -30,6 +33,7 @@ const capabilities: Capability[] = [
     ],
     slug: "custom-software-development",
     linkLabel: "Custom software development",
+    image: "/images/capability_forest.webp",
   },
   {
     index: "02",
@@ -44,6 +48,7 @@ const capabilities: Capability[] = [
     ],
     slug: "enterprise-websites",
     linkLabel: "Websites & landing pages",
+    image: "/images/capability_floral.webp",
   },
   {
     index: "03",
@@ -58,6 +63,7 @@ const capabilities: Capability[] = [
     ],
     slug: "ai-automation",
     linkLabel: "AI workflow automation",
+    image: "/images/capability_doodle_red.webp",
   },
   {
     index: "04",
@@ -67,6 +73,7 @@ const capabilities: Capability[] = [
     systems: ["Managed hosting", "Monitoring & alerting", "Tested restores", "Ongoing releases"],
     slug: "cloud-devops",
     linkLabel: "Cloud infrastructure & DevOps",
+    image: "/images/capability_doodle_violet.webp",
   },
 ];
 
@@ -102,35 +109,47 @@ export function WhatWeDo() {
             <Link
               to="/services/$slug"
               params={{ slug: c.slug }}
-              className="card-lift press flex h-full flex-col rounded-xl border border-border bg-surface p-5 sm:p-6"
+              className="card-lift press group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface p-5 sm:p-6"
             >
-              <div className="flex items-center justify-between gap-3">
-                <span className="flex size-10 items-center justify-center rounded-lg border border-border bg-background text-primary">
-                  <c.icon className="size-5" aria-hidden="true" />
-                </span>
-                <span className="eyebrow-type tnum text-muted-foreground">{c.index}</span>
+              <div className="absolute inset-0" aria-hidden="true">
+                <Picture
+                  src={c.image}
+                  alt=""
+                  className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                />
+                <div className="absolute inset-0 bg-background/78" />
               </div>
 
-              <h3 className="mt-5 text-lg font-semibold text-foreground sm:text-[22px]">
-                {c.title}
-              </h3>
-              <p className="mt-2.5 max-w-[46ch] text-base leading-relaxed text-muted-foreground">
-                {c.outcome}
-              </p>
+              <div className="relative z-10 flex h-full flex-col">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="flex size-10 items-center justify-center rounded-lg border border-border bg-background text-primary">
+                    <c.icon className="size-5" aria-hidden="true" />
+                  </span>
+                  <span className="eyebrow-type tnum text-muted-foreground">{c.index}</span>
+                </div>
 
-              <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-2">
-                {c.systems.map((s) => (
-                  <li key={s} className="flex items-center gap-2 text-sm text-foreground/75">
-                    <span className="size-1 rounded-full bg-primary" aria-hidden="true" />
-                    {s}
-                  </li>
-                ))}
-              </ul>
+                <h3 className="mt-5 text-lg font-semibold text-foreground sm:text-[22px]">
+                  {c.title}
+                </h3>
+                <p className="mt-2.5 max-w-[46ch] text-base leading-relaxed text-muted-foreground">
+                  {c.outcome}
+                </p>
 
-              <span className="mt-auto flex min-h-11 items-center gap-2 pt-6 text-sm font-medium text-primary">
-                {c.linkLabel}
-                <ArrowRight className="size-4 shrink-0" aria-hidden="true" />
-              </span>
+                <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-2">
+                  {c.systems.map((s) => (
+                    <li key={s} className="flex items-center gap-2 text-sm text-foreground/75">
+                      <span className="size-1 rounded-full bg-primary" aria-hidden="true" />
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+
+                <span className="mt-auto flex min-h-11 items-center gap-2 pt-6 text-sm font-medium text-primary">
+                  {c.linkLabel}
+                  <ArrowRight className="size-4 shrink-0" aria-hidden="true" />
+                </span>
+              </div>
             </Link>
           </Reveal>
         ))}
