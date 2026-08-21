@@ -117,7 +117,14 @@ def encode(source: Path, widths: list[int], force: bool, check: bool) -> tuple[l
     written: list[Path] = []
     skipped: list[Path] = []
     with Image.open(source) as im:
-        im = im.convert("RGB")
+        # Sources with real alpha (a logo on a transparent ground) keep it;
+        # everything else flattens to RGB same as before. Converting an
+        # opaque-looking RGBA/PNG-palette source to RGB unconditionally is
+        # what silently matted transparent logos onto black.
+        has_alpha = im.mode in ("RGBA", "LA") or (
+            im.mode == "P" and "transparency" in im.info
+        )
+        im = im.convert("RGBA") if has_alpha else im.convert("RGB")
         native_w, native_h = im.size
         for width in widths:
             height = max(1, round(native_h * width / native_w))

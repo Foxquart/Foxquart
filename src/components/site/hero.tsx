@@ -1,15 +1,23 @@
-import { useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
+import { Picture } from "@/components/ui/picture";
 import { FoxquartIcon } from "./ui";
 import { Magnetic, Marquee, MaskLines, Parallax, Rise } from "./motion";
-import { gsap, useGSAP, prefersReducedMotion } from "@/lib/gsap";
-import { introWillPlay, whenIntroDone } from "@/lib/intro-gate";
 
 /*
- * Hero. The LCP element is the <h1> text. No image or canvas competes with it.
- * One decorative object: the fox mark, oversized, parallaxing off the right edge.
- * Display face is Instrument Serif (one weight; italics are the emphasis voice).
+ * Hero. The LCP element is the <h1> text; the forest photo behind it is a
+ * decorative backdrop, never the paint that gates LCP (the h1's own text
+ * paints independently of the <img> decoding). The fox logo mark sits on top
+ * of it to the right, static but for a light scroll parallax drift.
+ *
+ * The photo is dark, so this section pins to the dark palette via a local
+ * `dark` class regardless of the site-wide theme toggle -- a light-theme
+ * visitor would otherwise get dark-mode-only foreground text over a photo
+ * that never lightens. That makes the hero a fixed dark band with a clean
+ * edge into the next (theme-following) section, not a seamless blend; the
+ * photo's own dark edges make that edge read as intentional rather than a
+ * broken theme switch. Display face is Instrument Serif (one weight; italics
+ * are the emphasis voice).
  */
 
 const marqueeSystems = [
@@ -24,146 +32,50 @@ const marqueeSystems = [
 ];
 
 export function Hero() {
-  const foxRef = useRef<HTMLDivElement>(null);
-
-  /*
-   * The cartoon intro, built from sprites cut out of the founder's artwork:
-   * the fox head appears whole (hole filled), the Q-ball bounces in from the
-   * left in two hops, leaps onto the head and lands exactly where the counter
-   * belongs, at which point the true holed head swaps in and the mark punches
-   * to rest. Afterwards a gentle idle rock repeats. Reduced motion shows the
-   * finished mark immediately and nothing moves.
-   */
-  useGSAP(
-    () => {
-      const fox = foxRef.current;
-      if (!fox) return;
-      const full = fox.querySelector("[data-head-full]");
-      const holed = fox.querySelector("[data-head-holed]");
-      const ball = fox.querySelector("[data-ball]");
-      if (!full || !holed || !ball) return;
-
-      if (prefersReducedMotion()) {
-        gsap.set(holed, { opacity: 1 });
-        gsap.set(full, { opacity: 0 });
-        gsap.set(ball, { opacity: 0 });
-        return;
-      }
-
-      const START = { xPercent: -380, yPercent: 140, rotation: -160, scaleX: 1, scaleY: 1 };
-      gsap.set(ball, { ...START, opacity: 1, transformOrigin: "50% 50%" });
-
-      /*
-       * One seamless cycle, repeated forever: the Q rolls in spinning, hops
-       * twice with squash-and-stretch, crouches (anticipation), leaps onto the
-       * face (the real holed artwork swaps in on impact), the head recoils and
-       * settles, holds, then the Q pops back out and rolls away off-screen,
-       * the head refills, and the cycle begins again from the exact start
-       * state, so the loop has no visible seam.
-       */
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.9, delay: 0.6 });
-      tl.from(fox, { rotation: -8, duration: 0.9, ease: "elastic.out(1, 0.4)" });
-      // Two roaming hops, spinning as it travels.
-      for (const [toX, hopDur] of [
-        [-250, 0.5],
-        [-125, 0.45],
-      ] as const) {
-        tl.to(ball, { xPercent: toX, rotation: "+=110", duration: hopDur, ease: "none" }, "<")
-          .to(ball, { yPercent: 60, duration: hopDur / 2, ease: "power2.out" }, "<")
-          .to(ball, { yPercent: 140, duration: hopDur / 2, ease: "power2.in" }, ">")
-          .to(ball, { scaleY: 0.8, scaleX: 1.14, duration: 0.09, ease: "power2.out" }, ">")
-          .to(ball, { scaleY: 1.04, scaleX: 0.98, duration: 0.11, ease: "power2.out" }, ">")
-          .to(ball, { scaleY: 1, scaleX: 1, duration: 0.08 }, ">");
-      }
-      // Anticipation: crouch, aim at the face…
-      tl.to(ball, { scaleY: 0.72, scaleX: 1.2, yPercent: 148, duration: 0.22, ease: "power2.out" })
-        // …and the leap, stretching in flight, spinning upright to land tail-true.
-        .to(ball, { xPercent: 0, rotation: 0, duration: 0.5, ease: "none" })
-        .to(
-          ball,
-          { yPercent: -55, scaleY: 1.12, scaleX: 0.92, duration: 0.28, ease: "power2.out" },
-          "<",
-        )
-        .to(ball, { yPercent: 0, scaleY: 1, scaleX: 1, duration: 0.22, ease: "power3.in" }, ">")
-        // Impact: the counter punches through and the head recoils like it took the hit.
-        .set(full, { opacity: 0 })
-        .set(holed, { opacity: 1 })
-        .to(ball, { opacity: 0, duration: 0.18, ease: "power1.out" }, "<")
-        .fromTo(
-          fox,
-          { scale: 1.06, rotation: 2.5 },
-          { scale: 1, rotation: 0, duration: 0.6, ease: "elastic.out(1, 0.4)" },
-        )
-        // Hold the finished mark, with one small proud rock.
-        .to(fox, { rotation: -4, duration: 0.3, ease: "power2.inOut" }, "+=1.6")
-        .to(fox, { rotation: 3, duration: 0.26, ease: "power2.inOut" })
-        .to(fox, { rotation: 0, duration: 0.45, ease: "elastic.out(1, 0.5)" })
-        // The Q pops back out and rolls away; the head refills. End = start.
-        .to(ball, { opacity: 1, duration: 0.15 }, "+=1.9")
-        .set(full, { opacity: 1 })
-        .set(holed, { opacity: 0 })
-        .to(ball, { yPercent: -40, duration: 0.22, ease: "power2.out" })
-        .to(
-          ball,
-          { xPercent: START.xPercent, rotation: START.rotation, duration: 0.7, ease: "power1.in" },
-          "<",
-        )
-        .to(ball, { yPercent: START.yPercent, duration: 0.5, ease: "power2.in" }, "<+=0.2")
-        .to(fox, { rotation: -3, duration: 0.25, ease: "power2.inOut" }, "<")
-        .to(fox, { rotation: 0, duration: 0.4, ease: "elastic.out(1, 0.5)" });
-
-      // Home intro: hold the cartoon so its first cycle plays on the revealed
-      // page instead of burning behind the loader overlay.
-      if (introWillPlay()) {
-        tl.pause();
-        whenIntroDone(() => tl.play());
-      }
-    },
-    { scope: foxRef },
-  );
-
   return (
-    <section className="mesh-bg relative flex min-h-dvh flex-col overflow-hidden">
-      {/* The mark as object, decorative, scrubbed, never in the reading path.
-          Positioning lives on this wrapper; GSAP owns the transforms of the two
-          nested layers (Parallax → translate, foxRef → rotation), so the layers
-          never fight over one transform property. */}
-      <div className="pointer-events-none absolute inset-y-0 -right-[16vw] flex items-center sm:-right-[8vw] lg:-right-[2vw]">
+    <section className="dark relative flex min-h-dvh flex-col overflow-hidden">
+      {/* Full-bleed photo backdrop, painted before everything else so later
+          siblings (fox mark, content, marquee) stack above it by DOM order
+          alone -- no z-index needed. The scrim fades the photo into the
+          section's own (forced-dark) background at the edges, and a flat
+          wash over the middle keeps the headline readable regardless of
+          where the photo itself is busy. */}
+      <div className="absolute inset-0" aria-hidden="true">
+        <Picture
+          src="/images/hero.png"
+          alt=""
+          priority
+          className="size-full object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/25 via-background/60 to-background" />
+      </div>
+
+      {/* Below lg, the logo folds into the backdrop instead of sitting as a
+          foreground cutout: full-bleed, faint, blended with the forest photo
+          so it never competes with the headline on a small viewport. */}
+      <div className="pointer-events-none absolute inset-0 lg:hidden" aria-hidden="true">
+        <Picture
+          src="/images/logohero.png"
+          alt=""
+          className="size-full object-cover object-center opacity-[0.14]"
+          sizes="100vw"
+        />
+      </div>
+
+      {/* Large screens: the logo sits low and right, in the photo's own
+          empty ground -- clear of both the headline measure above and the
+          marquee strip below. Muted saturation/brightness plus a soft,
+          photo-realistic shadow (not a flat sticker drop-shadow) so it reads
+          as part of the scene rather than pasted over it. */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 hidden items-end pb-[9vh] lg:flex xl:pb-[11vh]">
         <Parallax from={8} to={-8}>
-          <div
-            ref={foxRef}
-            className="relative w-[72vw] opacity-[0.16] will-change-transform sm:w-[50vw] lg:w-[38vw] lg:opacity-[0.3]"
-            style={{ aspectRatio: "900 / 1006" }}
-          >
-            {/* Sprites cut from public/foxquart.png, the mark is the artwork, verbatim. */}
-            <img
-              data-head-full
-              src="/images/fox-head-full.webp"
-              alt=""
-              width={900}
-              height={1006}
-              className="absolute inset-0 size-full"
-            />
-            <img
-              data-head-holed
-              src="/images/fox-head-holed.webp"
-              alt=""
-              width={900}
-              height={1006}
-              className="absolute inset-0 size-full opacity-0"
-            />
-            {/* Resting geometry = the hole's measured position in the artwork:
-                centre (48.94%, 67.77%), diameter 40.6% of the head's width. */}
-            <img
-              data-ball
-              src="/images/fox-ball.webp"
-              alt=""
-              width={505}
-              height={505}
-              className="absolute w-[56.2%]"
-              style={{ left: "20.86%", top: "42.65%" }}
-            />
-          </div>
+          <Picture
+            src="/images/logohero.png"
+            alt=""
+            className="w-[40vw] max-w-xl opacity-95 saturate-[0.85] brightness-[0.94] drop-shadow-[0_18px_28px_rgba(0,0,0,0.55)] xl:w-[902vw]"
+            sizes="40vw"
+          />
         </Parallax>
       </div>
 
