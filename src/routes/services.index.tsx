@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { GlassPanel, Reveal, Section, SectionHeading } from "@/components/site/ui";
-import { CtaBand } from "@/components/site/sections";
+import { BookingCta } from "@/components/site/booking-cta";
 import { services } from "@/lib/site-data";
 import { breadcrumbNode, canonicalLink, collectionNode, jsonLdScript, pageMeta } from "@/lib/seo";
 
@@ -67,7 +67,7 @@ function ServicesIndex() {
           ))}
         </div>
       </Section>
-      <CtaBand />
+      <BookingCta />
     </main>
   );
 }

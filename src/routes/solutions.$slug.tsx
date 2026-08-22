@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRight, Check, X } from "lucide-react";
 import { GlassPanel, Reveal, Section, SectionHeading, Eyebrow } from "@/components/site/ui";
-import { CtaBand } from "@/components/site/sections";
+import { BookingCta } from "@/components/site/booking-cta";
 import { SolutionDemo } from "@/components/site/solution-demo";
 import { solutionPages, services, type LandingPage } from "@/lib/site-data";
 import { pageBodies } from "@/lib/page-bodies";
@@ -201,7 +201,7 @@ function SolutionPage() {
         </Section>
       ) : null}
 
-      <CtaBand />
+      <BookingCta />
     </main>
   );
 }

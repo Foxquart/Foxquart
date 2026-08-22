@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRight, Check } from "lucide-react";
 import { GlassPanel, Reveal, Section, SectionHeading, Eyebrow } from "@/components/site/ui";
-import { CtaBand } from "@/components/site/sections";
+import { BookingCta } from "@/components/site/booking-cta";
 import { services, solutionPages, type Service, type LandingPage } from "@/lib/site-data";
 import { pageBodies } from "@/lib/page-bodies";
 import {
@@ -211,7 +211,7 @@ function ServicePage() {
         </div>
       </Section>
 
-      <CtaBand />
+      <BookingCta />
     </main>
   );
 }
