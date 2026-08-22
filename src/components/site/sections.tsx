@@ -137,6 +137,15 @@ export function WhyBuild() {
               aria-hidden="true"
               className="pointer-events-none absolute inset-x-0 top-0 h-full bg-gradient-to-t from-black/75 via-black/15 to-transparent lg:h-[70%]"
             />
+            {/* Below lg, the photos are busier/brighter than the desktop
+                footer layout accounts for, so an extra flat tint sits over
+                the whole image just on phone/tablet to keep the title
+                readable against them. Desktop already has the solid footer
+                doing that job, so this is hidden there. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 top-0 h-full bg-black/30 lg:hidden"
+            />
             <div className="relative z-10 flex h-full flex-col justify-end p-4 sm:p-5">
               <h3 className="font-display text-xl leading-[1.1] text-foreground sm:text-2xl">
                 {r.title}
