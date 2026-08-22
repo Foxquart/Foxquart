@@ -40,7 +40,7 @@ const LAST_UPDATED_LABEL = "11 August 2026";
 const path = "/privacy";
 const title = "Privacy Policy | Foxquart";
 const description =
-  "What Foxquart does with the information you send through this site: the contact form, Vercel Analytics and Speed Insights, cookies, embedded demos, retention and your rights.";
+  "How Foxquart collects, stores and protects the details you send through this website, plus your rights over that data and who processes it. Written plainly.";
 
 export const Route = createFileRoute("/privacy")({
   head: () => ({

@@ -71,7 +71,7 @@ const capabilities: Capability[] = [
     title: "Run & operate",
     outcome: "We see outages before your customers do, and keep shipping after launch.",
     systems: ["Managed hosting", "Monitoring & alerting", "Tested restores", "Ongoing releases"],
-    slug: "cloud-devops",
+    slug: "cloud-infrastructure",
     linkLabel: "Cloud infrastructure & DevOps",
     image: "/images/capability_doodle_violet.webp",
   },
@@ -92,6 +92,8 @@ const systemIndex: { label: string; slug: string }[] = [
   { label: "School ERP", slug: "school-erp" },
   { label: "Restaurant POS", slug: "restaurant-software" },
   { label: "Business process automation", slug: "business-process-automation" },
+  { label: "Web scraping", slug: "web-scraping" },
+  { label: "Landing pages", slug: "landing-page-development" },
 ];
 
 export function WhatWeDo() {

@@ -29,21 +29,21 @@ const DEMOS = {
   school: {
     name: "Vidya Bharati SMS",
     business: "Vidya Bharati International School",
-    url: "https://gilded-nougat-63e5af.netlify.app/",
+    url: "https://school-demo.foxquart.com/",
     image: "/images/school_management.png",
     blurb: "Admissions, fees, attendance and four role-based portals over one student record.",
   },
   clinic: {
     name: "Clinic Portfolio",
     business: "AuraCare Specialist Clinic",
-    url: "https://clinic-portfolio-template.vercel.app/",
+    url: "https://clinic-demo.foxquart.com/",
     image: "/images/clinic_portfolio.png",
     blurb: "Doctor rosters and patient self-booking, so the front desk stops being the queue.",
   },
   dining: {
     name: "Ember & Oak",
     business: "Ember & Oak Fine Dining",
-    url: "https://emberanoak.netlify.app/",
+    url: "https://cafe-demo.foxquart.com/",
     image: "/images/ember_oak.png",
     blurb: "Reservations, tasting menu and table management for a fine-dining room.",
   },
@@ -58,7 +58,6 @@ const SLUG_TO_DEMO: Record<string, keyof typeof DEMOS> = {
   "school-erp": "school",
   "healthcare-software": "clinic",
   "restaurant-software": "dining",
-  "custom-software-development-services": "school",
 };
 
 export function SolutionDemo({ slug }: { slug: string }) {

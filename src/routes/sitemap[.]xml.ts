@@ -1,12 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { services, solutionPages } from "@/lib/site-data";
-import { CONTENT_LAST_MODIFIED, absoluteUrl } from "@/lib/seo";
+import {
+  CONTENT_LAST_MODIFIED,
+  PRIVACY_LAST_MODIFIED,
+  TERMS_LAST_MODIFIED,
+  absoluteUrl,
+} from "@/lib/seo";
 
+/*
+ * No `changefreq` or `priority`. Google stopped using both years ago and Bing
+ * treats them as noise; `priority` in particular only ever expressed relative
+ * importance within this one site, which neither engine reads. `<lastmod>` is
+ * the only hint still honoured, and only while it tracks real edits, which is
+ * why entries can carry their own date instead of one sitewide value.
+ */
 interface SitemapEntry {
   path: string;
-  changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
-  priority?: string;
+  /** Falls back to CONTENT_LAST_MODIFIED when the page has no date of its own. */
+  lastModified?: string;
 }
 
 /** `<loc>` is parsed as XML text, so the five predefined entities must be escaped. */
@@ -24,25 +36,23 @@ export const Route = createFileRoute("/sitemap.xml")({
     handlers: {
       GET: async () => {
         const entries: SitemapEntry[] = [
-          // Home changes most often; the taxonomy indexes gain a page whenever a
-          // service or solution is added; detail pages and contact are stable.
-          { path: "/", changefreq: "weekly", priority: "1.0" },
-          { path: "/work", changefreq: "weekly", priority: "0.9" },
-          { path: "/services", changefreq: "monthly", priority: "0.9" },
-          { path: "/solutions", changefreq: "monthly", priority: "0.9" },
-          { path: "/contact", changefreq: "yearly", priority: "0.7" },
-          // Legal pages are indexable but carry no ranking intent.
-          { path: "/privacy", changefreq: "yearly", priority: "0.2" },
-          { path: "/terms", changefreq: "yearly", priority: "0.2" },
+          { path: "/" },
+          { path: "/work" },
+          { path: "/services" },
+          { path: "/solutions" },
+          { path: "/contact" },
+          // The legal pages state their own revision date in visible text and in
+          // JSON-LD dateModified, so `<lastmod>` has to agree with that, not with
+          // the sitewide copy date.
+          { path: "/privacy", lastModified: PRIVACY_LAST_MODIFIED },
+          { path: "/terms", lastModified: TERMS_LAST_MODIFIED },
           ...services.map((s) => ({
             path: `/services/${s.slug}`,
-            changefreq: "monthly" as const,
-            priority: "0.8",
+            lastModified: s.lastModified,
           })),
           ...solutionPages.map((p) => ({
             path: `/solutions/${p.slug}`,
-            changefreq: "monthly" as const,
-            priority: "0.6",
+            lastModified: p.lastModified,
           })),
         ];
 
@@ -50,13 +60,9 @@ export const Route = createFileRoute("/sitemap.xml")({
           [
             `  <url>`,
             `    <loc>${escapeXml(absoluteUrl(e.path))}</loc>`,
-            `    <lastmod>${CONTENT_LAST_MODIFIED}</lastmod>`,
-            e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
-            e.priority ? `    <priority>${e.priority}</priority>` : null,
+            `    <lastmod>${e.lastModified ?? CONTENT_LAST_MODIFIED}</lastmod>`,
             `  </url>`,
-          ]
-            .filter(Boolean)
-            .join("\n"),
+          ].join("\n"),
         );
 
         const xml = [
